@@ -1,13 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
-interface RouteParams {
-  params: { id: string };
-}
-
 export async function GET(
-  request: NextRequest,
-  { params }: RouteParams
+  _req: Request,
+  { params }: { params: { id: string } }
 ) {
   try {
     const project = await prisma.project.findUnique({
