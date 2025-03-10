@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { auth } from '@clerk/nextjs/server';
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const allProjects = await prisma.project.findMany({
       orderBy: {
@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
   }
 }
 
-export async function POST(request: NextRequest) {
+export async function POST(request: Request) {
   try {
     const { userId } = await auth();
 
