@@ -15,7 +15,7 @@ export const MovingBorder = ({
   className?: string;
   containerClassName?: string;
   borderClassName?: string;
-  [key: string]: any;
+  [key: string]: string | number | boolean | React.ReactNode | undefined;
 }) => {
   return (
     <div

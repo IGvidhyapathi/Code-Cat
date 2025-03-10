@@ -3,10 +3,9 @@
 import { WavyBackground } from "@/components/ui/wavy-background";
 import { AnimatedGradient } from "@/components/ui/animated-gradient";
 import { Sparkles } from "@/components/ui/sparkles";
-import { MovingBorder } from "@/components/ui/moving-border";
 import { AnimatedText } from "@/components/ui/animated-text";
 import { Spotlight } from "@/components/ui/spotlight";
-import { IconBrandGithub, IconRocket, IconBrain, IconCode } from "@tabler/icons-react";
+import { IconRocket, IconBrain, IconCode } from "@tabler/icons-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { RainbowButton } from "@/components/magicui/rainbow-button";
@@ -186,7 +185,7 @@ export default function Home() {
                 <Spotlight className="h-full">
                   <div className="h-full p-8 rounded-2xl bg-slate-800/50 backdrop-blur-xl border border-slate-700/50 hover:border-slate-600/50 transition-colors">
                     <div className={`h-1 w-20 rounded-full bg-gradient-to-r ${testimonial.gradient} mb-6`} />
-                    <p className="text-gray-300 mb-6 italic">"{testimonial.quote}"</p>
+                    <p className="text-gray-300 mb-6 italic">&ldquo;{testimonial.quote}&rdquo;</p>
                     <div>
                       <p className="text-white font-semibold">{testimonial.author}</p>
                       <p className="text-gray-400 text-sm">{testimonial.role}</p>
