@@ -1,101 +1,234 @@
-import Image from "next/image";
+"use client";
+
+import { WavyBackground } from "@/components/ui/wavy-background";
+import { AnimatedGradient } from "@/components/ui/animated-gradient";
+import { Sparkles } from "@/components/ui/sparkles";
+import { MovingBorder } from "@/components/ui/moving-border";
+import { AnimatedText } from "@/components/ui/animated-text";
+import { Spotlight } from "@/components/ui/spotlight";
+import { IconBrandGithub, IconRocket, IconBrain, IconCode } from "@tabler/icons-react";
+import Link from "next/link";
+import { motion } from "framer-motion";
+import { RainbowButton } from "@/components/magicui/rainbow-button";
 
 export default function Home() {
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+    <main className="flex min-h-screen flex-col bg-[#020617]">
+      {/* Hero Section with Improved Layout */}
+      <section className="relative w-full min-h-screen overflow-hidden">
+        <WavyBackground className="absolute inset-0">
+          <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-4">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="text-center"
+            >
+              <AnimatedText
+                text="Discover Amazing Projects"
+                className="text-4xl sm:text-6xl font-bold tracking-tight mb-4 text-white"
+              />
+              <AnimatedText
+                text="Ready for Your Next Venture"
+                className="text-3xl sm:text-5xl font-bold tracking-tight mb-8 bg-clip-text text-transparent bg-gradient-to-r from-violet-600 via-blue-500 to-cyan-400"
+              />
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.5 }}
+                className="text-lg sm:text-xl text-gray-400 max-w-3xl mx-auto mb-10"
+              >
+                Find projects that fit your needs perfectly. From ready-to-use solutions
+                to customizable templates, we've got everything covered.
+              </motion.p>
+              <div className="flex flex-col sm:flex-row justify-center gap-4">
+                <Link href="/explore">
+                  <RainbowButton className="inline-flex items-center justify-center gap-2 text-lg">
+                    <IconRocket className="w-5 h-5" />
+                    Explore Projects
+                  </RainbowButton>
+                </Link>
+                <Link href="/about">
+                  <RainbowButton className="inline-flex items-center justify-center gap-2 text-lg">
+                    <IconBrain className="w-5 h-5" />
+                    Learn More
+                  </RainbowButton>
+                </Link>
+              </div>
+            </motion.div>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            {/* Stats Section */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.8 }}
+              className="w-full max-w-7xl mx-auto mt-20 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 px-4"
+            >
+              {[
+                { icon: IconRocket, count: "500+", label: "Active Projects", color: "blue" },
+                { icon: IconBrain, count: "1000+", label: "Happy Customers", color: "violet" },
+                { icon: IconCode, count: "24/7", label: "Support Available", color: "cyan" },
+              ].map((stat, index) => (
+                <Spotlight key={index} className="h-full">
+                  <div className="relative h-full p-6 rounded-2xl bg-slate-900/50 backdrop-blur-xl border border-slate-800/50">
+                    <Sparkles className="absolute inset-0" />
+                    <div className="relative flex flex-col items-center">
+                      <stat.icon className={`w-8 h-8 mb-4 text-${stat.color}-400`} />
+                      <h3 className={`text-2xl font-bold text-${stat.color}-400`}>{stat.count}</h3>
+                      <p className="text-gray-400">{stat.label}</p>
+                    </div>
+                  </div>
+                </Spotlight>
+              ))}
+            </motion.div>
+          </div>
+        </WavyBackground>
+      </section>
+
+      {/* Features Section with Enhanced Visual Elements */}
+      <section className="w-full py-24 bg-slate-900/50 backdrop-blur-xl relative overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+            className="text-center mb-16"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+            <h2 className="text-3xl font-bold">
+              Everything you need.
+              <br />
+              <span className="text-gray-400">Nothing you don't.</span>
+            </h2>
+          </motion.div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {[
+              {
+                title: "Ready to Use",
+                description: "Download and start using immediately. No setup required.",
+                gradient: "from-violet-600/20 via-blue-500/20 to-cyan-400/20",
+              },
+              {
+                title: "Fully Customizable",
+                description: "Modify and adapt the projects to fit your specific needs.",
+                gradient: "from-blue-500/20 via-cyan-400/20 to-violet-600/20",
+              },
+              {
+                title: "Well Documented",
+                description: "Comprehensive documentation to help you get started quickly.",
+                gradient: "from-cyan-400/20 via-violet-600/20 to-blue-500/20",
+              },
+            ].map((feature, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.2 }}
+              >
+                <Spotlight className="h-full">
+                  <div className="h-full p-6 rounded-2xl bg-slate-800/50 backdrop-blur-xl border border-slate-700/50 hover:border-slate-600/50 transition-colors">
+                    <div className={`h-40 rounded-lg bg-gradient-to-br ${feature.gradient} mb-4`} />
+                    <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
+                    <p className="text-gray-400">{feature.description}</p>
+                  </div>
+                </Spotlight>
+              </motion.div>
+            ))}
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+      </section>
+
+      {/* Testimonials Section */}
+      <section className="w-full py-24 relative overflow-hidden">
+        <AnimatedGradient className="absolute inset-0 opacity-20">
+          <div className="w-full h-full" />
+        </AnimatedGradient>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+            className="text-center mb-16"
+          >
+            <h2 className="text-3xl font-bold text-white mb-4">Loved by Developers</h2>
+            <p className="text-gray-400 max-w-2xl mx-auto">Join thousands of satisfied developers who have transformed their projects with our solutions.</p>
+          </motion.div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {[
+              {
+                quote: "The quality and support are unmatched. Saved weeks of development time.",
+                author: "Sarah Chen",
+                role: "Senior Developer",
+                gradient: "from-violet-600/20 via-blue-500/20 to-cyan-400/20"
+              },
+              {
+                quote: "Perfect balance of flexibility and functionality. Exactly what we needed.",
+                author: "Mike Johnson",
+                role: "Tech Lead",
+                gradient: "from-blue-500/20 via-cyan-400/20 to-violet-600/20"
+              },
+              {
+                quote: "Documentation is excellent. Integration was smooth and straightforward.",
+                author: "Alex Rivera",
+                role: "Full Stack Developer",
+                gradient: "from-cyan-400/20 via-violet-600/20 to-blue-500/20"
+              }
+            ].map((testimonial, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.2 }}
+              >
+                <Spotlight className="h-full">
+                  <div className="h-full p-8 rounded-2xl bg-slate-800/50 backdrop-blur-xl border border-slate-700/50 hover:border-slate-600/50 transition-colors">
+                    <div className={`h-1 w-20 rounded-full bg-gradient-to-r ${testimonial.gradient} mb-6`} />
+                    <p className="text-gray-300 mb-6 italic">"{testimonial.quote}"</p>
+                    <div>
+                      <p className="text-white font-semibold">{testimonial.author}</p>
+                      <p className="text-gray-400 text-sm">{testimonial.role}</p>
+                    </div>
+                  </div>
+                </Spotlight>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="w-full py-24 relative overflow-hidden">
+        <WavyBackground className="absolute inset-0">
+          <div className="w-full h-full opacity-50" />
+        </WavyBackground>
+        <Spotlight className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="relative rounded-3xl overflow-hidden bg-slate-900/50 backdrop-blur-xl border border-slate-800/50 p-8 sm:p-12 text-center">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
+              className="space-y-8"
+            >
+              <h2 className="text-4xl font-bold text-white">Ready to Get Started?</h2>
+              <p className="text-xl text-gray-400 max-w-2xl mx-auto">
+                Join our community of developers and start building amazing projects today.
+              </p>
+              <div className="flex justify-center pt-4">
+                <Link href="/projects/new">
+                  <RainbowButton className="inline-flex items-center justify-center gap-2 text-lg font-semibold">
+                    <IconRocket className="w-5 h-5" />
+                    Start Building
+                  </RainbowButton>
+                </Link>
+              </div>
+            </motion.div>
+          </div>
+        </Spotlight>
+      </section>
+    </main>
   );
 }

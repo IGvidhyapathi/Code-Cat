@@ -1,4 +1,20 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+npm run db:generate
+npm run db:pushThis is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+
+## Database Setup
+
+1. Create a new project on [Neon](https://neon.tech)
+2. Get your database connection string from the Neon dashboard
+3. Create a `.env` file in the root directory and add your database URL:
+```bash
+DATABASE_URL=your_neon_database_url
+```
+
+4. Generate and push the database schema:
+```bash
+npm run db:generate  # Generate SQL migrations
+npm run db:push      # Push changes to the database
+```
 
 ## Getting Started
 
