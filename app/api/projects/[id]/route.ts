@@ -1,9 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
+interface RouteParams {
+  params: { id: string };
+}
+
 export async function GET(
-  request: NextRequest,  // Corrected Type
-  { params }: { params: { id: string } }
+  request: NextRequest,
+  { params }: RouteParams
 ) {
   try {
     const project = await prisma.project.findUnique({
@@ -17,7 +21,7 @@ export async function GET(
       );
     }
 
-    return NextResponse.json(project);
+    return NextResponse.json({ data: project });
   } catch (error) {
     console.error('Error fetching project:', error);
     return NextResponse.json(

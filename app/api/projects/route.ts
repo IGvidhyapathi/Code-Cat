@@ -1,22 +1,22 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { auth } from '@clerk/nextjs/server';
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
     const allProjects = await prisma.project.findMany({
       orderBy: {
         createdAt: 'desc'
       }
     });
-    return NextResponse.json(allProjects);
+    return NextResponse.json({ data: allProjects });
   } catch (error) {
     console.error('Error fetching projects:', error);
     return NextResponse.json({ error: 'Failed to fetch projects' }, { status: 500 });
   }
 }
 
-export async function POST(req: Request) {
+export async function POST(request: NextRequest) {
   try {
     const { userId } = await auth();
 
@@ -24,7 +24,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const body = await req.json();
+    const body = await request.json();
     const newProject = await prisma.project.create({
       data: {
         title: body.title,
@@ -43,7 +43,7 @@ export async function POST(req: Request) {
       }
     });
 
-    return NextResponse.json(newProject);
+    return NextResponse.json({ data: newProject });
   } catch (error) {
     console.error('Error creating project:', error);
     return NextResponse.json({ error: 'Failed to create project' }, { status: 500 });
