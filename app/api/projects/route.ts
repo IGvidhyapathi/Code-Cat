@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { auth } from '@clerk/nextjs/server';
 
-export async function GET(_req: Request) {
+export async function GET() {
   try {
     const allProjects = await prisma.project.findMany({
       orderBy: {
