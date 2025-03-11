@@ -1,17 +1,16 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
-type RouteParams = {
-  id: string;
-};
+export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+  const { id } = params; // Correct way to extract 'id' in Next.js 15
 
-export async function GET(
-  request: Request,
-  context: { params: RouteParams }
-) {
+  if (!id) {
+    return NextResponse.json({ error: 'ID is required' }, { status: 400 });
+  }
+
   try {
     const project = await prisma.project.findUnique({
-      where: { id: context.params.id }
+      where: { id }
     });
 
     if (!project) {
@@ -21,7 +20,7 @@ export async function GET(
       );
     }
 
-    return NextResponse.json({ data: project });
+    return NextResponse.json(project);
   } catch (error) {
     console.error('Error fetching project:', error);
     return NextResponse.json(

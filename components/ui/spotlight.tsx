@@ -40,15 +40,16 @@ export const Spotlight = ({
         setOpacity(0);
       };
 
-      const div = divRef.current;
-      div.addEventListener("mousemove", handleMouseMove);
-      div.addEventListener("mouseenter", handleMouseEnter);
-      div.addEventListener("mouseleave", handleMouseLeave);
+      divRef.current.addEventListener("mousemove", handleMouseMove);
+      divRef.current.addEventListener("mouseenter", handleMouseEnter);
+      divRef.current.addEventListener("mouseleave", handleMouseLeave);
 
       return () => {
-        div.removeEventListener("mousemove", handleMouseMove);
-        div.removeEventListener("mouseenter", handleMouseEnter);
-        div.removeEventListener("mouseleave", handleMouseLeave);
+        if (divRef.current) {
+          divRef.current.removeEventListener("mousemove", handleMouseMove);
+          divRef.current.removeEventListener("mouseenter", handleMouseEnter);
+          divRef.current.removeEventListener("mouseleave", handleMouseLeave);
+        }
       };
     }
   }, [isMounted]);

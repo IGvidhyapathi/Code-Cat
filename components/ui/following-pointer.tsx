@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-import { motion, AnimatePresence, useMotionValue, MotionValue } from "framer-motion";
+import { motion, AnimatePresence, useMotionValue } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 export const FollowerPointerCard = ({
@@ -63,8 +63,8 @@ export const FollowPointer = ({
   y,
   title,
 }: {
-  x: MotionValue<number>;
-  y: MotionValue<number>;
+  x: any;
+  y: any;
   title?: string | React.ReactNode;
 }) => {
   const colors = [

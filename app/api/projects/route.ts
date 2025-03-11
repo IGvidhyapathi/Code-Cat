@@ -9,13 +9,10 @@ export async function GET() {
         createdAt: 'desc'
       }
     });
-    return NextResponse.json({ data: allProjects });
+    return NextResponse.json(allProjects);
   } catch (error) {
     console.error('Error fetching projects:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch projects' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to fetch projects' }, { status: 500 });
   }
 }
 
@@ -46,7 +43,7 @@ export async function POST(req: Request) {
       }
     });
 
-    return NextResponse.json({ data: newProject });
+    return NextResponse.json(newProject);
   } catch (error) {
     console.error('Error creating project:', error);
     return NextResponse.json({ error: 'Failed to create project' }, { status: 500 });
