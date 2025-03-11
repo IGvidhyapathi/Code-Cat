@@ -4,13 +4,18 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { useUser } from "@clerk/nextjs";
-import { IconUpload } from "@tabler/icons-react";
+import { IconUpload, IconLock, IconCheck } from "@tabler/icons-react";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 export default function NewProject() {
   const router = useRouter();
   const { user } = useUser();
   const [isLoading, setIsLoading] = useState(false);
+  const [isPinVerified, setIsPinVerified] = useState(false);
+  const [pin, setPin] = useState("");
+
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -25,6 +30,16 @@ export default function NewProject() {
     category: "web",
     price: "",
   });
+
+  const verifyPin = () => {
+    if (pin === "0000") {
+      setIsPinVerified(true);
+      toast.success("PIN verified successfully!");
+    } else {
+      toast.error("Incorrect PIN. Please try again.");
+      setPin("");
+    }
+  };
 
   const addFeature = () => {
     setFormData(prev => ({
@@ -67,8 +82,6 @@ export default function NewProject() {
       techStack: prev.techStack.map((tech, i) => i === index ? value : tech)
     }));
   };
-
-
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -139,6 +152,64 @@ export default function NewProject() {
       setIsLoading(false);
     }
   };
+
+  if (!isPinVerified) {
+    return (
+      <div className="min-h-screen bg-slate-900 py-20">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="max-w-md mx-auto px-4 sm:px-6 lg:px-8"
+        >
+          <div className="text-center mb-8">
+            <div className="bg-blue-500/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+              <IconLock className="w-8 h-8 text-blue-400" />
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">Enter Project PIN</h1>
+            <p className="text-gray-400 text-sm sm:text-base">
+              Please enter the PIN to add a new project
+            </p>
+          </div>
+
+          <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-6 backdrop-blur-sm">
+            <div className="space-y-4">
+              <div>
+                <label htmlFor="pin" className="block text-sm font-medium text-gray-300 mb-1">
+                  PIN Code
+                </label>
+                <Input
+                  id="pin"
+                  type="password"
+                  maxLength={4}
+                  value={pin}
+                  onChange={(e) => setPin(e.target.value)}
+                  className="bg-slate-900/50 border-slate-700 text-white placeholder:text-gray-500"
+                  placeholder="Enter 4-digit PIN"
+                />
+              </div>
+              <Button
+                onClick={verifyPin}
+                disabled={pin.length !== 4}
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+              >
+                {pin.length === 4 ? (
+                  <>
+                    <IconCheck className="w-4 h-4 mr-2" />
+                    Verify PIN
+                  </>
+                ) : (
+                  <>
+                    <IconLock className="w-4 h-4 mr-2" />
+                    Enter PIN
+                  </>
+                )}
+              </Button>
+            </div>
+          </div>
+        </motion.div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-slate-900 py-20">
@@ -383,8 +454,6 @@ export default function NewProject() {
               />
             </div>
           </div>
-
-
 
           <div className="flex justify-end">
             <button

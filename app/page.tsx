@@ -3,121 +3,167 @@
 import { WavyBackground } from "@/components/ui/wavy-background";
 import { AnimatedGradient } from "@/components/ui/animated-gradient";
 import { Sparkles } from "@/components/ui/sparkles";
-import { MovingBorder } from "@/components/ui/moving-border";
-import { AnimatedText } from "@/components/ui/animated-text";
 import { Spotlight } from "@/components/ui/spotlight";
-import { IconBrandGithub, IconRocket, IconBrain, IconCode } from "@tabler/icons-react";
+import { Button } from "@/components/ui/button";
+import { IconBrandGithub, IconRocket, IconBrain, IconCode, IconArrowRight, IconStar, IconHeart, IconArrowNarrowRight, IconDeviceLaptop, IconBolt, IconTools } from "@tabler/icons-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { RainbowButton } from "@/components/magicui/rainbow-button";
+
 
 export default function Home() {
   return (
-    <main className="flex min-h-screen flex-col bg-[#020617]">
-      {/* Hero Section with Improved Layout */}
-      <section className="relative w-full min-h-screen overflow-hidden">
-        <WavyBackground className="absolute inset-0">
-          <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-4">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className="text-center"
-            >
-              <AnimatedText
-                text="Discover Amazing Projects"
-                className="text-4xl sm:text-6xl font-bold tracking-tight mb-4 text-white"
-              />
-              <AnimatedText
-                text="Ready for Your Next Venture"
-                className="text-3xl sm:text-5xl font-bold tracking-tight mb-8 bg-clip-text text-transparent bg-gradient-to-r from-violet-600 via-blue-500 to-cyan-400"
-              />
-              <motion.p
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.5 }}
-                className="text-lg sm:text-xl text-gray-400 max-w-3xl mx-auto mb-10"
-              >
-                Find projects that fit your needs perfectly. From ready-to-use solutions
-                to customizable templates, we've got everything covered.
-              </motion.p>
-              <div className="flex flex-col sm:flex-row justify-center gap-4">
-                <Link href="/explore">
-                  <RainbowButton className="inline-flex items-center justify-center gap-2 text-lg">
-                    <IconRocket className="w-5 h-5" />
-                    Explore Projects
-                  </RainbowButton>
-                </Link>
-                <Link href="/about">
-                  <RainbowButton className="inline-flex items-center justify-center gap-2 text-lg">
-                    <IconBrain className="w-5 h-5" />
-                    Learn More
-                  </RainbowButton>
-                </Link>
-              </div>
-            </motion.div>
+    <main className="flex min-h-screen flex-col bg-[#0A0A0F]">
+      {/* Hero Section */}
+      <section className="relative min-h-screen overflow-hidden">
+        {/* Background Effects */}
+        <div className="absolute inset-0">
+          <div className="absolute inset-0 bg-gradient-to-b from-black via-purple-900/20 to-black" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(24,24,27,0.8),rgba(0,0,0,0))]" />
+          <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:50px_50px]" />
+        </div>
 
-            {/* Stats Section */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.8 }}
-              className="w-full max-w-7xl mx-auto mt-20 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 px-4"
-            >
-              {[
-                { icon: IconRocket, count: "500+", label: "Active Projects", color: "blue" },
-                { icon: IconBrain, count: "1000+", label: "Happy Customers", color: "violet" },
-                { icon: IconCode, count: "24/7", label: "Support Available", color: "cyan" },
-              ].map((stat, index) => (
-                <Spotlight key={index} className="h-full">
-                  <div className="relative h-full p-6 rounded-2xl bg-slate-900/50 backdrop-blur-xl border border-slate-800/50">
-                    <Sparkles className="absolute inset-0" />
-                    <div className="relative flex flex-col items-center">
-                      <stat.icon className={`w-8 h-8 mb-4 text-${stat.color}-400`} />
-                      <h3 className={`text-2xl font-bold text-${stat.color}-400`}>{stat.count}</h3>
-                      <p className="text-gray-400">{stat.label}</p>
-                    </div>
+        <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 min-h-screen flex flex-col justify-center py-16 sm:py-0">
+          <div className="flex flex-col lg:flex-row items-center gap-8 lg:gap-24">
+            {/* Left Content */}
+            <div className="flex-1 text-center lg:text-left">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8 }}
+              >
+                <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold tracking-tight text-white mb-4 sm:mb-6">
+                  Find{" "}
+                  <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-500 via-blue-500 to-cyan-500">
+                    Quality
+                  </span>
+                  <br className="hidden sm:block" />
+                  <span className="sm:hidden"> </span>
+                  Projects{" "}
+                  <span className="bg-clip-text text-transparent bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-500">
+                    Today
+                  </span>
+                </h1>
+
+                <p className="text-lg sm:text-xl text-gray-400 mb-6 sm:mb-8 max-w-xl mx-auto lg:mx-0 px-4 sm:px-0">
+                  Discover premium developmented projects, templates, and source code. 
+                  Ready-to-use solutions for students who value quality and time.
+                </p>
+
+                <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center lg:justify-start px-4 sm:px-0">
+                  <Button asChild size="lg" className="w-full sm:w-auto bg-gradient-to-r from-purple-500 via-blue-500 to-cyan-500 hover:opacity-90">
+                    <Link href="/explore" className="inline-flex items-center gap-2">
+                      Browse Projects
+                      <IconArrowRight className="w-5 h-5" />
+                    </Link>
+                  </Button>
+                  <Button asChild variant="outline" size="lg" className="w-full sm:w-auto border-white/10 hover:bg-white/5">
+                    <Link href="/sell-project" className="inline-flex items-center gap-2">
+                      <IconRocket className="w-5 h-5" />
+                      Sell Your Project
+                    </Link>
+                  </Button>
+                </div>
+
+                {/* Stats */}
+                <div className="mt-8 sm:mt-12 grid grid-cols-2 sm:grid-cols-3 gap-4 sm:gap-8 max-w-lg mx-auto lg:mx-0">
+                  <div className="text-center lg:text-left p-4 sm:p-0">
+                    <div className="text-2xl sm:text-3xl font-bold text-white mb-1">500+</div>
+                    <div className="text-sm sm:text-base text-gray-400">Premium Projects</div>
                   </div>
-                </Spotlight>
-              ))}
-            </motion.div>
+                  <div className="text-center lg:text-left p-4 sm:p-0">
+                    <div className="text-2xl sm:text-3xl font-bold text-white mb-1">2k+</div>
+                    <div className="text-sm sm:text-base text-gray-400">Happy Buyers</div>
+                  </div>
+                  <div className="text-center lg:text-left col-span-2 sm:col-span-1 p-4 sm:p-0">
+                    <div className="text-2xl sm:text-3xl font-bold text-white mb-1">$1M+</div>
+                    <div className="text-sm sm:text-base text-gray-400">Paid to Sellers</div>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+
+            {/* Right Content - Feature Preview */}
+            <div className="flex-1 w-full max-w-xl lg:max-w-none px-4 sm:px-0">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 1, delay: 0.2 }}
+                className="relative"
+              >
+                <div className="relative rounded-xl overflow-hidden border border-white/10 bg-black/30 backdrop-blur-sm">
+                  <div className="absolute inset-0">
+                    <Sparkles className="w-full h-full" />
+                  </div>
+                  <div className="relative p-4 sm:p-8">
+                    <div className="flex items-center gap-4 mb-4 sm:mb-6">
+                      <div className="flex gap-2">
+                        <div className="w-3 h-3 rounded-full bg-red-500" />
+                        <div className="w-3 h-3 rounded-full bg-yellow-500" />
+                        <div className="w-3 h-3 rounded-full bg-green-500" />
+                      </div>
+                      <div className="text-sm text-gray-400">preview.jsx</div>
+                    </div>
+                    <pre className="text-xs sm:text-sm text-gray-300 font-mono overflow-x-auto">
+                      <code>{`import { Motion } from '@/components';
+
+export function App() {
+  return (
+    <Motion.div
+      animate={{ scale: 1 }}
+      initial={{ scale: 0 }}
+    >
+      Hello, Developer! 👋
+    </Motion.div>
+  );
+}`}</code>
+                    </pre>
+                  </div>
+                </div>
+                {/* Floating Elements */}
+                <div className="absolute -top-8 -right-8 w-24 h-24 bg-purple-500/10 rounded-full blur-2xl" />
+                <div className="absolute -bottom-8 -left-8 w-24 h-24 bg-blue-500/10 rounded-full blur-2xl" />
+              </motion.div>
+            </div>
           </div>
-        </WavyBackground>
+        </div>
       </section>
 
-      {/* Features Section with Enhanced Visual Elements */}
-      <section className="w-full py-24 bg-slate-900/50 backdrop-blur-xl relative overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-3xl font-bold">
-              Everything you need.
-              <br />
-              <span className="text-gray-400">Nothing you don't.</span>
+      {/* Features Section */}
+      <section className="relative py-16 sm:py-32">
+        <div className="absolute inset-0 bg-gradient-to-b from-black to-purple-900/20" />
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12 sm:mb-20">
+            <h2 className="text-2xl sm:text-3xl lg:text-5xl font-bold text-white mb-4 sm:mb-6 px-4">
+              Everything you need to build
+              <span className="block mt-2 bg-clip-text text-transparent bg-gradient-to-r from-purple-500 via-blue-500 to-cyan-500">
+                amazing applications
+              </span>
             </h2>
-          </motion.div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <p className="text-lg sm:text-xl text-gray-400 max-w-2xl mx-auto px-4">
+              Our platform provides all the tools and features you need to create modern, performant, and beautiful applications.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-8 px-4 sm:px-0">
             {[
               {
-                title: "Ready to Use",
-                description: "Download and start using immediately. No setup required.",
-                gradient: "from-violet-600/20 via-blue-500/20 to-cyan-400/20",
+                icon: IconCode,
+                title: "Verified Quality",
+                description: "Every project is thoroughly reviewed and tested for code quality and completeness.",
+                gradient: "from-purple-500/20 via-blue-500/20 to-cyan-500/20"
               },
               {
-                title: "Fully Customizable",
-                description: "Modify and adapt the projects to fit your specific needs.",
-                gradient: "from-blue-500/20 via-cyan-400/20 to-violet-600/20",
+                icon: IconBrain,
+                title: "Source Included",
+                description: "Get full source code access with detailed documentation and setup guides.",
+                gradient: "from-blue-500/20 via-cyan-500/20 to-purple-500/20"
               },
               {
-                title: "Well Documented",
-                description: "Comprehensive documentation to help you get started quickly.",
-                gradient: "from-cyan-400/20 via-violet-600/20 to-blue-500/20",
-              },
+                icon: IconHeart,
+                title: "Lifetime Support",
+                description: "Access dedicated support and free updates for all purchased projects.",
+                gradient: "from-cyan-500/20 via-purple-500/20 to-blue-500/20"
+              }
             ].map((feature, index) => (
               <motion.div
                 key={index}
@@ -126,108 +172,65 @@ export default function Home() {
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.2 }}
               >
-                <Spotlight className="h-full">
-                  <div className="h-full p-6 rounded-2xl bg-slate-800/50 backdrop-blur-xl border border-slate-700/50 hover:border-slate-600/50 transition-colors">
-                    <div className={`h-40 rounded-lg bg-gradient-to-br ${feature.gradient} mb-4`} />
-                    <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
-                    <p className="text-gray-400">{feature.description}</p>
+                <div className="group relative h-full p-8 rounded-3xl bg-white/[0.02] border border-white/[0.05] hover:border-white/[0.1] transition-all duration-300 hover:transform hover:-translate-y-1">
+                  <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-purple-500/5 via-blue-500/5 to-cyan-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <div className="relative">
+                    <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${feature.gradient} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}>
+                      <feature.icon className="w-7 h-7 text-white" />
+                    </div>
+                    <h3 className="text-2xl font-semibold text-white mb-4">{feature.title}</h3>
+                    <p className="text-gray-400 text-lg leading-relaxed">{feature.description}</p>
                   </div>
-                </Spotlight>
+                </div>
               </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Testimonials Section */}
-      <section className="w-full py-24 relative overflow-hidden">
-        <AnimatedGradient className="absolute inset-0 opacity-20">
-          <div className="w-full h-full" />
-        </AnimatedGradient>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-3xl font-bold text-white mb-4">Loved by Developers</h2>
-            <p className="text-gray-400 max-w-2xl mx-auto">Join thousands of satisfied developers who have transformed their projects with our solutions.</p>
-          </motion.div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[
-              {
-                quote: "The quality and support are unmatched. Saved weeks of development time.",
-                author: "Sarah Chen",
-                role: "Senior Developer",
-                gradient: "from-violet-600/20 via-blue-500/20 to-cyan-400/20"
-              },
-              {
-                quote: "Perfect balance of flexibility and functionality. Exactly what we needed.",
-                author: "Mike Johnson",
-                role: "Tech Lead",
-                gradient: "from-blue-500/20 via-cyan-400/20 to-violet-600/20"
-              },
-              {
-                quote: "Documentation is excellent. Integration was smooth and straightforward.",
-                author: "Alex Rivera",
-                role: "Full Stack Developer",
-                gradient: "from-cyan-400/20 via-violet-600/20 to-blue-500/20"
-              }
-            ].map((testimonial, index) => (
+     
+
+      {/* CTA Section */}
+      <section className="relative py-16 sm:py-32">
+        <WavyBackground className="absolute inset-0">
+          <div className="absolute inset-0" />
+        </WavyBackground>
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="relative rounded-3xl overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 via-blue-500/10 to-cyan-500/10" />
+            <div className="relative p-6 sm:p-12 lg:p-20 text-center">
               <motion.div
-                key={index}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: index * 0.2 }}
+                transition={{ duration: 0.5 }}
+                className="max-w-3xl mx-auto"
               >
-                <Spotlight className="h-full">
-                  <div className="h-full p-8 rounded-2xl bg-slate-800/50 backdrop-blur-xl border border-slate-700/50 hover:border-slate-600/50 transition-colors">
-                    <div className={`h-1 w-20 rounded-full bg-gradient-to-r ${testimonial.gradient} mb-6`} />
-                    <p className="text-gray-300 mb-6 italic">"{testimonial.quote}"</p>
-                    <div>
-                      <p className="text-white font-semibold">{testimonial.author}</p>
-                      <p className="text-gray-400 text-sm">{testimonial.role}</p>
-                    </div>
-                  </div>
-                </Spotlight>
+                <h2 className="text-3xl sm:text-4xl lg:text-6xl font-bold text-white mb-4 sm:mb-6">
+                  Start Selling Your Projects
+                </h2>
+                <p className="text-lg sm:text-xl text-gray-400 mb-8 sm:mb-12 px-4">
+                  Join our marketplace of talented developers and start earning from your code.
+                  Turn your projects into profit today.
+                </p>
+                <div className="flex flex-col sm:flex-row justify-center items-center gap-4 sm:gap-6 px-4 sm:px-0">
+                  <Button asChild size="lg" className="w-full sm:w-auto bg-gradient-to-r from-purple-500 via-blue-500 to-cyan-500 hover:opacity-90 text-base sm:text-lg px-6 sm:px-8 py-4 sm:py-6 h-auto">
+                    <Link href="/seller-signup" className="inline-flex items-center gap-2">
+                      Become a Seller
+                      <IconArrowRight className="w-5 h-5" />
+                    </Link>
+                  </Button>
+                  <Button asChild variant="ghost" size="lg" className="w-full sm:w-auto text-gray-400 hover:text-white">
+                    <Link href="/seller-guide" className="inline-flex items-center gap-2">
+                      View Seller Guide
+                      <IconArrowRight className="w-5 h-5" />
+                    </Link>
+                  </Button>
+                </div>
               </motion.div>
-            ))}
+            </div>
           </div>
         </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="w-full py-24 relative overflow-hidden">
-        <WavyBackground className="absolute inset-0">
-          <div className="w-full h-full opacity-50" />
-        </WavyBackground>
-        <Spotlight className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="relative rounded-3xl overflow-hidden bg-slate-900/50 backdrop-blur-xl border border-slate-800/50 p-8 sm:p-12 text-center">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
-              className="space-y-8"
-            >
-              <h2 className="text-4xl font-bold text-white">Ready to Get Started?</h2>
-              <p className="text-xl text-gray-400 max-w-2xl mx-auto">
-                Join our community of developers and start building amazing projects today.
-              </p>
-              <div className="flex justify-center pt-4">
-                <Link href="/projects/new">
-                  <RainbowButton className="inline-flex items-center justify-center gap-2 text-lg font-semibold">
-                    <IconRocket className="w-5 h-5" />
-                    Start Building
-                  </RainbowButton>
-                </Link>
-              </div>
-            </motion.div>
-          </div>
-        </Spotlight>
       </section>
     </main>
   );
