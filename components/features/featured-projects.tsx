@@ -1,5 +1,5 @@
 import { ProjectCard } from "./project-card"
-import prisma from "@/lib/prisma"
+import {prisma} from "@/lib/prisma"
 
 async function getFeaturedProjects() {
   const projects = await prisma.project.findMany({
