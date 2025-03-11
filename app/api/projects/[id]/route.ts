@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
-  const { id } = params; // Correct way to extract 'id' in Next.js 15
+export async function GET(request: NextRequest) {
+  const id = request.nextUrl.pathname.split('/').pop(); // Extract ID from URL path
 
   if (!id) {
     return NextResponse.json({ error: 'ID is required' }, { status: 400 });
@@ -14,10 +14,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
     });
 
     if (!project) {
-      return NextResponse.json(
-        { error: 'Project not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Project not found' }, { status: 404 });
     }
 
     return NextResponse.json(project);
