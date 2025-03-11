@@ -5,8 +5,8 @@ import Image from "next/image";
 import { useState } from "react";
 import { IconMenu2, IconX, IconPlus } from "@tabler/icons-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { MovingBorder } from "./moving-border";
 import { SignInButton, UserButton, useUser } from "@clerk/nextjs";
-import { RainbowButton } from "../magicui/rainbow-button";
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -41,7 +41,7 @@ export function Navbar() {
 
           {isSignedIn ? (
             <div className="flex items-center space-x-4">
-              <RainbowButton duration={3000} className="p-1">
+              <MovingBorder duration={3000} className="p-1">
                 <Link
                   href="/projects/new"
                   className="relative inline-flex h-10 animate-shimmer items-center justify-center rounded-lg px-6 bg-[linear-gradient(110deg,#000103,45%,#1e2631,55%,#000103)] bg-[length:200%_100%] font-medium text-white transition-colors focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-50"
@@ -49,7 +49,7 @@ export function Navbar() {
                   <IconPlus className="mr-2" size={16} />
                   Add Project
                 </Link>
-              </RainbowButton>
+              </MovingBorder>
               <UserButton afterSignOutUrl="/" />
             </div>
           ) : (
