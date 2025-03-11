@@ -5,9 +5,6 @@ import { motion } from "framer-motion";
 import { ProjectCard } from "@/components/ui/project-card";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import { RainbowButton } from "@/components/magicui/rainbow-button";
-import { Plus } from "lucide-react";
-import Link from "next/link";
 
 interface Project {
   id: string;

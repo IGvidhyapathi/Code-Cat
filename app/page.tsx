@@ -3,10 +3,9 @@
 import { WavyBackground } from "@/components/ui/wavy-background";
 import { AnimatedGradient } from "@/components/ui/animated-gradient";
 import { Sparkles } from "@/components/ui/sparkles";
-import { MovingBorder } from "@/components/ui/moving-border";
 import { AnimatedText } from "@/components/ui/animated-text";
 import { Spotlight } from "@/components/ui/spotlight";
-import { IconBrandGithub, IconRocket, IconBrain, IconCode } from "@tabler/icons-react";
+import { IconRocket, IconBrain, IconCode } from "@tabler/icons-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { RainbowButton } from "@/components/magicui/rainbow-button";
@@ -39,7 +38,7 @@ export default function Home() {
                 className="text-lg sm:text-xl text-gray-400 max-w-3xl mx-auto mb-10"
               >
                 Find projects that fit your needs perfectly. From ready-to-use solutions
-                to customizable templates, we've got everything covered.
+                to customizable templates, we&apos;ve got everything covered.
               </motion.p>
               <div className="flex flex-col sm:flex-row justify-center gap-4">
                 <Link href="/explore">
@@ -98,7 +97,7 @@ export default function Home() {
             <h2 className="text-3xl font-bold">
               Everything you need.
               <br />
-              <span className="text-gray-400">Nothing you don't.</span>
+              <span className="text-gray-400">Nothing you don&apos;t.</span>
             </h2>
           </motion.div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">

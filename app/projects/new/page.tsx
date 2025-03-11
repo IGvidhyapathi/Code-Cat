@@ -4,7 +4,6 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { useUser } from "@clerk/nextjs";
-import { IconUpload } from "@tabler/icons-react";
 import { toast } from "sonner";
 
 export default function NewProject() {
