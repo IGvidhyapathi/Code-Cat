@@ -180,3 +180,12 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+@keyframes glow {
+  from {
+    box-shadow: 0 0 5px #22c55e, 0 0 10px #22c55e, 0 0 15px #22c55e;
+  }
+  to {
+    box-shadow: 0 0 10px #22c55e, 0 0 20px #22c55e, 0 0 30px #22c55e;
+  }
+}

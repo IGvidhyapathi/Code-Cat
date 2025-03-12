@@ -47,7 +47,8 @@ export function ProjectCard({
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="group relative bg-slate-800/50 rounded-lg overflow-hidden border border-slate-700 h-full flex flex-col"
+      whileHover={{ y: -5 }}
+      className="group relative bg-slate-800/50 rounded-lg overflow-hidden border border-slate-700 h-full flex flex-col transform-gpu transition-all duration-300 hover:shadow-[0_0_30px_rgba(59,130,246,0.3)] hover:border-blue-500/50"
     >
       <div className="aspect-video relative overflow-hidden">
         {isTopSelling && (
@@ -65,21 +66,21 @@ export function ProjectCard({
           priority
           quality={85}
           loading="eager"
-          className="object-cover transition-transform group-hover:scale-105"
+          className="object-cover transition-all duration-500 group-hover:brightness-110"
           onError={() => setUseFallback(true)}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-slate-900/50 to-transparent transition-opacity duration-300 group-hover:opacity-90" />
+        <div className="absolute inset-0 bg-blue-500/0 mix-blend-overlay transition-colors duration-300 group-hover:bg-blue-500/20" />
       </div>
 
-      <div className="p-4 flex flex-col flex-grow">
+      <div className="p-4 flex flex-col flex-grow relative z-10">
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2">
-            <span className="text-xs font-medium px-2 py-1 rounded-full bg-slate-700 text-slate-300">
+            <span className="text-xs font-medium px-2 py-1 rounded-full bg-slate-700 text-slate-300 transition-colors duration-300 group-hover:bg-blue-500/20 group-hover:text-blue-300">
               {category}
             </span>
-
           </div>
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-2 opacity-0 translate-y-2 transition-all duration-300 group-hover:opacity-100 group-hover:translate-y-0">
             <Link
               href={youtubeUrl}
               target="_blank"
@@ -101,16 +102,16 @@ export function ProjectCard({
           </div>
         </div>
 
-        <h3 className="text-lg font-semibold text-white mb-2 line-clamp-1">
+        <h3 className="text-lg font-semibold text-white mb-2 line-clamp-1 transition-colors duration-300 group-hover:text-blue-300">
           {title}
         </h3>
         {price != null && (
           <div className="mb-3 flex items-baseline gap-1">
-            <span className="text-2xl font-bold text-emerald-400">₹{Number(price).toLocaleString('en-IN')}</span>
+            <span className="text-2xl font-bold text-emerald-400 transition-colors duration-300 group-hover:text-emerald-300">₹{Number(price).toLocaleString('en-IN')}</span>
             <span className="text-sm text-emerald-500/80">INR</span>
           </div>
         )}
-        <p className="text-sm text-gray-400 line-clamp-2 mb-4">
+        <p className="text-sm text-gray-400 line-clamp-2 mb-4 transition-colors duration-300 group-hover:text-gray-300">
           {description}
         </p>
 
@@ -121,13 +122,13 @@ export function ProjectCard({
               {techStack.slice(0, 3).map((tech, index) => (
                 <span
                   key={index}
-                  className="px-2 py-0.5 rounded-full text-xs font-medium bg-blue-500/10 text-blue-400"
+                  className="px-2 py-0.5 rounded-full text-xs font-medium bg-blue-500/10 text-blue-400 transition-all duration-300 group-hover:bg-blue-500/20 group-hover:text-blue-300"
                 >
                   {tech}
                 </span>
               ))}
               {techStack.length > 3 && (
-                <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-slate-700 text-slate-300">
+                <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-slate-700 text-slate-300 transition-all duration-300 group-hover:bg-slate-600 group-hover:text-white">
                   +{techStack.length - 3} more
                 </span>
               )}
@@ -137,7 +138,7 @@ export function ProjectCard({
 
         <Link
           href={`/projects/${id}`}
-          className="inline-flex w-full items-center justify-center px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors"
+          className="inline-flex w-full items-center justify-center px-4 py-2 rounded-lg bg-blue-600 text-white transition-all duration-300 hover:bg-blue-700 group-hover:bg-blue-500 group-hover:shadow-lg group-hover:shadow-blue-500/25 transform-gpu"
         >
           View Details
         </Link>
