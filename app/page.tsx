@@ -13,6 +13,52 @@ import { motion } from "framer-motion";
 export default function Home() {
   return (
     <main className="flex min-h-screen flex-col bg-[#0A0A0F]">
+      {/* System Status Badge */}
+      <div className="fixed bottom-4 right-4 z-50">
+        <div className="group relative">
+          <div className="flex items-center gap-2 px-3 py-2 rounded-full bg-slate-800/90 border border-slate-700/50 backdrop-blur-sm cursor-help">
+            <div className="relative">
+              <div className="w-2 h-2 rounded-full bg-green-500" />
+              <div className="absolute inset-0 w-2 h-2 rounded-full bg-green-500 animate-ping" />
+            </div>
+            <span className="text-sm text-gray-300">All Systems Operational</span>
+          </div>
+          
+          {/* Tooltip */}
+          <div className="absolute bottom-full right-0 mb-2 w-64 p-4 rounded-lg bg-slate-800 border border-slate-700 opacity-0 translate-y-2 invisible group-hover:opacity-100 group-hover:translate-y-0 group-hover:visible transition-all duration-200">
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-gray-400">Database</span>
+                <div className="flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
+                  <span className="text-xs text-green-500">Online</span>
+                </div>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-gray-400">API Server</span>
+                <div className="flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
+                  <span className="text-xs text-green-500">Online</span>
+                </div>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-gray-400">File Storage</span>
+                <div className="flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
+                  <span className="text-xs text-green-500">Online</span>
+                </div>
+              </div>
+              <div className="pt-2 mt-2 border-t border-slate-700">
+                <div className="flex items-center gap-2">
+                  <IconBolt className="w-4 h-4 text-blue-500" />
+                  <span className="text-xs text-gray-400">Last updated: Just now</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Hero Section */}
       <section className="relative min-h-screen overflow-hidden">
         {/* Background Effects */}
