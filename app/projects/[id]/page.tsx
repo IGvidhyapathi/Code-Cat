@@ -93,48 +93,28 @@ export default function ProjectDetails() {
 
     try {
       setIsRedirecting(true);
-      const formUrl = new URL('https://docs.google.com/forms/d/e/1FAIpQLSdCGBMGtmMG0qGuU3HwYrK5G9taPYHVgxqYUHNKVvYJ_AQEzA/viewform');
+      const formUrl = 'https://docs.google.com/forms/d/e/1FAIpQLSfEaZK4dfhCuXXOuW43tevdBAUA7_NWgfh1eUH2IKqPmJ9N5w/viewform';
       
-      // Add form parameters
-      const params = new URLSearchParams({
-        'usp': 'pp_url',
-        'entry.project_title': project.title,
-        'entry.project_category': project.category,
-        'entry.project_description': project.description,
-        'entry.project_tech_stack': project.techStack.join(', '),
-        'entry.project_url': window.location.href
-      });
-      formUrl.search = params.toString();
-
-      // Attempt to open the form in a new window
-      const newWindow = window.open(formUrl.toString(), '_blank', 'noopener,noreferrer');
+      // Try to open in current window
+      window.location.href = formUrl;
       
-      if (newWindow) {
-        toast.success(
-          'Opening project access form',
-          {
-            description: `Please complete the form to get access to ${project.title}.`,
-            duration: 5000,
-          }
-        );
-      } else {
-        throw new Error('Popup blocked');
-      }
+      toast.success(
+        'Opening project access form',
+        {
+          description: `Please complete the form to get access to ${project.title}.`,
+          duration: 5000,
+        }
+      );
     } catch (error) {
       console.error('Error redirecting to form:', error);
-      
-      const isPopupBlocked = error instanceof Error && error.message === 'Popup blocked';
       toast.error(
-        isPopupBlocked ? 'Popup Blocked' : 'Failed to Open Form',
+        'Failed to Open Form',
         {
-          description: isPopupBlocked
-            ? 'Please allow popups for this website and try again'
-            : 'Please try again or contact support if the issue persists',
+          description: 'Please try again or contact support if the issue persists.',
           duration: 6000,
         }
       );
     } finally {
-      // Add a slight delay before resetting to show the loading state
       setTimeout(() => setIsRedirecting(false), 800);
     }
   };
@@ -559,17 +539,14 @@ export default function ProjectDetails() {
           <div className="hidden lg:block space-y-6">
             {/* Action Buttons */}
             <div className="sticky top-6 space-y-4 bg-slate-800/50 border border-slate-700 rounded-xl p-6">
-              
-                <Button
-                  onClick={handleGetProjectAccess}
-                  disabled={isRedirecting}
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white shadow-lg"
-                >
-                  <IconDownload className="w-4 h-4 mr-2" />
-                  {isRedirecting ? 'Opening Form...' : 'Get Project Access'}
-                </Button>
-              
-
+              <Button
+                onClick={handleGetProjectAccess}
+                disabled={isRedirecting}
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white shadow-lg"
+              >
+                <IconDownload className="w-4 h-4 mr-2" />
+                {isRedirecting ? 'Opening Form...' : 'Get Project Access'}
+              </Button>
               <div className="flex gap-2">
                 {project.demoUrl && (
                   <Button

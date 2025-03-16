@@ -8,9 +8,36 @@ import { Button } from "@/components/ui/button";
 import { IconBrandGithub, IconRocket, IconBrain, IconCode, IconArrowRight, IconStar, IconHeart, IconArrowNarrowRight, IconDeviceLaptop, IconBolt, IconTools } from "@tabler/icons-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-
+import React from "react";
 
 export default function Home() {
+  const [isLoading, setIsLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    // Reduced timeouts for faster initialization
+    Promise.all([
+      new Promise(resolve => setTimeout(resolve, 100)), // Database - reduced from 500
+      new Promise(resolve => setTimeout(resolve, 50)),  // API - reduced from 300
+      new Promise(resolve => setTimeout(resolve, 50))   // Assets - reduced from 200
+    ]).then(() => {
+      setIsLoading(false);
+    });
+  }, []);
+
+  // Simplified loading screen for faster initial render
+  if (isLoading) {
+    return (
+      <div className="fixed inset-0 bg-[#0A0A0F] flex items-center justify-center">
+        <div className="space-y-4">
+          <div className="relative mx-auto w-16 h-16">
+            <div className="absolute inset-0 rounded-full border-t-2 border-purple-500 animate-spin" />
+          </div>
+          <div className="text-sm text-gray-400">Loading...</div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <main className="flex min-h-screen flex-col bg-[#0A0A0F]">
       {/* System Status Badge */}
@@ -73,9 +100,9 @@ export default function Home() {
             {/* Left Content */}
             <div className="flex-1 text-center lg:text-left">
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8 }}
+                transition={{ duration: 0.2 }}
               >
                 <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold tracking-tight text-white mb-4 sm:mb-6">
                   Find{" "}
@@ -131,9 +158,9 @@ export default function Home() {
             {/* Right Content - Feature Preview */}
             <div className="flex-1 w-full max-w-xl lg:max-w-none px-4 sm:px-0">
               <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
+                initial={{ opacity: 0, scale: 0.98 }}
                 animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 1, delay: 0.2 }}
+                transition={{ duration: 0.3 }}
                 className="relative"
               >
                 <div className="relative rounded-xl overflow-hidden border border-white/10 bg-black/30 backdrop-blur-sm">
@@ -213,10 +240,10 @@ export function App() {
             ].map((feature, index) => (
               <motion.div
                 key={index}
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 10 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.2 }}
+                viewport={{ once: true, margin: "100px" }}
+                transition={{ duration: 0.2 }}
               >
                 <div className="group relative h-full p-8 rounded-3xl bg-white/[0.02] border border-white/[0.05] hover:border-white/[0.1] transition-all duration-300 hover:transform hover:-translate-y-1">
                   <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-purple-500/5 via-blue-500/5 to-cyan-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -238,41 +265,68 @@ export function App() {
 
       {/* CTA Section */}
       <section className="relative py-16 sm:py-32">
-        <WavyBackground className="absolute inset-0">
+        <WavyBackground className="absolute inset-0 opacity-10">
           <div className="absolute inset-0" />
         </WavyBackground>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="relative rounded-3xl overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 via-blue-500/10 to-cyan-500/10" />
-            <div className="relative p-6 sm:p-12 lg:p-20 text-center">
+            <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 via-blue-500/10 to-cyan-500/10 backdrop-blur-sm" />
+            
+            <div className="relative p-8 sm:p-12 lg:p-20">
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 10 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5 }}
-                className="max-w-3xl mx-auto"
+                viewport={{ once: true, margin: "100px" }}
+                transition={{ duration: 0.2 }}
+                className="max-w-3xl mx-auto text-center"
               >
-                <h2 className="text-3xl sm:text-4xl lg:text-6xl font-bold text-white mb-4 sm:mb-6">
-                  Start Selling Your Projects
-                </h2>
-                <p className="text-lg sm:text-xl text-gray-400 mb-8 sm:mb-12 px-4">
-                  Join our marketplace of talented developers and start earning from your code.
-                  Turn your projects into profit today.
-                </p>
-                <div className="flex flex-col sm:flex-row justify-center items-center gap-4 sm:gap-6 px-4 sm:px-0">
-                  <Button asChild size="lg" className="w-full sm:w-auto bg-gradient-to-r from-purple-500 via-blue-500 to-cyan-500 hover:opacity-90 text-base sm:text-lg px-6 sm:px-8 py-4 sm:py-6 h-auto">
-                    <Link href="/seller-signup" className="inline-flex items-center gap-2">
-                      Become a Seller
-                      <IconArrowRight className="w-5 h-5" />
-                    </Link>
-                  </Button>
-                  <Button asChild variant="ghost" size="lg" className="w-full sm:w-auto text-gray-400 hover:text-white">
-                    <Link href="/seller-guide" className="inline-flex items-center gap-2">
-                      View Seller Guide
-                      <IconArrowRight className="w-5 h-5" />
-                    </Link>
-                  </Button>
-                </div>
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.3 }}
+                  className="space-y-8"
+                >
+                  <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight">
+                    <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-500 via-blue-500 to-cyan-500">
+                      Start Building Today
+                    </span>
+                  </h2>
+
+                  <p className="text-xl text-gray-400 max-w-2xl mx-auto">
+                    Join our marketplace of talented developers and start earning from your projects.
+                  </p>
+
+                  <div className="flex flex-col sm:flex-row justify-center items-center gap-4 sm:gap-6">
+                    <Button asChild size="lg" className="w-full sm:w-auto bg-gradient-to-r from-purple-500 via-blue-500 to-cyan-500 hover:opacity-90 text-lg px-8 py-6 h-auto">
+                      <Link href="/seller-signup" className="inline-flex items-center gap-2">
+                        Start Selling
+                        <IconArrowRight className="w-5 h-5" />
+                      </Link>
+                    </Button>
+                    <Button asChild variant="outline" size="lg" className="w-full sm:w-auto border-white/10 hover:bg-white/5 text-lg px-8 py-6 h-auto">
+                      <Link href="/seller-guide" className="inline-flex items-center gap-2">
+                        View Guide
+                        <IconArrowRight className="w-5 h-5" />
+                      </Link>
+                    </Button>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-8 mt-8 border-t border-white/10">
+                    <div className="flex items-center justify-center gap-2">
+                      <IconStar className="w-5 h-5 text-cyan-500" />
+                      <span className="text-gray-400">Premium Quality</span>
+                    </div>
+                    <div className="flex items-center justify-center gap-2">
+                      <IconBrain className="w-5 h-5 text-blue-500" />
+                      <span className="text-gray-400">Full Source Code</span>
+                    </div>
+                    <div className="flex items-center justify-center gap-2">
+                      <IconTools className="w-5 h-5 text-purple-500" />
+                      <span className="text-gray-400">Lifetime Support</span>
+                    </div>
+                  </div>
+                </motion.div>
               </motion.div>
             </div>
           </div>

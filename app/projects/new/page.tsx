@@ -48,7 +48,6 @@ export default function NewProject() {
   const [isPinVerified, setIsPinVerified] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
   const [pin, setPin] = useState("");
-  const [showWelcome, setShowWelcome] = useState(false);
 
   const [formData, setFormData] = useState({
     title: "",
@@ -83,11 +82,21 @@ export default function NewProject() {
     setIsVerifying(true);
     try {
       if (pin === "0000") {
-        setShowWelcome(true);
-        setTimeout(() => {
-          setShowWelcome(false);
-          setIsPinVerified(true);
-        }, 5000);
+        toast.success(
+          <div className="flex flex-col items-center gap-2">
+            <div className="relative">
+              <div className="w-3 h-3 rounded-full bg-green-500" />
+              <div className="absolute inset-0 w-3 h-3 rounded-full bg-green-500 animate-ping" />
+            </div>
+            <span className="text-lg font-semibold">Welcome Chief! 🎉</span>
+            <span className="text-sm text-gray-400">System initialized successfully</span>
+          </div>,
+          {
+            duration: 3000,
+            className: "bg-slate-800 border border-slate-700",
+          }
+        );
+        setIsPinVerified(true);
       } else {
         toast.error("Invalid PIN. Please try again.");
       }
@@ -328,168 +337,6 @@ export default function NewProject() {
       setIsLoading(false);
     }
   };
-
-  if (showWelcome) {
-    return (
-      <div className="min-h-screen bg-slate-900 flex items-center justify-center overflow-hidden">
-        <motion.div
-          initial={{ scale: 0.5, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ duration: 0.5, ease: "easeOut" }}
-          className="text-center relative"
-        >
-          {/* Engine circles animation */}
-          <div className="absolute inset-0 -z-10">
-            <motion.div
-              initial={{ rotate: 0 }}
-              animate={{ rotate: 360 }}
-              transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64"
-            >
-              {[...Array(8)].map((_, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ scale: 1, opacity: 0.1 }}
-                  animate={{ scale: [1, 1.2, 1], opacity: [0.1, 0.3, 0.1] }}
-                  transition={{
-                    duration: 1,
-                    repeat: Infinity,
-                    delay: i * 0.1,
-                    ease: "easeInOut",
-                  }}
-                  style={{
-                    position: "absolute",
-                    top: "50%",
-                    left: "50%",
-                    width: "8px",
-                    height: "8px",
-                    borderRadius: "50%",
-                    backgroundColor: "#3b82f6",
-                    transform: `rotate(${i * 45}deg) translateY(-120px) translateX(-50%)`,
-                  }}
-                />
-              ))}
-            </motion.div>
-          </div>
-
-          {/* Pulse rings */}
-          <div className="absolute inset-0 -z-10">
-            {[...Array(3)].map((_, i) => (
-              <motion.div
-                key={i}
-                initial={{ scale: 0.5, opacity: 0 }}
-                animate={{ scale: [1, 2], opacity: [0.3, 0] }}
-                transition={{
-                  duration: 2,
-                  repeat: Infinity,
-                  delay: i * 0.6,
-                  ease: "easeOut",
-                }}
-                className="absolute top-1/2 left-1/2 w-32 h-32 border-2 border-blue-500/30 rounded-full"
-                style={{ transform: 'translate(-50%, -50%)' }}
-              />
-            ))}
-          </div>
-
-          {/* Main content */}
-          <motion.div
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.2, duration: 0.5 }}
-            className="flex flex-col items-center gap-6 relative z-10"
-          >
-            {/* Engine core */}
-            <div className="relative">
-              <motion.div
-                animate={{ 
-                  boxShadow: [
-                    "0 0 20px rgba(59, 130, 246, 0.3)",
-                    "0 0 40px rgba(59, 130, 246, 0.5)",
-                    "0 0 20px rgba(59, 130, 246, 0.3)"
-                  ]
-                }}
-                transition={{ duration: 1, repeat: Infinity }}
-                className="w-24 h-24 rounded-full bg-slate-800 border-4 border-blue-500/50 flex items-center justify-center relative overflow-hidden"
-              >
-                <motion.div
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
-                  className="absolute inset-0"
-                >
-                  {[...Array(12)].map((_, i) => (
-                    <div
-                      key={i}
-                      className="absolute top-1/2 left-1/2 w-1 h-4 bg-blue-500/30"
-                      style={{
-                        transform: `rotate(${i * 30}deg) translateY(-150%)`,
-                      }}
-                    />
-                  ))}
-                </motion.div>
-                <motion.div
-                  animate={{ scale: [0.8, 1.1, 0.8] }}
-                  transition={{ duration: 1.5, repeat: Infinity }}
-                >
-                  <IconCheck className="w-12 h-12 text-blue-500" />
-                </motion.div>
-              </motion.div>
-              
-              {/* Power indicator */}
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.5, duration: 0.3 }}
-                className="absolute -bottom-2 left-1/2 transform -translate-x-1/2"
-              >
-                <div className="px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20">
-                  <motion.div
-                    animate={{ opacity: [1, 0.5, 1] }}
-                    transition={{ duration: 1, repeat: Infinity }}
-                    className="text-xs font-mono text-blue-500"
-                  >
-                    ONLINE
-                  </motion.div>
-                </div>
-              </motion.div>
-            </div>
-
-            <div className="relative">
-              <motion.h1 
-                className="text-4xl font-bold text-white mb-2"
-                animate={{ opacity: [1, 0.8, 1] }}
-                transition={{ duration: 2, repeat: Infinity }}
-              >
-                Welcome Chief!
-              </motion.h1>
-              <div className="flex flex-col items-center gap-2">
-                <p className="text-xl text-gray-400">Initializing Workspace</p>
-                <div className="flex items-center gap-2 text-sm text-gray-500 font-mono">
-                  <motion.div
-                    animate={{ opacity: [0, 1] }}
-                    transition={{ duration: 0.5, repeat: Infinity, repeatDelay: 0.5 }}
-                  >
-                    ⚡
-                  </motion.div>
-                  <motion.div
-                    animate={{ opacity: [0, 1] }}
-                    transition={{ duration: 0.5, repeat: Infinity, repeatDelay: 0.7 }}
-                  >
-                    System Ready
-                  </motion.div>
-                  <motion.div
-                    animate={{ opacity: [0, 1] }}
-                    transition={{ duration: 0.5, repeat: Infinity, repeatDelay: 0.9 }}
-                  >
-                    ⚡
-                  </motion.div>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-        </motion.div>
-      </div>
-    );
-  }
 
   if (!isPinVerified) {
     return (

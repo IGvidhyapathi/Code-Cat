@@ -35,7 +35,9 @@ const config: Config = {
         'border-width': 'border-width 2s ease-in-out infinite',
         'border-dance': 'border-dance 4s ease infinite',
         'rainbow-spin': 'rainbow-spin 8s linear infinite',
-        'rainbow-glow': 'rainbow-glow 3s ease-in-out infinite'
+        'rainbow-glow': 'rainbow-glow 3s ease-in-out infinite',
+        'spin-slow': 'spin 3s linear infinite',
+        'spin-slower': 'spin 4s linear infinite',
       }
     },
   },
