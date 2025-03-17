@@ -1,3 +1,6 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -7,8 +10,20 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id        String    @id @default(cuid())
+  clerkId   String    @unique
+  firstName String?
+  lastName  String?
+  imageUrl  String?
+  email     String?
+  projects  Project[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
 model Project {
-  id                    String   @id @default(uuid())
+  id                    String   @id @default(cuid())
   title                 String
   description           String
   keyFeatures           String[]
@@ -21,15 +36,16 @@ model Project {
   contactGithub         String?
   category              String
   price                 Float?
-  projectType           String   @default("academic")
-  includesDocumentation Boolean  @default(false)
-  includesSourceCode    Boolean  @default(false)
-  includesSupport       Boolean  @default(false)
+  projectType           String   @default("readymade")
+  includesDocumentation Boolean  @default(true)
+  includesSourceCode    Boolean  @default(true)
+  includesSupport       Boolean  @default(true)
   supportDuration       String   @default("1")
-  lastUpdated           DateTime @default(now())
+  lastUpdated           DateTime @updatedAt
   userId                String
+  user                  User     @relation(fields: [userId], references: [id])
   createdAt             DateTime @default(now())
-  updatedAt             DateTime @default(now()) @updatedAt
+  updatedAt             DateTime @updatedAt
 
   @@map("projects")
 }

@@ -130,7 +130,7 @@ export default function Home() {
                     </Link>
                   </Button>
                   <Button asChild variant="outline" size="lg" className="w-full sm:w-auto border-white/10 hover:bg-white/5">
-                    <Link href="/sell-project" className="inline-flex items-center gap-2">
+                    <Link href="/seller" className="inline-flex items-center gap-2">
                       <IconRocket className="w-5 h-5" />
                       Sell Your Project
                     </Link>
@@ -299,7 +299,7 @@ export function App() {
 
                   <div className="flex flex-col sm:flex-row justify-center items-center gap-4 sm:gap-6">
                     <Button asChild size="lg" className="w-full sm:w-auto bg-gradient-to-r from-purple-500 via-blue-500 to-cyan-500 hover:opacity-90 text-lg px-8 py-6 h-auto">
-                      <Link href="/seller-signup" className="inline-flex items-center gap-2">
+                      <Link href="/seller" className="inline-flex items-center gap-2">
                         Start Selling
                         <IconArrowRight className="w-5 h-5" />
                       </Link>

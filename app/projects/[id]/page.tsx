@@ -4,10 +4,11 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
-import { IconBrandYoutube, IconExternalLink, IconShare, IconDownload, IconArrowLeft, IconStar, IconEye, IconHeart } from "@tabler/icons-react";
+import { IconBrandYoutube, IconExternalLink, IconShare, IconDownload, IconArrowLeft, IconStar, IconEye, IconHeart, IconUser, IconMail, IconBrandGithub, IconBrandTwitter } from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
 import { Sparkles } from "@/components/ui/sparkles";
 import { marked } from "marked";
+import { useUser } from "@clerk/nextjs";
 
 interface Project {
   id: string;
@@ -31,6 +32,14 @@ interface Project {
   lastUpdated: string;
   userId: string;
   createdAt: string;
+  user?: {
+    firstName?: string;
+    lastName?: string;
+    imageUrl?: string;
+    email?: string;
+    github?: string;
+    twitter?: string;
+  };
 }
 
 function getYouTubeEmbedUrl(url: string) {
@@ -84,9 +93,12 @@ function ProjectSkeleton() {
 export default function ProjectDetails() {
   const router = useRouter();
   const params = useParams();
+  const { user } = useUser();
   const [project, setProject] = useState<Project | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isRedirecting, setIsRedirecting] = useState(false);
+
+  const isOwner = user?.id === project?.userId;
 
   const handleGetProjectAccess = async () => {
     if (isRedirecting || !project) return;
@@ -220,6 +232,112 @@ export default function ProjectDetails() {
                     <span className="text-xs sm:text-sm">156</span>
                   </div>
                 </div>
+              </div>
+            </div>
+
+            {/* Add user info below the title */}
+            <div className="flex items-center gap-3">
+              <div className="group relative">
+                <div className="flex items-center gap-2 cursor-help">
+                  {project.user?.imageUrl ? (
+                    <img
+                      src={project.user.imageUrl}
+                      alt={`${project.user.firstName} ${project.user.lastName}`}
+                      className="w-8 h-8 rounded-full"
+                    />
+                  ) : (
+                    <div className="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center">
+                      <IconUser className="w-4 h-4 text-blue-400" />
+                    </div>
+                  )}
+                  <div>
+                    <p className="text-sm text-gray-300">
+                      Added by {project.user?.firstName} {project.user?.lastName}
+                      {isOwner && (
+                        <span className="ml-2 px-2 py-0.5 text-xs rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                          You
+                        </span>
+                      )}
+                    </p>
+                    <p className="text-xs text-gray-400">
+                      {new Date(project.createdAt).toLocaleDateString()}
+                    </p>
+                  </div>
+                </div>
+                {/* Hover Card */}
+                <div className="absolute bottom-full left-0 mb-2 w-64 p-4 rounded-lg bg-slate-800 border border-slate-700 opacity-0 translate-y-2 invisible group-hover:opacity-100 group-hover:translate-y-0 group-hover:visible transition-all duration-200 shadow-xl">
+                  <div className="flex items-center gap-3 mb-3">
+                    {project.user?.imageUrl ? (
+                      <img
+                        src={project.user.imageUrl}
+                        alt={`${project.user.firstName} ${project.user.lastName}`}
+                        className="w-12 h-12 rounded-full"
+                      />
+                    ) : (
+                      <div className="w-12 h-12 rounded-full bg-blue-500/20 flex items-center justify-center">
+                        <IconUser className="w-6 h-6 text-blue-400" />
+                      </div>
+                    )}
+                    <div>
+                      <h3 className="text-sm font-semibold text-white">
+                        {project.user?.firstName} {project.user?.lastName}
+                      </h3>
+                      <p className="text-xs text-gray-400">
+                        Project Creator
+                      </p>
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    {project.user?.email && (
+                      <div className="flex items-center gap-2 text-sm text-gray-300">
+                        <IconMail className="w-4 h-4 text-blue-400" />
+                        <span>{project.user.email}</span>
+                      </div>
+                    )}
+                    <div className="flex items-center gap-2 text-sm text-gray-300">
+                      <IconUser className="w-4 h-4 text-blue-400" />
+                      <span>Member since {new Date(project.createdAt).toLocaleDateString()}</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm text-gray-300">
+                      <IconStar className="w-4 h-4 text-blue-400" />
+                      <span>4.8/5.0 Rating</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="h-4 w-px bg-slate-700"></div>
+              <div className="flex items-center gap-4">
+                {project.user?.email && (
+                  <a
+                    href={`mailto:${project.user.email}`}
+                    className="text-gray-400 hover:text-white transition-colors"
+                    title="Contact via email"
+                  >
+                    <IconMail className="w-4 h-4" />
+                  </a>
+                )}
+                {project.user?.github && (
+                  <a
+                    href={project.user.github}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-gray-400 hover:text-white transition-colors"
+                    title="View GitHub profile"
+                  >
+                    <IconBrandGithub className="w-4 h-4" />
+                  </a>
+                )}
+                {project.user?.twitter && (
+                  <a
+                    href={project.user.twitter}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-gray-400 hover:text-white transition-colors"
+                    title="View Twitter profile"
+                  >
+                    <IconBrandTwitter className="w-4 h-4" />
+                  </a>
+                )}
               </div>
             </div>
           </motion.div>

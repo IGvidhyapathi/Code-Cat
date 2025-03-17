@@ -325,14 +325,21 @@ export default function NewProject() {
 
       if (!response.ok) {
         const errorData = await response.json();
+        console.error('Server error:', errorData);
         throw new Error(errorData.error || 'Failed to create project');
       }
 
+      const data = await response.json();
+      console.log('Project created:', data);
       toast.success('Project created successfully!');
       router.push('/explore');
     } catch (error) {
       console.error('Error creating project:', error);
-      toast.error(error instanceof Error ? error.message : 'Failed to create project');
+      toast.error(
+        error instanceof Error 
+          ? error.message 
+          : 'Failed to create project. Please try again.'
+      );
     } finally {
       setIsLoading(false);
     }
