@@ -113,6 +113,12 @@ export async function POST(req: Request) {
           contactGithub: body.contactGithub || null,
           category: body.category,
           price: body.price ? parseFloat(String(body.price)) : null,
+          projectType: body.projectType || 'readymade',
+          includesDocumentation: body.includesDocumentation || false,
+          includesSourceCode: body.includesSourceCode || false,
+          includesSupport: body.includesSupport || false,
+          supportDuration: body.supportDuration || '1',
+          lastUpdated: new Date(body.lastUpdated),
           userId: dbUser.id
         },
         include: {

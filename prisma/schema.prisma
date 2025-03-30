@@ -37,9 +37,9 @@ model Project {
   category              String
   price                 Float?
   projectType           String   @default("readymade")
-  includesDocumentation Boolean  @default(true)
-  includesSourceCode    Boolean  @default(true)
-  includesSupport       Boolean  @default(true)
+  includesDocumentation Boolean  @default(false)
+  includesSourceCode    Boolean  @default(false)
+  includesSupport       Boolean  @default(false)
   supportDuration       String   @default("1")
   lastUpdated           DateTime @updatedAt
   userId                String

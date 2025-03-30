@@ -450,25 +450,40 @@ export default function ProjectDetails() {
                   <h4 className="text-sm font-medium text-gray-400 mb-3">Project Includes</h4>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div className="flex items-center gap-2">
-                      <div className="w-4 h-4 rounded-full flex items-center justify-center bg-green-500/20 text-green-400">
-                        ✓
+                      <div className={`w-4 h-4 rounded-full flex items-center justify-center ${
+                        project.includesDocumentation 
+                          ? 'bg-green-500/20 text-green-400' 
+                          : 'bg-red-500/20 text-red-400'
+                      }`}>
+                        {project.includesDocumentation ? '✓' : '✗'}
                       </div>
                       <span className="text-sm text-gray-300">Documentation & Report</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <div className="w-4 h-4 rounded-full flex items-center justify-center bg-green-500/20 text-green-400">
-                        ✓
+                      <div className={`w-4 h-4 rounded-full flex items-center justify-center ${
+                        project.includesSourceCode 
+                          ? 'bg-green-500/20 text-green-400' 
+                          : 'bg-red-500/20 text-red-400'
+                      }`}>
+                        {project.includesSourceCode ? '✓' : '✗'}
                       </div>
                       <span className="text-sm text-gray-300">Source Code</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <div className="w-4 h-4 rounded-full flex items-center justify-center bg-green-500/20 text-green-400">
-                        ✓
+                      <div className={`w-4 h-4 rounded-full flex items-center justify-center ${
+                        project.includesSupport 
+                          ? 'bg-green-500/20 text-green-400' 
+                          : 'bg-red-500/20 text-red-400'
+                      }`}>
+                        {project.includesSupport ? '✓' : '✗'}
                       </div>
                       <span className="text-sm text-gray-300">Technical Support</span>
                     </div>
                     {project.includesSupport && (
                       <div className="flex items-center gap-2">
+                        <div className="w-4 h-4 rounded-full flex items-center justify-center bg-green-500/20 text-green-400">
+                          ✓
+                        </div>
                         <span className="text-sm text-gray-300">
                           {project.supportDuration} Month{parseInt(project.supportDuration) > 1 ? 's' : ''} Support
                         </span>

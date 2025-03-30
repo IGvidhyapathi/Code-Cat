@@ -20,9 +20,23 @@ export default function RootLayout({
 }) {
   return (
     <ClerkProvider
-    appearance={{
-      baseTheme: dark,
-    }}
+      appearance={{
+        baseTheme: dark,
+        elements: {
+          card: "bg-slate-900/50 border border-slate-800/50 backdrop-blur-xl",
+          headerTitle: "text-white",
+          headerSubtitle: "text-gray-400",
+          socialButtonsBlockButton: "bg-slate-800/50 border border-slate-700/50 hover:bg-slate-700/50",
+          formButtonPrimary: "bg-gradient-to-r from-orange-500 via-yellow-400 to-orange-400 hover:opacity-90",
+          footerActionLink: "text-orange-400 hover:text-orange-300",
+          formFieldInput: "bg-slate-800/50 border border-slate-700/50 text-white",
+          formFieldLabel: "text-gray-300",
+          identityPreviewText: "text-white",
+          identityPreviewEditButton: "text-orange-400 hover:text-orange-300",
+        }
+      }}
+      afterSignInUrl="/"
+      afterSignUpUrl="/"
     >
       <html lang="en" className="dark">
         <body className={inter.className}>
