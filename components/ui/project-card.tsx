@@ -27,7 +27,8 @@ function getYouTubeVideoId(url: string) {
 function getYouTubeThumbnail(url: string) {
   const videoId = getYouTubeVideoId(url);
   if (!videoId) return '/images/project-thumbnails/placeholder.jpg';
-  return `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+  const timestamp = Date.now();
+  return `https://img.youtube.com/vi/${videoId}/hqdefault.jpg?t=${timestamp}`;
 }
 
 export function ProjectCard({
@@ -45,7 +46,7 @@ export function ProjectCard({
   const thumbnail = useFallback ? '/images/project-thumbnails/placeholder.jpg' : getYouTubeThumbnail(youtubeUrl);
   
   // Add a key to force image refresh when YouTube URL changes
-  const imageKey = `${id}-${youtubeUrl}`;
+  const imageKey = `${id}-${youtubeUrl}-${Date.now()}`;
 
   return (
     <motion.div
@@ -73,6 +74,7 @@ export function ProjectCard({
           loading="eager"
           className="object-cover transition-all duration-500 group-hover:brightness-110"
           onError={() => setUseFallback(true)}
+          unoptimized
         />
         <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-slate-900/50 to-transparent transition-opacity duration-300 group-hover:opacity-90" />
         <div className="absolute inset-0 bg-blue-500/0 mix-blend-overlay transition-colors duration-300 group-hover:bg-blue-500/20" />
