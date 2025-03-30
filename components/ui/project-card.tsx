@@ -43,6 +43,10 @@ export function ProjectCard({
 }: ProjectCardProps) {
   const [useFallback, setUseFallback] = useState(false);
   const thumbnail = useFallback ? '/images/project-thumbnails/placeholder.jpg' : getYouTubeThumbnail(youtubeUrl);
+  
+  // Add a key to force image refresh when YouTube URL changes
+  const imageKey = `${id}-${youtubeUrl}`;
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -59,6 +63,7 @@ export function ProjectCard({
           </div>
         )}
         <Image
+          key={imageKey}
           src={thumbnail}
           alt={`${title} thumbnail`}
           fill
