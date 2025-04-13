@@ -138,9 +138,7 @@ export default function ProjectDetails() {
       try {
         const response = await fetch(`/api/projects/${params.id}`, {
           signal: controller.signal,
-          headers: {
-            'Cache-Control': 'no-cache'
-          }
+          next: { revalidate: 60 }
         });
         
         if (!response.ok) {
@@ -167,6 +165,27 @@ export default function ProjectDetails() {
       controller.abort();
     };
   }, [params.id, router]);
+
+  // Preload YouTube iframe
+  useEffect(() => {
+    if (project?.youtubeUrl) {
+      const embedUrl = getYouTubeEmbedUrl(project.youtubeUrl);
+      if (embedUrl) {
+        const link = document.createElement('link');
+        link.rel = 'preconnect';
+        link.href = 'https://www.youtube.com';
+        document.head.appendChild(link);
+      }
+    }
+  }, [project?.youtubeUrl]);
+
+  // Preload user image
+  useEffect(() => {
+    if (project?.user?.imageUrl) {
+      const img = new Image();
+      img.src = project.user.imageUrl;
+    }
+  }, [project?.user?.imageUrl]);
 
   if (isLoading) {
     return <ProjectSkeleton />;
@@ -243,13 +262,17 @@ export default function ProjectDetails() {
                     <img
                       src={project.user.imageUrl}
                       alt={`${project.user.firstName} ${project.user.lastName}`}
-                      className="w-8 h-8 rounded-full"
+                      className="w-8 h-8 rounded-full object-cover"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.style.display = 'none';
+                        target.parentElement?.querySelector('.fallback-icon')?.classList.remove('hidden');
+                      }}
                     />
-                  ) : (
-                    <div className="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center">
-                      <IconUser className="w-4 h-4 text-blue-400" />
-                    </div>
-                  )}
+                  ) : null}
+                  <div className={`w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center fallback-icon ${project.user?.imageUrl ? 'hidden' : ''}`}>
+                    <IconUser className="w-4 h-4 text-blue-400" />
+                  </div>
                   <div>
                     <p className="text-sm text-gray-300">
                       Added by {project.user?.firstName} {project.user?.lastName}

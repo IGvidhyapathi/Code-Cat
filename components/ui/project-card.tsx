@@ -16,6 +16,11 @@ interface ProjectCardProps {
   techStack: string[];
   price?: number;
   isTopSelling?: boolean;
+  user?: {
+    firstName?: string;
+    lastName?: string;
+    imageUrl?: string;
+  };
 }
 
 function getYouTubeVideoId(url: string) {
@@ -41,6 +46,7 @@ export function ProjectCard({
   techStack,
   price,
   isTopSelling,
+  user,
 }: ProjectCardProps) {
   const [useFallback, setUseFallback] = useState(false);
   const thumbnail = useFallback ? '/images/project-thumbnails/placeholder.jpg' : getYouTubeThumbnail(youtubeUrl);
@@ -76,15 +82,19 @@ export function ProjectCard({
           onError={() => setUseFallback(true)}
           unoptimized
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-slate-900/50 to-transparent transition-opacity duration-300 group-hover:opacity-90" />
         <div className="absolute inset-0 bg-blue-500/0 mix-blend-overlay transition-colors duration-300 group-hover:bg-blue-500/20" />
       </div>
+
+      {/* Preload user image */}
+      {user?.imageUrl && (
+        <link rel="preload" href={user.imageUrl} as="image" />
+      )}
 
       <div className="p-4 flex flex-col flex-grow relative z-10">
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2">
             <span className="text-xs font-medium px-2 py-1 rounded-full bg-slate-700 text-slate-300 transition-colors duration-300 group-hover:bg-blue-500/20 group-hover:text-blue-300">
-              {category}
+              {category.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ')}
             </span>
           </div>
           <div className="flex items-center space-x-2 opacity-0 translate-y-2 transition-all duration-300 group-hover:opacity-100 group-hover:translate-y-0">

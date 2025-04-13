@@ -95,6 +95,23 @@ export async function POST(req: Request) {
           { status: 500 }
         );
       }
+    } else {
+      // Update user profile if it exists
+      try {
+        dbUser = await prisma.user.update({
+          where: { clerkId: userId },
+          data: {
+            firstName: user?.firstName || dbUser.firstName,
+            lastName: user?.lastName || dbUser.lastName,
+            imageUrl: user?.imageUrl || dbUser.imageUrl,
+            email: user?.emailAddresses?.[0]?.emailAddress || dbUser.email,
+          }
+        });
+        console.log('Updated user profile:', dbUser);
+      } catch (updateError) {
+        console.error('Error updating user profile:', updateError);
+        // Continue with project creation even if profile update fails
+      }
     }
 
     // Create project with essential fields and optional fields

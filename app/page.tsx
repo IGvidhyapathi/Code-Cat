@@ -135,6 +135,12 @@ export default function Home() {
                       Sell Your Project
                     </Link>
                   </Button>
+                  <Button asChild variant="outline" size="lg" className="w-full sm:w-auto border-white/10 hover:bg-white/5">
+                    <Link href="https://docs.google.com/forms/d/e/1FAIpQLSc7JsIwygkP47Bj8N1d8GNefLqPLSSuKFU-WfR12XMB-LaWUg/viewform?usp=header" className="inline-flex items-center gap-2">
+                      <IconTools className="w-5 h-5" />
+                      Custom Project Request
+                    </Link>
+                  </Button>
                 </div>
 
                 {/* Stats */}

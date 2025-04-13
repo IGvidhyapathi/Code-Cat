@@ -7,8 +7,9 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { IconSearch, IconFilter, IconX, IconMoodEmpty } from "@tabler/icons-react";
+import { IconSearch, IconFilter, IconX, IconMoodEmpty, IconTools } from "@tabler/icons-react";
 import { Sparkles } from "@/components/ui/sparkles";
+import Link from "next/link";
 
 
 interface Project {
@@ -252,6 +253,27 @@ export default function ExplorePage() {
           </div>
         </div>
       </section>
+
+      {/* Custom Development Section */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="bg-slate-800/50 rounded-lg p-6 sm:p-8 border border-slate-700">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="text-center sm:text-left">
+              <h2 className="text-2xl font-bold text-white mb-2">Need a Custom Project? 🎓</h2>
+              <p className="text-gray-400">
+                Got a project idea for your college assignment or personal portfolio? 
+                We'll help you build it from scratch! Just tell us what you need.
+              </p>
+            </div>
+            <Button asChild variant="outline" size="lg" className="border-white/10 hover:bg-white/5">
+              <Link href="https://docs.google.com/forms/d/e/1FAIpQLSc7JsIwygkP47Bj8N1d8GNefLqPLSSuKFU-WfR12XMB-LaWUg/viewform?usp=header" className="inline-flex items-center gap-2">
+                <IconTools className="w-5 h-5" />
+                Request project
+              </Link>
+            </Button>
+          </div>
+        </div>
+      </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Category Filter */}
