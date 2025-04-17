@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useState, useEffect } from "react";
-import { IconMenu2, IconX, IconPlus, IconSearch, IconHome, IconApps } from "@tabler/icons-react";
+import { IconMenu2, IconX, IconPlus, IconSearch, IconHome, IconApps, IconChartBar } from "@tabler/icons-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { SignInButton, UserButton, useUser } from "@clerk/nextjs";
 import { cn } from "@/lib/utils";
@@ -27,6 +27,7 @@ export function Navbar() {
     { href: "/", label: "Home", icon: IconHome },
     { href: "/explore", label: "Explore", icon: IconApps },
     { href: "/seller", label: "Become a Seller", icon: IconPlus },
+    { href: "/marketing", label: "Marketing", icon: IconChartBar },
   ];
 
   return (

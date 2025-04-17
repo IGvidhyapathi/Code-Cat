@@ -11,7 +11,6 @@ import { IconSearch, IconFilter, IconX, IconMoodEmpty, IconTools } from "@tabler
 import { Sparkles } from "@/components/ui/sparkles";
 import Link from "next/link";
 
-
 interface Project {
   id: string;
   title: string;
@@ -266,7 +265,12 @@ export default function ExplorePage() {
               </p>
             </div>
             <Button asChild variant="outline" size="lg" className="border-white/10 hover:bg-white/5">
-              <Link href="https://docs.google.com/forms/d/e/1FAIpQLSc7JsIwygkP47Bj8N1d8GNefLqPLSSuKFU-WfR12XMB-LaWUg/viewform?usp=header" className="inline-flex items-center gap-2">
+              <Link 
+                href="https://docs.google.com/forms/d/e/1FAIpQLSc7JsIwygkP47Bj8N1d8GNefLqPLSSuKFU-WfR12XMB-LaWUg/viewform?usp=header" 
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2"
+              >
                 <IconTools className="w-5 h-5" />
                 Request project
               </Link>
