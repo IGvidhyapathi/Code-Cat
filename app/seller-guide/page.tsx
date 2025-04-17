@@ -1,32 +1,10 @@
 "use client";
 
-import { IconCheck, IconAlertCircle, IconCurrencyDollar, IconFileText, IconRocket, IconArrowRight } from "@tabler/icons-react";
-import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { IconCheck, IconAlertCircle, IconCurrencyDollar, IconFileText, IconRocket, IconArrowRight } from "@tabler/icons-react";
 import { Sparkles } from "@/components/ui/sparkles";
-import { Metadata } from "next";
-
-export const metadata: Metadata = {
-  title: "Seller Guide",
-  description: "Learn how to become a seller on CodeCat. Get started with our comprehensive guide for selling your projects and earning revenue.",
-  openGraph: {
-    title: "Seller Guide | CodeCat",
-    description: "Learn how to become a seller on CodeCat. Get started with our comprehensive guide for selling your projects and earning revenue.",
-    images: [
-      {
-        url: "/logo.png",
-        width: 1200,
-        height: 630,
-        alt: "Seller Guide on CodeCat"
-      }
-    ]
-  },
-  twitter: {
-    title: "Seller Guide | CodeCat",
-    description: "Learn how to become a seller on CodeCat. Get started with our comprehensive guide for selling your projects and earning revenue.",
-    images: ["/seller-guide-og.jpg"]
-  }
-};
+import Link from "next/link";
 
 export default function SellerGuide() {
   return (
