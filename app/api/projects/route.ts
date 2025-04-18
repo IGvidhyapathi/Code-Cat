@@ -4,9 +4,26 @@ import { auth, currentUser } from '@clerk/nextjs/server';
 
 export const revalidate = 30; // Revalidate every 30 seconds
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
+    const { searchParams } = new URL(request.url);
+    const cursor = searchParams.get('cursor');
+    const limit = parseInt(searchParams.get('limit') || '12');
+    const countOnly = searchParams.get('count') === 'true';
+
+    if (countOnly) {
+      const count = await prisma.project.count();
+      return NextResponse.json({ count });
+    }
+    
     const projects = await prisma.project.findMany({
+      take: limit + 1, // Take one extra to check if there are more
+      ...(cursor && {
+        cursor: {
+          id: cursor
+        },
+        skip: 1
+      }),
       orderBy: {
         createdAt: 'desc'
       },
@@ -22,8 +39,16 @@ export async function GET() {
       }
     });
 
+    const hasMore = projects.length > limit;
+    const items = hasMore ? projects.slice(0, -1) : projects;
+    const nextCursor = hasMore ? items[items.length - 1].id : null;
+
     // Add cache headers
-    const response = NextResponse.json(projects);
+    const response = NextResponse.json({
+      items,
+      nextCursor,
+      hasMore
+    });
     response.headers.set('Cache-Control', 'public, s-maxage=30, stale-while-revalidate=59');
     
     return response;

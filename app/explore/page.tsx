@@ -40,6 +40,25 @@ const categories = [
   { value: "other", label: "Other" },
 ];
 
+// Add price ranges
+const priceRanges = [
+  { value: "all", label: "All Prices" },
+  { value: "free", label: "Free" },
+  { value: "100-600", label: "₹100 - ₹600" },
+  { value: "600-1300", label: "₹600 - ₹1,300" },
+  { value: "1300-2000", label: "₹1,300 - ₹2,000" },
+  { value: "2000-3000", label: "₹2,000 - ₹3,000" },
+  { value: "3000+", label: "₹3,000+" },
+];
+
+// Add project types
+const projectTypes = [
+  { value: "all", label: "All Types" },
+  { value: "readymade", label: "Ready Made" },
+  { value: "custom", label: "Custom" },
+  { value: "template", label: "Template" },
+];
+
 function NoProjectsFound() {
   const funnyMessages = [
     {
@@ -101,50 +120,64 @@ function NoProjectsFound() {
 
 export default function ExplorePage() {
   const [projects, setProjects] = useState<Project[]>([]);
-  const [initialProjectCount, setInitialProjectCount] = useState<number | null>(null);
+  const [totalCount, setTotalCount] = useState<number>(0);
   const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const [cursor, setCursor] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState("all");
+  const [selectedPriceRange, setSelectedPriceRange] = useState("all");
+  const [selectedProjectType, setSelectedProjectType] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [showFilters, setShowFilters] = useState(false);
+  const [sortBy, setSortBy] = useState("newest");
 
-  // Optimized data fetching with Promise.all
+  // Initial data fetch
   useEffect(() => {
     let isMounted = true;
     const controller = new AbortController();
 
-    async function fetchData() {
+    async function fetchInitialData() {
       try {
-        const [projectsResponse, countResponse] = await Promise.all([
-          fetch('/api/projects', {
-            signal: controller.signal,
-            headers: {
-              'Accept': 'application/json',
-            }
-          }),
-          fetch('/api/projects/count', {
-            signal: controller.signal,
-            headers: {
-              'Accept': 'application/json',
-            }
-          })
-        ]);
+        // Fetch total count first
+        const countResponse = await fetch('/api/projects?count=true', {
+          signal: controller.signal,
+          headers: {
+            'Accept': 'application/json',
+          }
+        });
 
         if (!isMounted) return;
 
-        if (!projectsResponse.ok || !countResponse.ok) {
-          throw new Error('Failed to fetch data');
+        if (!countResponse.ok) {
+          throw new Error('Failed to fetch count');
         }
 
-        const [projectsData, { count }] = await Promise.all([
-          projectsResponse.json(),
-          countResponse.json()
-        ]);
+        const { count } = await countResponse.json();
+        setTotalCount(count);
+
+        // Then fetch initial projects
+        const projectsResponse = await fetch('/api/projects', {
+          signal: controller.signal,
+          headers: {
+            'Accept': 'application/json',
+          }
+        });
 
         if (!isMounted) return;
 
-        setProjects(projectsData);
-        setInitialProjectCount(count);
-      } catch (error: unknown) {
+        if (!projectsResponse.ok) {
+          throw new Error('Failed to fetch projects');
+        }
+
+        const { items, nextCursor, hasMore } = await projectsResponse.json();
+
+        if (!isMounted) return;
+
+        setProjects(items);
+        setCursor(nextCursor);
+        setHasMore(hasMore);
+      } catch (error) {
         if (!isMounted) return;
         
         if (error instanceof Error) {
@@ -162,7 +195,7 @@ export default function ExplorePage() {
       }
     }
 
-    fetchData();
+    fetchInitialData();
 
     return () => {
       isMounted = false;
@@ -170,43 +203,108 @@ export default function ExplorePage() {
     };
   }, []);
 
+  // Load more data when scrolling
+  const loadMore = useCallback(async () => {
+    if (!hasMore || isLoadingMore || !cursor) return;
+
+    setIsLoadingMore(true);
+    try {
+      const response = await fetch(`/api/projects?cursor=${cursor}`, {
+        headers: {
+          'Accept': 'application/json',
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch more data');
+      }
+
+      const { items, nextCursor, hasMore: more } = await response.json();
+      
+      setProjects(prev => [...prev, ...items]);
+      setCursor(nextCursor);
+      setHasMore(more);
+    } catch (error) {
+      console.error('Error loading more projects:', error);
+      toast.error('Failed to load more projects');
+    } finally {
+      setIsLoadingMore(false);
+    }
+  }, [cursor, hasMore, isLoadingMore]);
+
+  // Intersection Observer for infinite scroll
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore && !isLoadingMore) {
+          loadMore();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    const sentinel = document.getElementById('load-more-sentinel');
+    if (sentinel) {
+      observer.observe(sentinel);
+    }
+
+    return () => {
+      if (sentinel) {
+        observer.unobserve(sentinel);
+      }
+    };
+  }, [loadMore, hasMore, isLoadingMore]);
+
   // Memoized project processing
   const projectsWithTopSelling = useMemo(() => 
-    projects.map(project => ({
+    (projects || []).map(project => ({
       ...project,
       isTopSelling: Math.random() < 0.3
     })),
     [projects]
   );
 
-  // Memoized project filtering
-  const filteredProjects = useMemo(() => 
-    projectsWithTopSelling
+  // Enhanced project filtering
+  const filteredProjects = useMemo(() => {
+    if (!projectsWithTopSelling) return [];
+    
+    let filtered = projectsWithTopSelling
       .filter(project => selectedCategory === "all" || project.category === selectedCategory)
+      .filter(project => {
+        if (selectedPriceRange === "all") return true;
+        if (!project.price) return selectedPriceRange === "free";
+        if (selectedPriceRange === "free") return false;
+        if (selectedPriceRange === "100-600") return project.price >= 100 && project.price <= 600;
+        if (selectedPriceRange === "600-1300") return project.price > 600 && project.price <= 1300;
+        if (selectedPriceRange === "1300-2000") return project.price > 1300 && project.price <= 2000;
+        if (selectedPriceRange === "2000-3000") return project.price > 2000 && project.price <= 3000;
+        if (selectedPriceRange === "3000+") return project.price > 3000;
+        return true;
+      })
       .filter(project => 
         searchQuery === "" || 
         project.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        project.description.toLowerCase().includes(searchQuery.toLowerCase())
-      ),
-    [projectsWithTopSelling, selectedCategory, searchQuery]
-  );
+        project.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        project.techStack.some(tech => tech.toLowerCase().includes(searchQuery.toLowerCase()))
+      );
 
-  // Memoized handlers
-  const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(e.target.value);
-  }, []);
-
-  const handleCategoryChange = useCallback((category: string) => {
-    setSelectedCategory(category);
-  }, []);
-
-  const handleClearFilters = useCallback(() => {
-    setSearchQuery("");
-    setSelectedCategory("all");
-  }, []);
+    // Sort projects
+    return filtered.sort((a, b) => {
+      if (sortBy === "newest") {
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+      } else if (sortBy === "oldest") {
+        return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+      } else if (sortBy === "price-low") {
+        return (a.price || 0) - (b.price || 0);
+      } else if (sortBy === "price-high") {
+        return (b.price || 0) - (a.price || 0);
+      }
+      return 0;
+    });
+  }, [projectsWithTopSelling, selectedCategory, selectedPriceRange, searchQuery, sortBy]);
 
   // Calculate the number to display
-  const displayCount = isLoading ? initialProjectCount || 0 : filteredProjects.length;
+  const displayCount = isLoading ? 0 : filteredProjects.length;
 
   return (
     <div className="min-h-screen bg-slate-900">
@@ -235,7 +333,7 @@ export default function ExplorePage() {
                   type="text"
                   placeholder="Search projects..."
                   value={searchQuery}
-                  onChange={handleSearchChange}
+                  onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full bg-slate-800/50 border-slate-700 text-white placeholder:text-gray-400 pl-10 focus-visible:ring-blue-500 focus-visible:ring-offset-slate-900"
                 />
                 <IconSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
@@ -280,7 +378,7 @@ export default function ExplorePage() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Category Filter */}
+        {/* Enhanced Filters */}
         <AnimatePresence>
           {showFilters && (
             <motion.div
@@ -290,23 +388,104 @@ export default function ExplorePage() {
               transition={{ duration: 0.2 }}
               className="overflow-hidden mb-8"
             >
-              <div className="w-full overflow-x-auto pb-4">
-                <div className="flex flex-nowrap sm:flex-wrap sm:justify-start gap-2 min-w-max sm:min-w-0">
-                  {categories.map((category) => (
+              <div className="space-y-6">
+                {/* Category Filter */}
+                <div>
+                  <h3 className="text-sm font-medium text-gray-400 mb-3">Categories</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {categories.map((category) => (
+                      <Button
+                        key={category.value}
+                        variant={selectedCategory === category.value ? "default" : "outline"}
+                        className={cn(
+                          "whitespace-nowrap",
+                          selectedCategory === category.value 
+                            ? "bg-blue-600 hover:bg-blue-700" 
+                            : "border-slate-700 text-white hover:bg-slate-800"
+                        )}
+                        onClick={() => setSelectedCategory(category.value)}
+                      >
+                        {category.label}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Price Range Filter */}
+                <div>
+                  <h3 className="text-sm font-medium text-gray-400 mb-3">Price Range</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {priceRanges.map((range) => (
+                      <Button
+                        key={range.value}
+                        variant={selectedPriceRange === range.value ? "default" : "outline"}
+                        className={cn(
+                          "whitespace-nowrap",
+                          selectedPriceRange === range.value 
+                            ? "bg-blue-600 hover:bg-blue-700" 
+                            : "border-slate-700 text-white hover:bg-slate-800"
+                        )}
+                        onClick={() => setSelectedPriceRange(range.value)}
+                      >
+                        {range.label}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Sort Options */}
+                <div>
+                  <h3 className="text-sm font-medium text-gray-400 mb-3">Sort By</h3>
+                  <div className="flex flex-wrap gap-2">
                     <Button
-                      key={category.value}
-                      variant={selectedCategory === category.value ? "default" : "outline"}
+                      variant={sortBy === "newest" ? "default" : "outline"}
                       className={cn(
                         "whitespace-nowrap",
-                        selectedCategory === category.value 
+                        sortBy === "newest" 
                           ? "bg-blue-600 hover:bg-blue-700" 
                           : "border-slate-700 text-white hover:bg-slate-800"
                       )}
-                      onClick={() => handleCategoryChange(category.value)}
+                      onClick={() => setSortBy("newest")}
                     >
-                      {category.label}
+                      Newest First
                     </Button>
-                  ))}
+                    <Button
+                      variant={sortBy === "oldest" ? "default" : "outline"}
+                      className={cn(
+                        "whitespace-nowrap",
+                        sortBy === "oldest" 
+                          ? "bg-blue-600 hover:bg-blue-700" 
+                          : "border-slate-700 text-white hover:bg-slate-800"
+                      )}
+                      onClick={() => setSortBy("oldest")}
+                    >
+                      Oldest First
+                    </Button>
+                    <Button
+                      variant={sortBy === "price-low" ? "default" : "outline"}
+                      className={cn(
+                        "whitespace-nowrap",
+                        sortBy === "price-low" 
+                          ? "bg-blue-600 hover:bg-blue-700" 
+                          : "border-slate-700 text-white hover:bg-slate-800"
+                      )}
+                      onClick={() => setSortBy("price-low")}
+                    >
+                      Price: Low to High
+                    </Button>
+                    <Button
+                      variant={sortBy === "price-high" ? "default" : "outline"}
+                      className={cn(
+                        "whitespace-nowrap",
+                        sortBy === "price-high" 
+                          ? "bg-blue-600 hover:bg-blue-700" 
+                          : "border-slate-700 text-white hover:bg-slate-800"
+                      )}
+                      onClick={() => setSortBy("price-high")}
+                    >
+                      Price: High to Low
+                    </Button>
+                  </div>
                 </div>
               </div>
             </motion.div>
@@ -315,14 +494,34 @@ export default function ExplorePage() {
 
         {/* Results Summary */}
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-semibold text-white">
-            {displayCount} {displayCount === 1 ? 'Project' : 'Projects'} Found
-          </h2>
-          {(searchQuery || selectedCategory !== "all") && (
+          <div className="space-y-1">
+            <h2 className="text-xl font-semibold text-white">
+              {isLoading ? (
+                <span className="animate-pulse">Loading...</span>
+              ) : (
+                <>
+                  {filteredProjects.length} of {totalCount} {totalCount === 1 ? 'Project' : 'Projects'} Found
+                </>
+              )}
+            </h2>
+            {(searchQuery || selectedCategory !== "all" || selectedPriceRange !== "all") && (
+              <p className="text-sm text-gray-400">
+                Showing results for: {searchQuery && `"${searchQuery}"`} 
+                {selectedCategory !== "all" && ` in ${categories.find(c => c.value === selectedCategory)?.label}`}
+                {selectedPriceRange !== "all" && ` priced ${priceRanges.find(p => p.value === selectedPriceRange)?.label}`}
+              </p>
+            )}
+          </div>
+          {(searchQuery || selectedCategory !== "all" || selectedPriceRange !== "all") && (
             <Button
               variant="ghost"
               className="text-gray-400 hover:text-white"
-              onClick={handleClearFilters}
+              onClick={() => {
+                setSearchQuery("");
+                setSelectedCategory("all");
+                setSelectedPriceRange("all");
+                setSelectedProjectType("all");
+              }}
             >
               <IconX className="w-4 h-4 mr-2" />
               Clear Filters
@@ -340,7 +539,7 @@ export default function ExplorePage() {
               exit={{ opacity: 0 }}
               className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-4 sm:gap-6 auto-rows-fr"
             >
-              {[...Array(initialProjectCount || 8)].map((_, index) => (
+              {[...Array(12)].map((_, index) => (
                 <motion.div
                   key={index}
                   initial={{ opacity: 0.6 }}
@@ -365,22 +564,10 @@ export default function ExplorePage() {
                   </div>
 
                   {/* Content Skeleton */}
-                  <div className="p-3 sm:p-4 space-y-2 sm:space-y-3">
-                    <div className="flex items-center justify-between">
-                      <div className="w-20 h-5 sm:h-6 bg-slate-700/50 rounded-full" />
-                      <div className="flex space-x-2">
-                        <div className="w-7 sm:w-8 h-7 sm:h-8 bg-slate-700/50 rounded-full" />
-                        <div className="w-7 sm:w-8 h-7 sm:h-8 bg-slate-700/50 rounded-full" />
-                      </div>
-                    </div>
-                    <div className="w-3/4 h-5 sm:h-6 bg-slate-700/50 rounded" />
-                    <div className="w-full h-14 sm:h-16 bg-slate-700/50 rounded" />
-                    <div className="flex flex-wrap gap-2">
-                      {[...Array(3)].map((_, i) => (
-                        <div key={i} className="w-14 sm:w-16 h-5 sm:h-6 bg-slate-700/50 rounded-full" />
-                      ))}
-                    </div>
-                    <div className="w-full h-9 sm:h-10 bg-slate-700/50 rounded mt-3 sm:mt-4" />
+                  <div className="p-4 space-y-3">
+                    <div className="h-6 w-3/4 bg-slate-700/50 rounded"></div>
+                    <div className="h-4 w-full bg-slate-700/50 rounded"></div>
+                    <div className="h-4 w-2/3 bg-slate-700/50 rounded"></div>
                   </div>
                 </motion.div>
               ))}
@@ -424,6 +611,21 @@ export default function ExplorePage() {
             <NoProjectsFound />
           )}
         </AnimatePresence>
+      </div>
+
+      {/* Load More Sentinel */}
+      <div id="load-more-sentinel" className="h-20 flex items-center justify-center">
+        {isLoadingMore && (
+          <div className="flex items-center gap-2 text-gray-400">
+            <div className="w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></div>
+            <span>Loading more projects...</span>
+          </div>
+        )}
+        {!isLoadingMore && hasMore && (
+          <div className="text-sm text-gray-400">
+            Scroll down to load more projects
+          </div>
+        )}
       </div>
     </div>
   );

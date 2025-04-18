@@ -148,6 +148,30 @@ export default function SellerPage() {
                     <span className="text-gray-400">Platform Fee</span>
                   </div>
                 </div>
+                <div className="mt-6 space-y-4">
+                  <h3 className="text-lg font-semibold text-white">With Marketing Agent:</h3>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 rounded-full bg-green-400"></div>
+                      <span className="text-2xl font-bold text-white">60%</span>
+                    </div>
+                    <span className="text-gray-400">Seller's Share</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 rounded-full bg-purple-400"></div>
+                      <span className="text-2xl font-bold text-white">10%</span>
+                    </div>
+                    <span className="text-gray-400">Marketing Agent</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 rounded-full bg-blue-400"></div>
+                      <span className="text-2xl font-bold text-white">30%</span>
+                    </div>
+                    <span className="text-gray-400">Platform Fee</span>
+                  </div>
+                </div>
                 <p className="mt-4 text-sm text-gray-400">
                   This revenue sharing model helps us maintain platform quality and provide support to our sellers.
                 </p>

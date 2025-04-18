@@ -143,7 +143,7 @@ export default function MarketingPage() {
                     </div>
                     <div className="mt-4 space-y-2">
                       <p className="text-gray-400">
-                        Share this code with your clients to track your commissions
+                        Share this code with your client and get your commissions
                       </p>
                       <p className="text-yellow-400 text-sm">
                         ⚠️ Note: This code will only be valid after your application is approved
