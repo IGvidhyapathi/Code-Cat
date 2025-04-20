@@ -99,9 +99,9 @@ export default function Home() {
           <div className="flex flex-col lg:flex-row items-center gap-8 lg:gap-24">
             {/* Left Content */}
             <div className="flex-1 text-center lg:text-left">
-              <motion.div
+            <motion.div
                 initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
+              animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.2 }}
               >
                 <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold tracking-tight text-white mb-4 sm:mb-6">
@@ -131,9 +131,9 @@ export default function Home() {
                   </Button>
                   <Button asChild variant="outline" size="lg" className="w-full sm:w-auto border-white/10 hover:bg-white/5">
                     <Link href="/seller" className="inline-flex items-center gap-2">
-                      <IconRocket className="w-5 h-5" />
+                    <IconRocket className="w-5 h-5" />
                       Sell Your Project
-                    </Link>
+                </Link>
                   </Button>
                   <Button asChild variant="outline" size="lg" className="w-full sm:w-auto border-white/10 hover:bg-white/5">
                     <Link 
@@ -144,9 +144,9 @@ export default function Home() {
                     >
                       <IconTools className="w-5 h-5" />
                       Custom Project Request
-                    </Link>
+                </Link>
                   </Button>
-                </div>
+              </div>
 
                 {/* Stats */}
                 <div className="mt-8 sm:mt-12 grid grid-cols-2 sm:grid-cols-3 gap-4 sm:gap-8 max-w-lg mx-auto lg:mx-0">
@@ -155,20 +155,20 @@ export default function Home() {
                     <div className="text-sm sm:text-base text-gray-400">Premium Projects</div>
                   </div>
                   <div className="text-center lg:text-left p-4 sm:p-0">
-                    <div className="text-2xl sm:text-3xl font-bold text-white mb-1">2k+</div>
+                    <div className="text-2xl sm:text-3xl font-bold text-white mb-1">200+</div>
                     <div className="text-sm sm:text-base text-gray-400">Happy Buyers</div>
-                  </div>
+                    </div>
                   <div className="text-center lg:text-left col-span-2 sm:col-span-1 p-4 sm:p-0">
-                    <div className="text-2xl sm:text-3xl font-bold text-white mb-1">$1M+</div>
+                    <div className="text-2xl sm:text-3xl font-bold text-white mb-1">10k+</div>
                     <div className="text-sm sm:text-base text-gray-400">Paid to Sellers</div>
                   </div>
                 </div>
-              </motion.div>
-            </div>
+            </motion.div>
+          </div>
 
             {/* Right Content - Feature Preview */}
             <div className="flex-1 w-full max-w-xl lg:max-w-none px-4 sm:px-0">
-              <motion.div
+          <motion.div
                 initial={{ opacity: 0, scale: 0.98 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.3 }}
@@ -178,34 +178,197 @@ export default function Home() {
                   <div className="absolute inset-0">
                     <Sparkles className="w-full h-full" />
                   </div>
+                  
+                  {/* Animated Project Showcase */}
                   <div className="relative p-4 sm:p-8">
-                    <div className="flex items-center gap-4 mb-4 sm:mb-6">
-                      <div className="flex gap-2">
-                        <div className="w-3 h-3 rounded-full bg-red-500" />
-                        <div className="w-3 h-3 rounded-full bg-yellow-500" />
-                        <div className="w-3 h-3 rounded-full bg-green-500" />
+                    <div className="flex items-center justify-between gap-4 mb-6">
+                      <div className="flex items-center gap-3">
+                        <div className="flex gap-2">
+                          <div className="w-3 h-3 rounded-full bg-red-500" />
+                          <div className="w-3 h-3 rounded-full bg-yellow-500" />
+                          <div className="w-3 h-3 rounded-full bg-green-500" />
+                        </div>
+                        <div className="text-sm text-gray-400">Project Showcase</div>
                       </div>
-                      <div className="text-sm text-gray-400">preview.jsx</div>
+                      <div className="flex items-center gap-2">
+                        <div className="px-2 py-1 rounded-md bg-blue-500/20 text-blue-400 text-xs">Premium</div>
+                      </div>
                     </div>
-                    <pre className="text-xs sm:text-sm text-gray-300 font-mono overflow-x-auto">
-                      <code>{`import { Motion } from '@/components';
-
-export function App() {
-  return (
-    <Motion.div
-      animate={{ scale: 1 }}
-      initial={{ scale: 0 }}
-    >
-      Hello, Developer! 👋
-    </Motion.div>
-  );
-}`}</code>
-                    </pre>
+                    
+                    <div className="space-y-6">
+                      {/* Project Cards Animation - Smoother Horizontal Scroll */}
+                      <div className="relative h-64 overflow-hidden rounded-lg">
+                        <div className="absolute inset-0">
+                          <div className="animate-marquee flex gap-4">
+                            {/* First batch of cards - simplified for performance */}
+                            {[
+                              {
+                                title: "AI Chat Application",
+                                description: "A complete chat application with AI integration.",
+                                price: "₹1,999",
+                                tech: ["React", "Node.js", "OpenAI"],
+                                gradient: "from-purple-600/20 to-blue-600/20"
+                              },
+                              {
+                                title: "E-Commerce Platform",
+                                description: "Full-featured online store with payment processing.",
+                                price: "₹2,499",
+                                tech: ["Next.js", "MongoDB", "Stripe"],
+                                gradient: "from-blue-600/20 to-cyan-600/20"
+                              },
+                              {
+                                title: "Portfolio Template",
+                                description: "Responsive portfolio with animations.",
+                                price: "₹899",
+                                tech: ["React", "Framer", "Tailwind"],
+                                gradient: "from-cyan-600/20 to-green-600/20"
+                              },
+                              {
+                                title: "Social Media Dashboard",
+                                description: "Analytics dashboard for social media accounts.",
+                                price: "₹1,799",
+                                tech: ["Vue.js", "Firebase", "D3.js"],
+                                gradient: "from-green-600/20 to-yellow-600/20"
+                              },
+                              {
+                                title: "Learning Management System",
+                                description: "Complete solution for online courses.",
+                                price: "₹3,499",
+                                tech: ["Django", "React", "PostgreSQL"],
+                                gradient: "from-yellow-600/20 to-orange-600/20"
+                              },
+                              {
+                                title: "Fitness Tracking App",
+                                description: "Mobile-first app for tracking workouts.",
+                                price: "₹1,299",
+                                tech: ["Flutter", "Firebase", "HealthKit"],
+                                gradient: "from-orange-600/20 to-red-600/20"
+                              },
+                              {
+                                title: "Task Management System",
+                                description: "Kanban-style task management system.",
+                                price: "₹999",
+                                tech: ["Angular", "Express", "MongoDB"],
+                                gradient: "from-red-600/20 to-purple-600/20"
+                              },
+                              // Duplicate the first few to ensure smooth looping
+                              {
+                                title: "AI Chat Application",
+                                description: "A complete chat application with AI integration.",
+                                price: "₹1,999",
+                                tech: ["React", "Node.js", "OpenAI"],
+                                gradient: "from-purple-600/20 to-blue-600/20"
+                              },
+                              {
+                                title: "E-Commerce Platform",
+                                description: "Full-featured online store with payment processing.",
+                                price: "₹2,499",
+                                tech: ["Next.js", "MongoDB", "Stripe"],
+                                gradient: "from-blue-600/20 to-cyan-600/20"
+                              },
+                              {
+                                title: "Portfolio Template",
+                                description: "Responsive portfolio with animations.",
+                                price: "₹899",
+                                tech: ["React", "Framer", "Tailwind"],
+                                gradient: "from-cyan-600/20 to-green-600/20"
+                              }
+                            ].map((project, index) => (
+                              <div
+                                key={`card-${index}`}
+                                className={`flex-shrink-0 w-[280px] h-full bg-gradient-to-br ${project.gradient} rounded-lg border border-white/10 p-4 hover:translate-y-[-5px] transition-transform duration-300`}
+                              >
+                                <div className="h-full flex flex-col justify-between">
+                                  <div>
+                                    <div className="flex items-center justify-between mb-2">
+                                      <h3 className="text-lg font-semibold text-white truncate">
+                                        {project.title}
+                                      </h3>
+                                      <div className="text-emerald-400 font-semibold text-sm whitespace-nowrap">
+                                        {project.price}
+                                      </div>
+                                    </div>
+                                    <p className="text-sm text-gray-300 line-clamp-2 mb-3">
+                                      {project.description}
+                                    </p>
+                                  </div>
+                                  <div>
+                                    <div className="flex flex-wrap gap-2 mb-2">
+                                      {project.tech.map((tech, i) => (
+                                        <span 
+                                          key={i} 
+                                          className="px-2 py-0.5 rounded-full text-xs font-medium bg-blue-500/10 text-blue-400"
+                                        >
+                                          {tech}
+                                        </span>
+                                      ))}
+                                    </div>
+                                    <div className="flex items-center justify-between mt-3">
+                                      <div className="flex -space-x-1">
+                                        <div className="w-5 h-5 rounded-full border-2 border-slate-800 bg-gradient-to-br from-purple-500 to-blue-500"></div>
+                                        <div className="w-5 h-5 rounded-full border-2 border-slate-800 bg-gradient-to-br from-blue-500 to-cyan-500"></div>
+                                        <div className="w-5 h-5 rounded-full border-2 border-slate-800 bg-gradient-to-br from-cyan-500 to-green-500"></div>
+                                      </div>
+                                      <span className="text-xs text-gray-400">+{70 + index * 5} users</span>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                      
+                      {/* Bottom Stats */}
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-1.5">
+                          <IconStar className="w-4 h-4 text-yellow-500" />
+                          <span className="text-white font-medium">4.9</span>
+                          <span className="text-gray-400 text-sm">(500+ ratings)</span>
+                        </div>
+                        
+                        <Link href="/explore">
+                          <button 
+                            className="px-3 py-1 text-xs font-medium rounded-full bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 transition-colors"
+                          >
+                            View All Projects
+                          </button>
+                        </Link>
+                      </div>
+                    </div>
                   </div>
                 </div>
                 {/* Floating Elements */}
                 <div className="absolute -top-8 -right-8 w-24 h-24 bg-purple-500/10 rounded-full blur-2xl" />
                 <div className="absolute -bottom-8 -left-8 w-24 h-24 bg-blue-500/10 rounded-full blur-2xl" />
+                <motion.div 
+                  className="absolute -bottom-4 -right-4 w-16 h-16 bg-cyan-500/20 rounded-full blur-xl"
+                  animate={{ 
+                    scale: [1, 1.2, 1],
+                    opacity: [0.5, 0.8, 0.5]
+                  }}
+                  transition={{
+                    duration: 4,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                />
+
+                <style jsx global>{`
+                  @keyframes marquee {
+                    0% {
+                      transform: translateX(0);
+                    }
+                    100% {
+                      transform: translateX(-140%);
+                    }
+                  }
+                  
+                  .animate-marquee {
+                    animation: marquee 40s linear infinite;
+                    will-change: transform;
+                  }
+                `}</style>
               </motion.div>
             </div>
           </div>
@@ -291,20 +454,20 @@ export function App() {
                 transition={{ duration: 0.2 }}
                 className="max-w-3xl mx-auto text-center"
               >
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
                   transition={{ duration: 0.3 }}
-                  className="space-y-8"
-                >
+              className="space-y-8"
+            >
                   <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight">
                     <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-500 via-blue-500 to-cyan-500">
                       Start Building Today
                     </span>
                   </h2>
 
-                  <p className="text-xl text-gray-400 max-w-2xl mx-auto">
+              <p className="text-xl text-gray-400 max-w-2xl mx-auto">
                     Join our marketplace of talented developers and start earning from your projects.
                   </p>
 
@@ -319,7 +482,7 @@ export function App() {
                       <Link href="/seller-guide" className="inline-flex items-center gap-2">
                         View Guide
                         <IconArrowRight className="w-5 h-5" />
-                      </Link>
+                </Link>
                     </Button>
                   </div>
 
@@ -336,8 +499,8 @@ export function App() {
                       <IconTools className="w-5 h-5 text-purple-500" />
                       <span className="text-gray-400">Lifetime Support</span>
                     </div>
-                  </div>
-                </motion.div>
+              </div>
+            </motion.div>
               </motion.div>
             </div>
           </div>

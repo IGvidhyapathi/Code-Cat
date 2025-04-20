@@ -27,6 +27,7 @@ interface Project {
   price?: number;
   userId: string;
   createdAt: string;
+  projectType?: string;
 }
 
 const categories = [
@@ -131,106 +132,102 @@ export default function ExplorePage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [showFilters, setShowFilters] = useState(false);
   const [sortBy, setSortBy] = useState("newest");
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("");
+
+  // Debounce search query to avoid too many API calls
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchQuery(searchQuery);
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  // When search query or filters change, reset and fetch new data
+  useEffect(() => {
+    setIsLoading(true);
+    setProjects([]);
+    setCursor(null);
+    setHasMore(true);
+    fetchData();
+  }, [debouncedSearchQuery, selectedCategory, selectedPriceRange, selectedProjectType, sortBy]);
+
+  // Fetch data with current search and filter parameters
+  const fetchData = useCallback(async (cursorParam?: string | null) => {
+    try {
+      // Build query parameters
+      const params = new URLSearchParams();
+      if (cursorParam) params.append('cursor', cursorParam);
+      params.append('limit', '12');
+      if (debouncedSearchQuery) params.append('search', debouncedSearchQuery);
+      if (selectedCategory !== 'all') params.append('category', selectedCategory);
+      if (selectedPriceRange !== 'all') params.append('priceRange', selectedPriceRange);
+      if (selectedProjectType !== 'all') params.append('projectType', selectedProjectType);
+      params.append('sortBy', sortBy);
+
+      // Fetch total count first
+      const countParams = new URLSearchParams(params);
+      countParams.append('countOnly', 'true');
+      const countResponse = await fetch(`/api/projects?${countParams}`);
+
+      if (!countResponse.ok) {
+        throw new Error('Failed to fetch count');
+      }
+
+      const countData = await countResponse.json();
+      setTotalCount(countData.count);
+
+      // Then fetch projects
+      const projectsResponse = await fetch(`/api/projects?${params}`);
+
+      if (!projectsResponse.ok) {
+        throw new Error('Failed to fetch projects');
+      }
+
+      const { items, nextCursor, hasMore } = await projectsResponse.json();
+
+      if (cursorParam) {
+        // If loading more, append to existing projects
+        setProjects(prev => [...prev, ...(items || [])]);
+      } else {
+        // Initial load, replace projects
+        setProjects(items || []);
+      }
+      
+      setCursor(nextCursor);
+      setHasMore(hasMore);
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error('Error fetching data:', error.message);
+      } else {
+        console.error('Unknown error occurred while fetching data');
+      }
+      
+      toast.error('Failed to load projects');
+    } finally {
+      setIsLoading(false);
+      setIsLoadingMore(false);
+    }
+  }, [debouncedSearchQuery, selectedCategory, selectedPriceRange, selectedProjectType, sortBy]);
 
   // Initial data fetch
   useEffect(() => {
-    let isMounted = true;
     const controller = new AbortController();
-
-    async function fetchInitialData() {
-      try {
-        // Fetch total count first
-        const countResponse = await fetch('/api/projects?count=true', {
-          signal: controller.signal,
-          headers: {
-            'Accept': 'application/json',
-          }
-        });
-
-        if (!isMounted) return;
-
-        if (!countResponse.ok) {
-          throw new Error('Failed to fetch count');
-        }
-
-        const { count } = await countResponse.json();
-        setTotalCount(count);
-
-        // Then fetch initial projects
-        const projectsResponse = await fetch('/api/projects', {
-          signal: controller.signal,
-          headers: {
-            'Accept': 'application/json',
-          }
-        });
-
-        if (!isMounted) return;
-
-        if (!projectsResponse.ok) {
-          throw new Error('Failed to fetch projects');
-        }
-
-        const { items, nextCursor, hasMore } = await projectsResponse.json();
-
-        if (!isMounted) return;
-
-        setProjects(items);
-        setCursor(nextCursor);
-        setHasMore(hasMore);
-      } catch (error) {
-        if (!isMounted) return;
-        
-        if (error instanceof Error) {
-          if (error.name === 'AbortError') return;
-          console.error('Error fetching data:', error.message);
-        } else {
-          console.error('Unknown error occurred while fetching data');
-        }
-        
-        toast.error('Failed to load projects');
-      } finally {
-        if (isMounted) {
-          setIsLoading(false);
-        }
-      }
-    }
-
-    fetchInitialData();
+    
+    fetchData();
 
     return () => {
-      isMounted = false;
       controller.abort();
     };
-  }, []);
+  }, [fetchData]);
 
-  // Load more data when scrolling
+  // Load more function
   const loadMore = useCallback(async () => {
-    if (!hasMore || isLoadingMore || !cursor) return;
+    if (isLoadingMore || !hasMore || !cursor) return;
 
     setIsLoadingMore(true);
-    try {
-      const response = await fetch(`/api/projects?cursor=${cursor}`, {
-        headers: {
-          'Accept': 'application/json',
-        }
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch more data');
-      }
-
-      const { items, nextCursor, hasMore: more } = await response.json();
-      
-      setProjects(prev => [...prev, ...items]);
-      setCursor(nextCursor);
-      setHasMore(more);
-    } catch (error) {
-      console.error('Error loading more projects:', error);
-      toast.error('Failed to load more projects');
-    } finally {
-      setIsLoadingMore(false);
-    }
-  }, [cursor, hasMore, isLoadingMore]);
+    fetchData(cursor);
+  }, [cursor, hasMore, isLoadingMore, fetchData]);
 
   // Intersection Observer for infinite scroll
   useEffect(() => {
@@ -255,7 +252,7 @@ export default function ExplorePage() {
     };
   }, [loadMore, hasMore, isLoadingMore]);
 
-  // Memoized project processing
+  // Memoized project processing - all filtering and sorting is now handled by the API
   const projectsWithTopSelling = useMemo(() => 
     (projects || []).map(project => ({
       ...project,
@@ -264,47 +261,18 @@ export default function ExplorePage() {
     [projects]
   );
 
-  // Enhanced project filtering
-  const filteredProjects = useMemo(() => {
-    if (!projectsWithTopSelling) return [];
-    
-    let filtered = projectsWithTopSelling
-      .filter(project => selectedCategory === "all" || project.category === selectedCategory)
-      .filter(project => {
-        if (selectedPriceRange === "all") return true;
-        if (!project.price) return selectedPriceRange === "free";
-        if (selectedPriceRange === "free") return false;
-        if (selectedPriceRange === "100-600") return project.price >= 100 && project.price <= 600;
-        if (selectedPriceRange === "600-1300") return project.price > 600 && project.price <= 1300;
-        if (selectedPriceRange === "1300-2000") return project.price > 1300 && project.price <= 2000;
-        if (selectedPriceRange === "2000-3000") return project.price > 2000 && project.price <= 3000;
-        if (selectedPriceRange === "3000+") return project.price > 3000;
-        return true;
-      })
-      .filter(project => 
-        searchQuery === "" || 
-        project.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        project.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        project.techStack.some(tech => tech.toLowerCase().includes(searchQuery.toLowerCase()))
-      );
+  // Handle search input
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+  };
 
-    // Sort projects
-    return filtered.sort((a, b) => {
-      if (sortBy === "newest") {
-        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-      } else if (sortBy === "oldest") {
-        return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
-      } else if (sortBy === "price-low") {
-        return (a.price || 0) - (b.price || 0);
-      } else if (sortBy === "price-high") {
-        return (b.price || 0) - (a.price || 0);
-      }
-      return 0;
-    });
-  }, [projectsWithTopSelling, selectedCategory, selectedPriceRange, searchQuery, sortBy]);
-
-  // Calculate the number to display
-  const displayCount = isLoading ? 0 : filteredProjects.length;
+  // Handle clear filters
+  const handleClearFilters = () => {
+    setSearchQuery("");
+    setSelectedCategory("all");
+    setSelectedPriceRange("all");
+    setSelectedProjectType("all");
+  };
 
   return (
     <div className="min-h-screen bg-slate-900">
@@ -333,7 +301,7 @@ export default function ExplorePage() {
                   type="text"
                   placeholder="Search projects..."
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onChange={handleSearchChange}
                   className="w-full bg-slate-800/50 border-slate-700 text-white placeholder:text-gray-400 pl-10 focus-visible:ring-blue-500 focus-visible:ring-offset-slate-900"
                 />
                 <IconSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
@@ -500,28 +468,24 @@ export default function ExplorePage() {
                 <span className="animate-pulse">Loading...</span>
               ) : (
                 <>
-                  {filteredProjects.length} of {totalCount} {totalCount === 1 ? 'Project' : 'Projects'} Found
+                  {projectsWithTopSelling.length} of {totalCount} {totalCount === 1 ? 'Project' : 'Projects'} Found
                 </>
               )}
             </h2>
-            {(searchQuery || selectedCategory !== "all" || selectedPriceRange !== "all") && (
+            {(searchQuery || selectedCategory !== "all" || selectedPriceRange !== "all" || selectedProjectType !== "all") && (
               <p className="text-sm text-gray-400">
                 Showing results for: {searchQuery && `"${searchQuery}"`} 
                 {selectedCategory !== "all" && ` in ${categories.find(c => c.value === selectedCategory)?.label}`}
                 {selectedPriceRange !== "all" && ` priced ${priceRanges.find(p => p.value === selectedPriceRange)?.label}`}
+                {selectedProjectType !== "all" && ` type ${projectTypes.find(t => t.value === selectedProjectType)?.label}`}
               </p>
             )}
           </div>
-          {(searchQuery || selectedCategory !== "all" || selectedPriceRange !== "all") && (
+          {(searchQuery || selectedCategory !== "all" || selectedPriceRange !== "all" || selectedProjectType !== "all") && (
             <Button
               variant="ghost"
               className="text-gray-400 hover:text-white"
-              onClick={() => {
-                setSearchQuery("");
-                setSelectedCategory("all");
-                setSelectedPriceRange("all");
-                setSelectedProjectType("all");
-              }}
+              onClick={handleClearFilters}
             >
               <IconX className="w-4 h-4 mr-2" />
               Clear Filters
@@ -572,7 +536,7 @@ export default function ExplorePage() {
                 </motion.div>
               ))}
             </motion.div>
-          ) : filteredProjects.length > 0 ? (
+          ) : projectsWithTopSelling.length > 0 ? (
             <motion.div
               key="content"
               initial={{ opacity: 0 }}
@@ -581,7 +545,7 @@ export default function ExplorePage() {
               className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-4 sm:gap-6 auto-rows-fr"
             >
               <AnimatePresence mode="popLayout">
-                {filteredProjects.map((project, index) => (
+                {projectsWithTopSelling.map((project, index) => (
                   <motion.div
                     key={project.id}
                     initial={{ opacity: 0, scale: 0.9 }}
@@ -601,7 +565,7 @@ export default function ExplorePage() {
                       demoUrl={project.demoUrl}
                       techStack={project.techStack}
                       price={project.price}
-                      isTopSelling={Math.random() < 0.3}
+                      isTopSelling={project.isTopSelling}
                     />
                   </motion.div>
                 ))}
@@ -614,19 +578,111 @@ export default function ExplorePage() {
       </div>
 
       {/* Load More Sentinel */}
-      <div id="load-more-sentinel" className="h-20 flex items-center justify-center">
-        {isLoadingMore && (
-          <div className="flex items-center gap-2 text-gray-400">
-            <div className="w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></div>
-            <span>Loading more projects...</span>
-          </div>
-        )}
-        {!isLoadingMore && hasMore && (
-          <div className="text-sm text-gray-400">
-            Scroll down to load more projects
-          </div>
-        )}
+      <div id="load-more-sentinel" className="h-24 flex items-center justify-center py-8">
+        <AnimatePresence mode="wait">
+          {isLoadingMore ? (
+            <motion.div
+              key="loading"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="flex flex-col items-center gap-3"
+            >
+              <div className="relative w-12 h-12">
+                {/* Outer spinning ring */}
+                <motion.div
+                  className="absolute inset-0 rounded-full border-2 border-blue-500 border-t-transparent"
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
+                />
+                {/* Inner spinning ring */}
+                <motion.div
+                  className="absolute inset-1 rounded-full border-2 border-purple-500 border-b-transparent"
+                  animate={{ rotate: -360 }}
+                  transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                />
+                {/* Center dot */}
+                <motion.div 
+                  className="absolute inset-0 flex items-center justify-center"
+                  animate={{ scale: [0.8, 1.2, 0.8] }}
+                  transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+                >
+                  <div className="w-2 h-2 bg-cyan-500 rounded-full" />
+                </motion.div>
+              </div>
+              
+              <motion.div 
+                className="text-center"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.3 }}
+              >
+                <p className="text-white font-medium">Loading more projects</p>
+                <p className="text-gray-400 text-sm">Discovering amazing creations for you...</p>
+              </motion.div>
+            </motion.div>
+          ) : hasMore ? (
+            <motion.div
+              key="hasMore"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="text-center"
+            >
+              <motion.div
+                className="inline-flex items-center px-5 py-2.5 rounded-full bg-slate-800 border border-slate-700 text-white cursor-pointer hover:bg-slate-700 transition-colors"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={loadMore}
+              >
+                <motion.div
+                  animate={{ y: [0, 3, 0] }}
+                  transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+                  className="mr-2"
+                >
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M10 16L10 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                    <path d="M5 9L10 4L15 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </motion.div>
+                Load more projects
+              </motion.div>
+              <motion.p 
+                className="text-gray-400 text-sm mt-2"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.2 }}
+              >
+                {projects.length} of {totalCount} projects loaded
+              </motion.p>
+            </motion.div>
+          ) : (
+            <motion.div
+              key="noMore"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-center py-4"
+            >
+              <motion.div 
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-purple-600/20 to-blue-600/20 text-white border border-purple-500/20"
+                animate={{ 
+                  boxShadow: ["0 0 0px rgba(147, 51, 234, 0)", "0 0 15px rgba(147, 51, 234, 0.3)", "0 0 0px rgba(147, 51, 234, 0)"] 
+                }}
+                transition={{ duration: 2, repeat: Infinity }}
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M20 6L9 17L4 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+                All projects loaded
+              </motion.div>
+              <p className="text-gray-400 text-sm mt-2">You've seen all {totalCount} projects</p>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
+      
+      {/* Add padding at the bottom for better spacing */}
+      <div className="h-10"></div>
     </div>
   );
 }

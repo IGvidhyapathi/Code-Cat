@@ -131,7 +131,9 @@ export default function SellerPage() {
                 </div>
                 <h2 className="text-2xl font-bold text-white">Revenue Sharing</h2>
               </div>
+              
               <div className="bg-slate-800/50 rounded-xl p-6">
+              <h3 className="text-lg font-semibold text-white">Without Marketing Agent:</h3>
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">

@@ -8,56 +8,120 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const cursor = searchParams.get('cursor');
-    const limit = parseInt(searchParams.get('limit') || '12');
-    const countOnly = searchParams.get('count') === 'true';
-
-    if (countOnly) {
-      const count = await prisma.project.count();
-      return NextResponse.json({ count });
-    }
+    const limitParam = searchParams.get('limit');
+    const limit = limitParam ? parseInt(limitParam, 10) : 20;
+    const countOnly = searchParams.get('countOnly') === 'true';
     
+    // Get search and filter parameters
+    const searchQuery = searchParams.get('search');
+    const category = searchParams.get('category');
+    const priceRange = searchParams.get('priceRange');
+    const projectType = searchParams.get('projectType');
+    const sortBy = searchParams.get('sortBy') || 'newest';
+
+    // Build where clause based on search and filter parameters
+    const whereClause: any = {};
+    
+    if (searchQuery) {
+      whereClause.OR = [
+        { title: { contains: searchQuery, mode: 'insensitive' } },
+        { description: { contains: searchQuery, mode: 'insensitive' } },
+        { techStack: { hasSome: [searchQuery] } } // Search in techStack array
+      ];
+    }
+
+    if (category && category !== 'all') {
+      whereClause.category = category;
+    }
+
+    if (projectType && projectType !== 'all') {
+      whereClause.projectType = projectType;
+    }
+
+    if (priceRange && priceRange !== 'all') {
+      if (priceRange === 'free') {
+        whereClause.price = null;
+      } else if (priceRange === '100-600') {
+        whereClause.price = { gte: 100, lte: 600 };
+      } else if (priceRange === '600-1300') {
+        whereClause.price = { gt: 600, lte: 1300 };
+      } else if (priceRange === '1300-2000') {
+        whereClause.price = { gt: 1300, lte: 2000 };
+      } else if (priceRange === '2000-3000') {
+        whereClause.price = { gt: 2000, lte: 3000 };
+      } else if (priceRange === '3000+') {
+        whereClause.price = { gt: 3000 };
+      }
+    }
+
+    // If count only, return just the total count
+    if (countOnly) {
+      const count = await prisma.project.count({
+        where: whereClause
+      });
+      return Response.json({ count }, {
+        headers: {
+          'Cache-Control': 's-maxage=60, stale-while-revalidate=120'
+        }
+      });
+    }
+
+    // Determine sort order
+    let orderBy: any = { createdAt: 'desc' }; // default is newest
+    
+    if (sortBy === 'oldest') {
+      orderBy = { createdAt: 'asc' };
+    } else if (sortBy === 'price-low') {
+      orderBy = { price: 'asc' };
+    } else if (sortBy === 'price-high') {
+      orderBy = { price: 'desc' };
+    }
+
+    // For pagination, we fetch one more than the limit to know if there are more items
     const projects = await prisma.project.findMany({
-      take: limit + 1, // Take one extra to check if there are more
-      ...(cursor && {
-        cursor: {
-          id: cursor
-        },
-        skip: 1
-      }),
-      orderBy: {
-        createdAt: 'desc'
-      },
+      where: whereClause,
+      take: limit + 1,
+      ...(cursor
+        ? {
+            cursor: {
+              id: cursor,
+            },
+            skip: 1, // Skip the cursor
+          }
+        : {}),
+      orderBy: orderBy,
       include: {
         user: {
           select: {
+            id: true,
             firstName: true,
-            lastName: true,
             imageUrl: true,
-            email: true
-          }
-        }
-      }
+          },
+        },
+      },
     });
 
+    // Check if there are more projects
     const hasMore = projects.length > limit;
-    const items = hasMore ? projects.slice(0, -1) : projects;
+    const items = hasMore ? projects.slice(0, limit) : projects;
     const nextCursor = hasMore ? items[items.length - 1].id : null;
 
-    // Add cache headers
-    const response = NextResponse.json({
-      items,
-      nextCursor,
-      hasMore
-    });
-    response.headers.set('Cache-Control', 'public, s-maxage=30, stale-while-revalidate=59');
-    
-    return response;
+    // Return paginated results
+    return Response.json(
+      { 
+        items, 
+        nextCursor, 
+        hasMore 
+      },
+      {
+        headers: {
+          'Cache-Control': 's-maxage=60, stale-while-revalidate=120'
+        }
+      }
+    );
   } catch (error) {
     console.error('Error fetching projects:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch projects' },
-      { status: 500 }
-    );
+    return Response.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
 

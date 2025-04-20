@@ -97,7 +97,7 @@ export function ProjectCard({
               {category.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ')}
             </span>
           </div>
-          <div className="flex items-center space-x-2 opacity-0 translate-y-2 transition-all duration-300 group-hover:opacity-100 group-hover:translate-y-0">
+          <div className="flex items-center space-x-2 sm:opacity-0 sm:translate-y-2 transition-all duration-300 group-hover:opacity-100 group-hover:translate-y-0">
             <Link
               href={youtubeUrl}
               target="_blank"

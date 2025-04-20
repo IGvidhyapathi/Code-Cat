@@ -59,7 +59,7 @@ export default function NewProject() {
     installationGuide: "",
     contactEmail: "",
     contactTwitter: "",
-    contactGithub: "",
+    contactGithub: "https://www.instagram.com/buildwithcodecat?igsh=MW9nMXRwajV6d2oycA==",
     category: "web",
     price: "",
     projectType: "academic",
@@ -880,7 +880,7 @@ npm start
                   </div>
                   <div>
                     <label htmlFor="contactGithub" className="block text-sm font-medium text-gray-300 mb-2">
-                      Social Media Link
+                      Instagram Link
                     </label>
                     <input
                       type="url"
@@ -888,7 +888,7 @@ npm start
                       value={formData.contactGithub}
                       onChange={(e) => setFormData({ ...formData, contactGithub: e.target.value })}
                       className="block w-full rounded-lg bg-slate-800 border border-slate-700 text-white px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
-                      placeholder="https://linkedin.com/in/username"
+                      placeholder="https://instagram.com/buildwithcodecat"
                     />
                   </div>
                 </div>
