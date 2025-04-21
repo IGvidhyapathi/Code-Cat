@@ -62,3 +62,72 @@ export async function GET(request: NextRequest) {
     );
   }
 }
+
+export async function PUT(request: NextRequest) {
+  const id = request.nextUrl.pathname.split('/').pop();
+
+  if (!id) {
+    return NextResponse.json({ error: 'ID is required' }, { status: 400 });
+  }
+
+  try {
+    const body = await request.json();
+
+    // Validate required fields
+    if (!body.title || !body.description || !body.youtubeUrl || !body.category) {
+      return NextResponse.json(
+        { error: 'Required fields are missing' },
+        { status: 400 }
+      );
+    }
+
+    // Check if project exists
+    const existingProject = await prisma.project.findUnique({
+      where: { id },
+      select: { id: true }
+    });
+
+    if (!existingProject) {
+      return NextResponse.json(
+        { error: 'Project not found' },
+        { status: 404 }
+      );
+    }
+
+    // Update the project
+    const updatedProject = await prisma.project.update({
+      where: { id },
+      data: {
+        title: body.title,
+        description: body.description,
+        keyFeatures: body.keyFeatures,
+        techStack: body.techStack,
+        youtubeUrl: body.youtubeUrl,
+        demoUrl: body.demoUrl,
+        installationGuide: body.installationGuide,
+        contactEmail: body.contactEmail,
+        contactTwitter: body.contactTwitter,
+        contactGithub: body.contactGithub,
+        category: body.category,
+        price: body.price,
+        projectType: body.projectType,
+        includesDocumentation: body.includesDocumentation,
+        includesSourceCode: body.includesSourceCode,
+        includesSupport: body.includesSupport,
+        supportDuration: body.supportDuration,
+        lastUpdated: body.lastUpdated || new Date().toISOString().split('T')[0],
+      }
+    });
+
+    return NextResponse.json({
+      message: 'Project updated successfully',
+      project: updatedProject
+    });
+  } catch (error) {
+    console.error('Error updating project:', error);
+    return NextResponse.json(
+      { error: 'Failed to update project' },
+      { status: 500 }
+    );
+  }
+}

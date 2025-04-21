@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { useUser } from "@clerk/nextjs";
-import { IconUpload, IconLock, IconCheck, IconCopy, IconTrash } from "@tabler/icons-react";
+import { IconUpload, IconLock, IconCheck, IconCopy, IconTrash, IconEdit, IconPlus } from "@tabler/icons-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -48,6 +48,7 @@ export default function NewProject() {
   const [isPinVerified, setIsPinVerified] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
   const [pin, setPin] = useState("");
+  const [showOptions, setShowOptions] = useState(false);
 
   const [formData, setFormData] = useState({
     title: "",
@@ -97,6 +98,7 @@ export default function NewProject() {
           }
         );
         setIsPinVerified(true);
+        setShowOptions(true);
       } else {
         toast.error("Invalid PIN. Please try again.");
       }
@@ -376,6 +378,60 @@ export default function NewProject() {
                 <p className="mt-4 text-center text-xs text-gray-400">
                   Contact administrator if you need access
                 </p>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (showOptions) {
+    return (
+      <div className="min-h-screen bg-slate-900 py-24 sm:py-32">
+        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+          <div className="mx-auto max-w-2xl text-center">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mx-auto w-full max-w-md"
+            >
+              <div className="text-center">
+                <div className="mx-auto h-14 w-14 rounded-full bg-green-600/10 flex items-center justify-center mb-4">
+                  <IconCheck className="h-7 w-7 text-green-500" />
+                </div>
+                <h2 className="text-2xl font-bold tracking-tight text-white">Choose an Option</h2>
+                <p className="mt-2 text-sm text-gray-400">
+                  What would you like to do?
+                </p>
+              </div>
+
+              <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
+                <motion.button
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="flex flex-col items-center justify-center p-6 bg-slate-800/70 border border-slate-700/50 rounded-xl hover:bg-slate-800 transition-all"
+                  onClick={() => setShowOptions(false)}
+                >
+                  <div className="h-12 w-12 rounded-full bg-blue-600/10 flex items-center justify-center mb-3">
+                    <IconPlus className="h-6 w-6 text-blue-500" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-white">Create Project</h3>
+                  <p className="text-sm text-gray-400 mt-1">Add a new project to the platform</p>
+                </motion.button>
+
+                <motion.button
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="flex flex-col items-center justify-center p-6 bg-slate-800/70 border border-slate-700/50 rounded-xl hover:bg-slate-800 transition-all"
+                  onClick={() => router.push('/projects/edit')}
+                >
+                  <div className="h-12 w-12 rounded-full bg-purple-600/10 flex items-center justify-center mb-3">
+                    <IconEdit className="h-6 w-6 text-purple-500" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-white">Edit Projects</h3>
+                  <p className="text-sm text-gray-400 mt-1">Manage existing projects</p>
+                </motion.button>
               </div>
             </motion.div>
           </div>
