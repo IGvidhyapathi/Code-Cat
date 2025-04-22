@@ -16,6 +16,25 @@ npm run db:generate  # Generate SQL migrations
 npm run db:push      # Push changes to the database
 ```
 
+## Environment Variables
+
+The following environment variables need to be set in your `.env` file:
+
+### Required:
+- `DATABASE_URL`: Your database connection string
+- `GEMINI_API_KEY`: API key for Google's Gemini AI for AI search functionality
+- Other required environment variables for authentication, etc.
+
+Example of how your `.env` file should look:
+
+```
+DATABASE_URL=your_neon_database_url
+GEMINI_API_KEY=your_gemini_api_key_here
+# Additional environment variables...
+```
+
+Note: Never commit your `.env` file to version control! It's already added to `.gitignore` for your protection.
+
 ## Getting Started
 
 First, run the development server:
