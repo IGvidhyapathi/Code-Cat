@@ -1,14 +1,20 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { useUser } from "@clerk/nextjs";
-import { IconUpload, IconLock, IconCheck, IconCopy, IconTrash, IconEdit, IconPlus } from "@tabler/icons-react";
+import { IconUpload, IconLock, IconCheck, IconCopy, IconTrash, IconEdit, IconPlus, IconChevronLeft, IconAlertTriangle } from "@tabler/icons-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { PinInput } from "@/components/ui/pin-input";
+import { PinInput, PinInputRef } from "@/components/ui/pin-input";
+
+// PIN security related constants
+const PIN_ATTEMPTS_KEY = 'pin_attempts_count_new';
+const PIN_LOCKOUT_TIME_KEY = 'pin_lockout_until_new';
+const MAX_PIN_ATTEMPTS = 3;
+const LOCKOUT_DURATION = 30; // in seconds
 
 // Common technology keywords to detect with categories
 const TECH_CATEGORIES = {
@@ -49,6 +55,13 @@ export default function NewProject() {
   const [isVerifying, setIsVerifying] = useState(false);
   const [pin, setPin] = useState("");
   const [showOptions, setShowOptions] = useState(false);
+  const pinInputRef = React.useRef<PinInputRef>(null);
+  
+  // PIN security related states
+  const [attempts, setAttempts] = useState(0);
+  const [isLocked, setIsLocked] = useState(false);
+  const [lockoutTime, setLockoutTime] = useState(0);
+  const [timeRemaining, setTimeRemaining] = useState(0);
 
   const [formData, setFormData] = useState({
     title: "",
@@ -79,10 +92,97 @@ export default function NewProject() {
   const [showTechSuggestions, setShowTechSuggestions] = useState(false);
   const [currentTechInput, setCurrentTechInput] = useState("");
 
+  // Load attempts from localStorage on initial load
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const storedAttempts = localStorage.getItem(PIN_ATTEMPTS_KEY);
+      const storedLockoutTime = localStorage.getItem(PIN_LOCKOUT_TIME_KEY);
+      
+      if (storedAttempts) {
+        setAttempts(parseInt(storedAttempts, 10));
+      }
+      
+      if (storedLockoutTime) {
+        const lockoutUntil = parseInt(storedLockoutTime, 10);
+        const now = Date.now();
+        
+        if (lockoutUntil > now) {
+          setIsLocked(true);
+          setLockoutTime(lockoutUntil);
+          setTimeRemaining(Math.ceil((lockoutUntil - now) / 1000));
+        } else {
+          // Clear expired lockout
+          localStorage.removeItem(PIN_LOCKOUT_TIME_KEY);
+        }
+      }
+    }
+  }, []);
+
+  // Timer effect for countdown
+  useEffect(() => {
+    if (!isLocked) return;
+    
+    const interval = setInterval(() => {
+      const now = Date.now();
+      
+      if (lockoutTime <= now) {
+        setIsLocked(false);
+        setTimeRemaining(0);
+        clearInterval(interval);
+        
+        // Reset attempts after lockout period
+        setAttempts(0);
+        if (typeof window !== 'undefined') {
+          localStorage.setItem(PIN_ATTEMPTS_KEY, '0');
+          localStorage.removeItem(PIN_LOCKOUT_TIME_KEY);
+        }
+      } else {
+        setTimeRemaining(Math.ceil((lockoutTime - now) / 1000));
+      }
+    }, 1000);
+    
+    return () => clearInterval(interval);
+  }, [isLocked, lockoutTime]);
+
+  // Function to increment attempts and check for lockout
+  const incrementAttempts = useCallback(() => {
+    const newAttempts = attempts + 1;
+    setAttempts(newAttempts);
+    
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(PIN_ATTEMPTS_KEY, newAttempts.toString());
+    }
+    
+    // Lock after MAX_PIN_ATTEMPTS failed attempts
+    if (newAttempts >= MAX_PIN_ATTEMPTS) {
+      const lockUntil = Date.now() + (LOCKOUT_DURATION * 1000);
+      setIsLocked(true);
+      setLockoutTime(lockUntil);
+      setTimeRemaining(LOCKOUT_DURATION);
+      
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(PIN_LOCKOUT_TIME_KEY, lockUntil.toString());
+      }
+      
+      toast.error(
+        <div className="flex flex-col items-center gap-2">
+          <IconAlertTriangle className="h-6 w-6 text-red-400" />
+          <span className="text-lg font-semibold">Security Alert</span>
+          <span className="text-sm text-gray-400">
+            Too many incorrect attempts. Please try again in {LOCKOUT_DURATION} seconds.
+          </span>
+        </div>
+      );
+    }
+  }, [attempts]);
+
   const handlePinComplete = async (pin: string) => {
+    // Don't process if locked
+    if (isLocked) return;
+    
     setIsVerifying(true);
     try {
-      if (pin === "0000") {
+      if (pin === "2022") {
         toast.success(
           <div className="flex flex-col items-center gap-2">
             <div className="relative">
@@ -99,11 +199,31 @@ export default function NewProject() {
         );
         setIsPinVerified(true);
         setShowOptions(true);
+        
+        // Reset attempts on success
+        if (typeof window !== 'undefined') {
+          localStorage.setItem(PIN_ATTEMPTS_KEY, '0');
+          setAttempts(0);
+        }
       } else {
         toast.error("Invalid PIN. Please try again.");
+        // Clear PIN input
+        setTimeout(() => {
+          pinInputRef.current?.clear();
+        }, 300);
+        
+        // Increment attempt counter
+        incrementAttempts();
       }
     } catch (error) {
       toast.error("Failed to verify PIN");
+      // Clear PIN input on error too
+      setTimeout(() => {
+        pinInputRef.current?.clear();
+      }, 300);
+      
+      // Increment attempt counter
+      incrementAttempts();
     } finally {
       setIsVerifying(false);
     }
@@ -349,38 +469,226 @@ export default function NewProject() {
 
   if (!isPinVerified) {
     return (
-      <div className="min-h-screen bg-slate-900 py-24 sm:py-32">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="mx-auto max-w-2xl text-center">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="mx-auto w-full max-w-sm"
-            >
-              <div className="text-center">
-                <div className="mx-auto h-12 w-12 rounded-full bg-blue-600/10 flex items-center justify-center mb-4">
-                  <IconLock className="h-6 w-6 text-blue-500" />
+      <div className="min-h-screen bg-gradient-to-br from-slate-950 to-slate-900 flex items-center justify-center p-4">
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute -top-40 -left-40 w-80 h-80 bg-blue-500/5 rounded-full blur-3xl"></div>
+          <div className="absolute top-1/3 -right-20 w-60 h-60 bg-indigo-500/5 rounded-full blur-3xl"></div>
+          <div className="absolute -bottom-40 left-1/3 w-80 h-80 bg-purple-500/5 rounded-full blur-3xl"></div>
+          
+          {/* Grid lines */}
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(30,41,59,0.05)_1px,transparent_1px),linear-gradient(to_bottom,rgba(30,41,59,0.05)_1px,transparent_1px)] bg-[size:4rem_4rem]"></div>
+        </div>
+        
+        <div className="w-full max-w-md relative z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+            className="w-full"
+          >
+            {/* Card with glass effect */}
+            <div className="bg-white/[0.01] backdrop-blur-xl border border-white/10 rounded-3xl overflow-hidden shadow-[0_0_50px_-12px_rgba(59,130,246,0.15)]">
+              {/* Visual header design */}
+              <div className="relative h-28 overflow-hidden">
+                {/* Geometric shapes */}
+                <motion.div
+                  initial={{ x: -50, y: -50, opacity: 0 }}
+                  animate={{ x: 0, y: 0, opacity: 0.4 }}
+                  transition={{ duration: 0.7, ease: "easeOut", delay: 0.2 }}
+                  className="absolute -left-10 -top-20 w-40 h-40 bg-gradient-to-r from-blue-600/20 to-blue-400/20 rounded-full"
+                ></motion.div>
+                <motion.div
+                  initial={{ x: 50, y: -50, opacity: 0 }}
+                  animate={{ x: 0, y: 0, opacity: 0.3 }}
+                  transition={{ duration: 0.7, ease: "easeOut", delay: 0.4 }}
+                  className="absolute -right-20 -top-10 w-40 h-40 bg-gradient-to-l from-indigo-600/20 to-violet-400/20 rounded-full"
+                ></motion.div>
+                
+                {/* Rotating rings around the lock icon */}
+                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                  <motion.div 
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.5, delay: 0.2 }}
+                    className="relative flex items-center justify-center"
+                  >
+                    <motion.div
+                      animate={{ rotate: 360 }}
+                      transition={{ duration: 8, ease: "linear", repeat: Infinity }}
+                      className="absolute w-20 h-20 rounded-full border border-dashed border-blue-500/20"
+                    ></motion.div>
+                    <motion.div
+                      animate={{ rotate: -360 }}
+                      transition={{ duration: 12, ease: "linear", repeat: Infinity }}
+                      className="absolute w-28 h-28 rounded-full border border-dashed border-indigo-500/20"
+                    ></motion.div>
+                    <motion.div
+                      initial={{ scale: 0 }}
+                      animate={{ scale: [0, 1.2, 1] }}
+                      transition={{ duration: 0.8, delay: 0.4, times: [0, 0.7, 1], ease: [0.34, 1.56, 0.64, 1] }}
+                      className="relative flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-600/10 to-violet-600/10 border border-white/10 shadow-lg transform rotate-12"
+                    >
+                      <div className="absolute inset-0.5 rounded-xl bg-gradient-to-br from-blue-600/10 to-violet-600/10 backdrop-blur-md transform -rotate-12"></div>
+                      <motion.div 
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 0.7 }}
+                        className={`relative z-10 ${isLocked ? 'text-red-400' : 'text-blue-400'}`}
+                      >
+                        <IconLock className="h-7 w-7" stroke={1.5} />
+                      </motion.div>
+                    </motion.div>
+                  </motion.div>
                 </div>
-                <h2 className="text-2xl font-bold tracking-tight text-white">Enter PIN</h2>
-                <p className="mt-2 text-sm text-gray-400">
-                  Please enter the PIN to add a new project
-                </p>
               </div>
 
-              <div className="mt-8">
-                <PinInput
-                  length={4}
-                  onComplete={handlePinComplete}
-                  correctPin="0000"
-                  disabled={isVerifying}
-                  className="justify-center"
-                />
-                <p className="mt-4 text-center text-xs text-gray-400">
-                  Contact administrator if you need access
-                </p>
+              {/* Card content */}
+              <div className="p-8">
+                <div className="space-y-6">
+                  <div className="text-center space-y-2">
+                    <motion.h2 
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.3 }}
+                      className="text-2xl font-medium bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent"
+                    >
+                      {isLocked ? 'Account Locked' : 'Authentication Required'}
+                    </motion.h2>
+                    <motion.p 
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 0.4 }}
+                      className="text-gray-400 text-sm"
+                    >
+                      {isLocked 
+                        ? `Too many incorrect attempts. Try again in ${timeRemaining} seconds` 
+                        : 'Enter your administrator PIN to add new projects'}
+                    </motion.p>
+                  </div>
+
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.5 }}
+                    className="mt-6"
+                  >
+                    {/* Styled PIN input container */}
+                    <div className={`bg-white/[0.03] backdrop-blur-sm rounded-2xl p-6 border ${isLocked ? 'border-red-500/20' : 'border-white/5'}`}>
+                      {isLocked ? (
+                        <div className="flex flex-col items-center space-y-4">
+                          <div className="w-16 h-16 rounded-full bg-red-500/10 flex items-center justify-center">
+                            <IconAlertTriangle className="h-8 w-8 text-red-400" />
+                          </div>
+                          <div className="text-center">
+                            <p className="text-red-400 font-medium">Security Lockout</p>
+                            <p className="text-sm text-gray-400 mt-1">Please wait before trying again</p>
+                          </div>
+                          <div className="w-full bg-slate-800/50 rounded-full h-2 mt-2">
+                            <div 
+                              className="bg-red-500 h-2 rounded-full transition-all duration-1000 ease-linear" 
+                              style={{ width: `${(timeRemaining / LOCKOUT_DURATION) * 100}%` }}
+                            ></div>
+                          </div>
+                          <p className="text-sm text-gray-500">
+                            <span className="font-mono">{timeRemaining}</span> seconds remaining
+                          </p>
+                        </div>
+                      ) : (
+                        <PinInput
+                          ref={pinInputRef}
+                          length={4}
+                          onComplete={handlePinComplete}
+                          disabled={isVerifying || isLocked}
+                          className="justify-center gap-3"
+                        />
+                      )}
+                      
+                      {/* Verification indicator with bounce animation */}
+                      {isVerifying && (
+                        <motion.div 
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          className="mt-4 flex justify-center"
+                        >
+                          <div className="flex items-center justify-center space-x-1 py-2 px-4 rounded-full bg-blue-500/10">
+                            <div className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-[bounce_1s_infinite_-0.3s]"></div>
+                            <div className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-[bounce_1s_infinite_-0.15s]"></div>
+                            <div className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-[bounce_1s_infinite]"></div>
+                            <span className="text-blue-400 text-xs font-medium ml-2">Verifying</span>
+                          </div>
+                        </motion.div>
+                      )}
+                    </div>
+                    
+                    {/* Attempt counter */}
+                    {!isLocked && attempts > 0 && (
+                      <div className="mt-3 text-center">
+                        <p className="text-xs text-amber-400/80">
+                          <span className="inline-flex items-center">
+                            <IconAlertTriangle size={12} className="mr-1" />
+                            {attempts === 1 
+                              ? 'Failed attempt: 1' 
+                              : `Failed attempts: ${attempts}`
+                            } of {MAX_PIN_ATTEMPTS}
+                          </span>
+                        </p>
+                      </div>
+                    )}
+                  </motion.div>
+
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.7 }}
+                    className="flex justify-center"
+                  >
+                    <button
+                      onClick={() => router.push('/')}
+                      className="group flex items-center gap-2 py-2 px-4 rounded-full bg-white/5 hover:bg-white/10 transition-all duration-300 text-sm text-gray-400 hover:text-white border border-white/10"
+                    >
+                      <IconChevronLeft size={16} className="transition-transform group-hover:-translate-x-1" />
+                      <span>Return to Dashboard</span>
+                    </button>
+                  </motion.div>
+                </div>
               </div>
+              
+              {/* Bottom indicator strip */}
+              <div className="px-8 py-4 border-t border-white/5 bg-gradient-to-r from-transparent via-white/5 to-transparent">
+                <div className="flex justify-between items-center">
+                  <div className="text-xs text-gray-500 flex items-center">
+                    <motion.div 
+                      animate={{ opacity: [0.4, 1, 0.4] }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                      className={`w-1.5 h-1.5 rounded-full ${isLocked ? 'bg-red-400' : 'bg-emerald-400'} mr-2`}
+                    ></motion.div>
+                    Codecat Creator
+                  </div>
+                  <div className="text-xs text-gray-500">
+                    {new Date().toLocaleDateString(undefined, {
+                      year: 'numeric',
+                      month: 'short',
+                      day: 'numeric'
+                    })}
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            {/* Security notice below card */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 0.7 }}
+              transition={{ delay: 0.9 }}
+              className="mt-6 text-center"
+            >
+              <p className="text-xs text-gray-500">
+                {isLocked 
+                  ? 'Account temporarily locked for security. Please wait to try again.' 
+                  : 'This is a secured section. All login attempts are monitored.'}
+              </p>
             </motion.div>
-          </div>
+          </motion.div>
         </div>
       </div>
     );
