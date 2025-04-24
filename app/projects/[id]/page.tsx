@@ -4,11 +4,12 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
-import { IconBrandYoutube, IconExternalLink, IconShare, IconDownload, IconArrowLeft, IconStar, IconEye, IconHeart, IconUser, IconMail, IconBrandGithub, IconBrandTwitter } from "@tabler/icons-react";
+import { IconBrandYoutube, IconExternalLink, IconShare, IconDownload, IconArrowLeft, IconStar, IconEye, IconHeart, IconUser, IconMail, IconBrandGithub, IconBrandTwitter, IconBrandGoogle, IconCreditCard, IconInfoCircle, IconDeviceDesktop, IconCheck } from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
 import { Sparkles } from "@/components/ui/sparkles";
 import { marked } from "marked";
 import { useUser } from "@clerk/nextjs";
+import Script from "next/script";
 
 interface Project {
   id: string;
@@ -96,40 +97,161 @@ export default function ProjectDetails() {
   const { user } = useUser();
   const [project, setProject] = useState<Project | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [isRedirecting, setIsRedirecting] = useState(false);
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
+  const [razorpayLoaded, setRazorpayLoaded] = useState(false);
+  const [paymentCompleted, setPaymentCompleted] = useState(false);
+  const [paidAmount, setPaidAmount] = useState<number | null>(null);
+  const [editPaymentCompleted, setEditPaymentCompleted] = useState(false);
 
   const isOwner = user?.id === project?.userId;
 
-  const handleGetProjectAccess = async () => {
-    if (isRedirecting || !project) return;
-
+  const handleRazorpayPayment = () => {
+    if (!project || isProcessingPayment || !razorpayLoaded) return;
+    
+    setIsProcessingPayment(true);
+    
     try {
-      setIsRedirecting(true);
-      const formUrl = 'https://docs.google.com/forms/d/e/1FAIpQLSfEaZK4dfhCuXXOuW43tevdBAUA7_NWgfh1eUH2IKqPmJ9N5w/viewform';
+      // Calculate price - use project price if available, fallback to calculated price based on project type
+      const projectPrice = calculateProjectPrice(project);
       
-      // Try to open in current window
-      window.location.href = formUrl;
-      
-      toast.success(
-        'Opening project access form',
-        {
-          description: `Please complete the form to get access to ${project.title}.`,
-          duration: 5000,
+      // Create a new instance of Razorpay
+      const rzp = new (window as any).Razorpay({
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID, // Using environment variable
+        amount: projectPrice * 100, // Amount in smallest currency unit (paise for INR)
+        currency: 'INR',
+        name: 'Codecat',
+        description: `Payment for ${project.title} (${project.category})`,
+        image: '/logo.png', // Update with your actual logo path
+        handler: function(response: any) {
+          // Handle successful payment
+          toast.success(
+            'Payment Successful!',
+            {
+              description: `Your payment of ₹${projectPrice} for ${project.title} was successful. Reference: ${response.razorpay_payment_id}`,
+              duration: 5000,
+            }
+          );
+          
+          // Set payment completed state and amount
+          setPaymentCompleted(true);
+          setPaidAmount(projectPrice);
+          
+          // Record the successful payment
+          recordPayment(project.id, response.razorpay_payment_id, projectPrice);
+        },
+        prefill: {
+          name: user?.fullName || '',
+          email: user?.primaryEmailAddress?.emailAddress || '',
+        },
+        theme: {
+          color: '#4f46e5',
+        },
+        modal: {
+          ondismiss: function() {
+            setIsProcessingPayment(false);
+          }
+        },
+        notes: {
+          projectId: project.id,
+          projectType: project.projectType,
+          category: project.category
         }
-      );
+      });
+      
+      rzp.open();
     } catch (error) {
-      console.error('Error redirecting to form:', error);
+      console.error('Razorpay error:', error);
       toast.error(
-        'Failed to Open Form',
+        'Payment Failed',
         {
-          description: 'Please try again or contact support if the issue persists.',
-          duration: 6000,
+          description: 'There was a problem initializing the payment. Please try again.',
+          duration: 4000,
         }
       );
-    } finally {
-      setTimeout(() => setIsRedirecting(false), 800);
+      setIsProcessingPayment(false);
     }
   };
+
+  // Calculate project price based on various factors
+  const calculateProjectPrice = (project: Project): number => {
+    // If project has a defined price, use that
+    if (project.price && project.price > 0) {
+      return project.price;
+    }
+    
+    // Otherwise calculate based on project type
+    let basePrice = 999; // Default base price
+    
+    // Adjust price based on project type
+    switch (project.projectType) {
+      case 'custom':
+        basePrice = 2499;
+        break;
+      case 'readymade':
+        basePrice = 1499;
+        break;
+      case 'template':
+        basePrice = 999;
+        break;
+      default:
+        basePrice = 999;
+    }
+    
+    // Adjust for included features
+    if (project.includesSourceCode) basePrice += 500;
+    if (project.includesDocumentation) basePrice += 300;
+    if (project.includesSupport) {
+      // Add price based on support duration (e.g., 200 per month)
+      const supportMonths = parseInt(project.supportDuration) || 1;
+      basePrice += supportMonths * 200;
+    }
+    
+    // Adjust for category (some categories might be more valuable)
+    const premiumCategories = ['ai', 'ml', 'web', 'mobile'];
+    if (premiumCategories.includes(project.category)) {
+      basePrice *= 1.2; // 20% premium for high-demand categories
+    }
+    
+    return Math.round(basePrice); // Round to nearest whole number
+  };
+
+  // Record payment in database or local storage
+  const recordPayment = async (projectId: string, paymentId: string, amount: number) => {
+    try {
+      // This would typically be an API call to your backend
+      console.log(`Payment recorded: Project ${projectId}, Payment ${paymentId}, Amount ₹${amount}`);
+      
+      // You could implement an actual API call here
+      // const response = await fetch('/api/payments', {
+      //   method: 'POST',
+      //   headers: { 'Content-Type': 'application/json' },
+      //   body: JSON.stringify({ projectId, paymentId, amount, timestamp: new Date().toISOString() })
+      // });
+      
+      localStorage.setItem(`payment_${projectId}`, JSON.stringify({
+        paymentId,
+        amount,
+        timestamp: new Date().toISOString()
+      }));
+    } catch (error) {
+      console.error('Error recording payment:', error);
+    }
+  };
+
+  // Handle Razorpay script loading
+  const handleRazorpayScriptLoad = () => {
+    console.log("Razorpay script loaded successfully");
+    setRazorpayLoaded(true);
+  };
+
+  // Add a useEffect to ensure the Razorpay check happens on mount
+  useEffect(() => {
+    // Check if Razorpay is already available in window object
+    if (typeof window !== 'undefined' && (window as any).Razorpay) {
+      console.log("Razorpay already available");
+      setRazorpayLoaded(true);
+    }
+  }, []);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -187,6 +309,58 @@ export default function ProjectDetails() {
     }
   }, [project?.user?.imageUrl]);
 
+  // Check if payment is stored in localStorage when component loads
+  useEffect(() => {
+    if (project) {
+      try {
+        const storedPayment = localStorage.getItem(`payment_${project.id}`);
+        if (storedPayment) {
+          const paymentData = JSON.parse(storedPayment);
+          setPaymentCompleted(true);
+          setPaidAmount(paymentData.amount);
+        }
+      } catch (error) {
+        console.error('Error checking stored payment:', error);
+      }
+    }
+  }, [project]);
+
+  // Check localStorage for edit payment status in useEffect
+  useEffect(() => {
+    if (project) {
+      // Check custom edit payment
+      try {
+        const editPaymentStatus = localStorage.getItem(`edit_payment_${project.id}`);
+        if (editPaymentStatus) {
+          setEditPaymentCompleted(true);
+        }
+      } catch (error) {
+        console.error('Error checking edit payment status:', error);
+      }
+    }
+  }, [project]);
+
+  // Add function to handle edit payment completion
+  const handleEditPaymentComplete = () => {
+    if (!project) return;
+    
+    // Store edit payment status
+    try {
+      localStorage.setItem(`edit_payment_${project.id}`, 'completed');
+      setEditPaymentCompleted(true);
+      
+      toast.success(
+        'Edit Payment Recorded',
+        {
+          description: 'Your custom edit payment has been recorded successfully.',
+          duration: 5000,
+        }
+      );
+    } catch (error) {
+      console.error('Error storing edit payment status:', error);
+    }
+  };
+
   if (isLoading) {
     return <ProjectSkeleton />;
   }
@@ -199,6 +373,13 @@ export default function ProjectDetails() {
 
   return (
     <div className="min-h-screen bg-slate-900">
+      {/* Load Razorpay script */}
+      <Script
+        src="https://checkout.razorpay.com/v1/checkout.js"
+        onLoad={handleRazorpayScriptLoad}
+        strategy="afterInteractive"
+      />
+      
       {/* Hero Section */}
       <div className="relative bg-gradient-to-b from-blue-600/20 to-slate-900 border-b border-slate-800">
         <div className="absolute inset-0">
@@ -372,13 +553,40 @@ export default function ProjectDetails() {
           {/* Sidebar for Mobile - Sticky Header */}
           <div className="lg:hidden sticky top-0 z-10 -mx-4 px-4 py-4 bg-slate-900/80 backdrop-blur-lg border-b border-slate-800">
             <div className="flex gap-2">
+              {/* Mobile button redesign - cleaner style */}
               <Button
-                onClick={handleGetProjectAccess}
-                disabled={isRedirecting}
-                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white shadow-lg text-sm h-9"
+                onClick={handleRazorpayPayment}
+                disabled={isProcessingPayment || !razorpayLoaded || paymentCompleted}
+                className={`flex-1 ${paymentCompleted 
+                  ? 'bg-green-600 hover:bg-green-600 cursor-default' 
+                  : 'bg-blue-600 hover:bg-blue-700'} text-white shadow-md text-sm h-10 rounded-lg transition-colors duration-200`}
               >
-                <IconDownload className="w-4 h-4 mr-1.5" />
-                {isRedirecting ? 'Opening...' : 'Get Access'}
+                <span className="flex items-center justify-center">
+                  {paymentCompleted ? (
+                    <>
+                      <IconCheck className="w-4 h-4 mr-2" />
+                      <span className="font-medium">
+                        Paid ₹{paidAmount}
+                      </span>
+                    </>
+                  ) : isProcessingPayment ? (
+                    <span className="flex items-center">
+                      Processing...
+                    </span>
+                  ) : !razorpayLoaded ? (
+                    <span className="flex items-center">
+                      <div className="mr-2 h-3 w-3 border-2 border-t-transparent border-white rounded-full animate-spin"></div>
+                      Loading...
+                    </span>
+                  ) : (
+                    <>
+                      <IconCreditCard className="w-4 h-4 mr-2" />
+                      <span className="font-medium">
+                        Pay ₹{project.price || calculateProjectPrice(project)}
+                      </span>
+                    </>
+                  )}
+                </span>
               </Button>
               {project.demoUrl && (
                 <Button
@@ -428,6 +636,15 @@ export default function ProjectDetails() {
 
             {/* Project Details */}
             <div className="space-y-8">
+              {/* Remote Setup Notice */}
+              <div className="p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg mb-6 flex items-start">
+                <IconDeviceDesktop className="w-5 h-5 text-blue-400 shrink-0 mt-0.5 mr-3" />
+                <div>
+                  <h4 className="text-sm font-medium text-white">Remote Setup via AnyDesk</h4>
+                  <p className="text-sm text-gray-300 mt-1">After your purchase, our team will contact you to schedule a remote setup session using AnyDesk. We'll handle the complete installation and configuration of your project, ensuring it works perfectly on your system.</p>
+                </div>
+              </div>
+
               {/* Description */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -695,14 +912,66 @@ export default function ProjectDetails() {
           <div className="hidden lg:block space-y-6">
             {/* Action Buttons */}
             <div className="sticky top-6 space-y-4 bg-slate-800/50 border border-slate-700 rounded-xl p-6">
+              {/* Small notice above the payment button */}
+              <div className="mb-3 flex items-center">
+                <IconDeviceDesktop className="w-4 h-4 text-blue-400 mr-2" />
+                <span className="text-xs text-gray-400">Includes remote setup via AnyDesk</span>
+              </div>
+              {/* Desktop button redesign - cleaner style */}
               <Button
-                onClick={handleGetProjectAccess}
-                disabled={isRedirecting}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white shadow-lg"
+                onClick={handleRazorpayPayment}
+                disabled={isProcessingPayment || !razorpayLoaded || paymentCompleted}
+                className={`w-full ${paymentCompleted 
+                  ? 'bg-green-600 hover:bg-green-600 cursor-default' 
+                  : 'bg-blue-600 hover:bg-blue-700'} text-white shadow-md rounded-lg py-3 transition-colors duration-200`}
               >
-                <IconDownload className="w-4 h-4 mr-2" />
-                {isRedirecting ? 'Opening Form...' : 'Get Project Access'}
+                <div className="flex items-center justify-center">
+                  {paymentCompleted ? (
+                    <div className="flex items-center">
+                      <IconCheck className="w-5 h-5 mr-2" />
+                      <span className="font-medium">
+                        Payment Complete (₹{paidAmount})
+                      </span>
+                    </div>
+                  ) : isProcessingPayment ? (
+                    <div className="flex items-center">
+                      <div className="mr-2 h-4 w-4 border-2 border-t-transparent border-white rounded-full animate-spin"></div>
+                      <span>Processing Payment</span>
+                    </div>
+                  ) : !razorpayLoaded ? (
+                    <div className="flex items-center">
+                      <div className="mr-2 h-4 w-4 border-2 border-t-transparent border-white rounded-full animate-spin"></div>
+                      <span>Loading Payment System</span>
+                    </div>
+                  ) : (
+                    <div className="flex items-center">
+                      <IconCreditCard className="w-5 h-5 mr-2" />
+                      <span className="font-medium text-base">
+                        Pay ₹{project.price || calculateProjectPrice(project)}
+                      </span>
+                    </div>
+                  )}
+                </div>
               </Button>
+              <div className="mt-2">
+                {editPaymentCompleted ? (
+                  <div className="flex items-center justify-center px-3 py-2 bg-green-500/10 border border-green-500/20 rounded-lg">
+                    <IconCheck className="w-4 h-4 text-green-500 mr-2" />
+                    <span className="text-sm text-green-400">Edit Payment Complete</span>
+                  </div>
+                ) : (
+                  <a 
+                    href="https://rzp.io/rzp/NLDsA3T" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    onClick={handleEditPaymentComplete}
+                    className="flex items-center justify-center px-3 py-2.5 bg-slate-700/60 hover:bg-slate-700/80 border border-slate-600/50 rounded-lg transition-colors duration-200"
+                  >
+                    <span className="text-sm text-white">Need custom edits? Pay Fixed Amount</span>
+                    <IconExternalLink className="w-3.5 h-3.5 ml-1.5 text-gray-300" />
+                  </a>
+                )}
+              </div>
               <div className="flex gap-2">
                 {project.demoUrl && (
                   <Button
@@ -840,6 +1109,38 @@ export default function ProjectDetails() {
                 </div>
               </div>
             )}
+
+            {/* Edit Payment */}
+            <div className="mt-2 w-full">
+              {editPaymentCompleted ? (
+                <div className="flex items-center justify-center py-2 bg-green-500/10 border border-green-500/20 rounded-lg">
+                  <IconCheck className="w-3.5 h-3.5 text-green-500 mr-1.5" />
+                  <span className="text-xs text-green-400">Edit Payment Complete</span>
+                </div>
+              ) : (
+                <a 
+                  href="https://rzp.io/rzp/NLDsA3T" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  onClick={handleEditPaymentComplete}
+                  className="flex items-center justify-center py-2 w-full bg-slate-700/60 hover:bg-slate-700/80 border border-slate-600/50 rounded-lg"
+                >
+                  <span className="text-xs text-white">Pay for Custom Edits</span>
+                  <IconExternalLink className="w-3 h-3 ml-1.5 text-gray-300" />
+                </a>
+              )}
+            </div>
+
+            {/* Add back the remote setup info box below the edit payment button */}
+            <div className="mt-4 p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg">
+              <div className="flex items-start">
+                <IconInfoCircle className="w-5 h-5 text-blue-400 shrink-0 mt-0.5 mr-3" />
+                <div>
+                  <h4 className="text-sm font-medium text-blue-400">Remote Setup Included</h4>
+                  <p className="text-xs text-gray-400 mt-1">Project setup will be done remotely via AnyDesk after purchase. Our technicians will ensure your project is properly configured.</p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

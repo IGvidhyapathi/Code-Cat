@@ -480,9 +480,9 @@ export default function NewProject() {
         </div>
         
         <div className="w-full max-w-md relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
             className="w-full"
           >
@@ -511,7 +511,7 @@ export default function NewProject() {
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.5, delay: 0.2 }}
                     className="relative flex items-center justify-center"
-                  >
+            >
                     <motion.div
                       animate={{ rotate: 360 }}
                       transition={{ duration: 8, ease: "linear", repeat: Infinity }}
@@ -579,10 +579,10 @@ export default function NewProject() {
                           <div className="w-16 h-16 rounded-full bg-red-500/10 flex items-center justify-center">
                             <IconAlertTriangle className="h-8 w-8 text-red-400" />
                           </div>
-                          <div className="text-center">
+              <div className="text-center">
                             <p className="text-red-400 font-medium">Security Lockout</p>
                             <p className="text-sm text-gray-400 mt-1">Please wait before trying again</p>
-                          </div>
+                </div>
                           <div className="w-full bg-slate-800/50 rounded-full h-2 mt-2">
                             <div 
                               className="bg-red-500 h-2 rounded-full transition-all duration-1000 ease-linear" 
@@ -591,16 +591,16 @@ export default function NewProject() {
                           </div>
                           <p className="text-sm text-gray-500">
                             <span className="font-mono">{timeRemaining}</span> seconds remaining
-                          </p>
-                        </div>
+                </p>
+              </div>
                       ) : (
-                        <PinInput
+                <PinInput
                           ref={pinInputRef}
-                          length={4}
-                          onComplete={handlePinComplete}
+                  length={4}
+                  onComplete={handlePinComplete}
                           disabled={isVerifying || isLocked}
                           className="justify-center gap-3"
-                        />
+                />
                       )}
                       
                       {/* Verification indicator with bounce animation */}
@@ -631,8 +631,8 @@ export default function NewProject() {
                               : `Failed attempts: ${attempts}`
                             } of {MAX_PIN_ATTEMPTS}
                           </span>
-                        </p>
-                      </div>
+                </p>
+              </div>
                     )}
                   </motion.div>
 
@@ -649,8 +649,8 @@ export default function NewProject() {
                       <IconChevronLeft size={16} className="transition-transform group-hover:-translate-x-1" />
                       <span>Return to Dashboard</span>
                     </button>
-                  </motion.div>
-                </div>
+            </motion.div>
+          </div>
               </div>
               
               {/* Bottom indicator strip */}

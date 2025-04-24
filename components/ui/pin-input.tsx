@@ -28,7 +28,7 @@ export const PinInput = forwardRef<PinInputRef, PinInputProps>(({
   // Expose clear method via ref
   useImperativeHandle(ref, () => ({
     clear: () => {
-      setValues(Array(length).fill(""));
+    setValues(Array(length).fill(""));
       pins[0].current?.focus();
     }
   }));
@@ -37,15 +37,15 @@ export const PinInput = forwardRef<PinInputRef, PinInputProps>(({
     // Only allow numbers
     if (!/^\d*$/.test(value)) return;
 
-    const newValues = [...values];
+      const newValues = [...values];
     // Take only the last character if multiple are pasted
     newValues[index] = value.substring(value.length - 1);
-    setValues(newValues);
+      setValues(newValues);
 
     // Move focus to next input if current one is filled
     if (value !== "" && index < length - 1) {
       pins[index + 1].current?.focus();
-    }
+      }
 
     // Check if all inputs are filled
     const newValuesStr = newValues.join("");
@@ -58,7 +58,7 @@ export const PinInput = forwardRef<PinInputRef, PinInputProps>(({
     // Move focus to previous input on backspace if current is empty
     if (e.key === "Backspace" && index > 0 && values[index] === "") {
       pins[index - 1].current?.focus();
-    }
+      }
     
     // Allow navigation with arrow keys
     if (e.key === "ArrowLeft" && index > 0) {
@@ -94,15 +94,15 @@ export const PinInput = forwardRef<PinInputRef, PinInputProps>(({
         <Input
           key={index}
           ref={pins[index]}
-          type="text"
-          inputMode="numeric"
-          pattern="[0-9]*"
-          maxLength={1}
-          value={values[index]}
+            type="text"
+            inputMode="numeric"
+            pattern="[0-9]*"
+            maxLength={1}
+            value={values[index]}
           onChange={(e) => handleChange(index, e.target.value)}
           onKeyDown={(e) => handleKeyDown(index, e)}
           onPaste={index === 0 ? handlePaste : undefined}
-          disabled={disabled}
+            disabled={disabled}
           className="w-12 h-12 text-center text-xl font-bold"
           autoComplete="off"
         />

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { IconArrowRight, IconMail, IconBrandInstagram, IconBrandWhatsapp } from "@tabler/icons-react";
+import { IconArrowRight, IconMail, IconBrandInstagram, IconBrandWhatsapp, IconMapPin } from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
 import { Sparkles } from "@/components/ui/sparkles";
 
@@ -103,6 +103,22 @@ export default function SupportPage() {
                         <span className="font-medium">6382667158</span>
                       </a>
                     </div>
+                  </div>
+                </div>
+
+                <div className="flex items-start space-x-4">
+                  <div className="w-12 h-12 rounded-full bg-red-600/10 flex items-center justify-center flex-shrink-0">
+                    <IconMapPin className="w-6 h-6 text-red-500" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-medium text-white">Operational Address</h3>
+                    <p className="text-gray-400 mt-1">
+                      Our physical location for mail and official correspondence.
+                    </p>
+                    <address className="text-gray-300 mt-2 not-italic">
+                      1/16A Poorandampalatam, Sulthanpet, Sulur, Coimbatore,<br/>
+                      Tamil Nadu - 641669
+                    </address>
                   </div>
                 </div>
               </div>
