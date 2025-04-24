@@ -1,14 +1,14 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import { IconBrandYoutube, IconExternalLink, IconShare, IconDownload, IconArrowLeft, IconStar, IconEye, IconHeart, IconUser, IconMail, IconBrandGithub, IconBrandTwitter, IconBrandGoogle, IconCreditCard, IconInfoCircle, IconDeviceDesktop, IconCheck, IconPhone, IconCalendar, IconX } from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
 import { Sparkles } from "@/components/ui/sparkles";
 import { marked } from "marked";
-import { useUser } from "@clerk/nextjs";
+import { useUser, SignInButton } from "@clerk/nextjs";
 import Script from "next/script";
 
 interface Project {
@@ -94,7 +94,7 @@ function ProjectSkeleton() {
 export default function ProjectDetails() {
   const router = useRouter();
   const params = useParams();
-  const { user } = useUser();
+  const { user, isSignedIn } = useUser();
   const [project, setProject] = useState<Project | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
@@ -123,6 +123,15 @@ export default function ProjectDetails() {
   }, []);
 
   const handleRazorpayPayment = () => {
+    // Check if user is signed in first
+    if (!user || !isSignedIn) {
+      toast.error('Authentication Required', {
+        description: 'You need to sign in before making a payment.',
+        duration: 5000
+      });
+      return;
+    }
+    
     if (!project || isProcessingPayment || !razorpayLoaded) return;
     
     setIsProcessingPayment(true);
@@ -141,13 +150,13 @@ export default function ProjectDetails() {
         image: '/logo.png', // Update with your actual logo path
         handler: function(response: any) {
           // Handle successful payment
-          toast.success(
+      toast.success(
             'Payment Successful!',
-            {
+        {
               description: `Your payment of ₹${projectPrice} for ${project.title} was successful. Reference: ${response.razorpay_payment_id}`,
-              duration: 5000,
-            }
-          );
+          duration: 5000,
+        }
+      );
           
           // Set payment completed state and amount
           setPaymentCompleted(true);
@@ -239,23 +248,59 @@ export default function ProjectDetails() {
   // Record payment in database or local storage
   const recordPayment = async (projectId: string, paymentId: string, amount: number) => {
     try {
-      // This would typically be an API call to your backend
-      console.log(`Payment recorded: Project ${projectId}, Payment ${paymentId}, Amount ₹${amount}`);
+      console.log(`Attempting to record payment: Project ${projectId}, Payment ${paymentId}, Amount ₹${amount}`);
       
-      // You could implement an actual API call here
-      // const response = await fetch('/api/payments', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({ projectId, paymentId, amount, timestamp: new Date().toISOString() })
-      // });
-      
+      // Store in localStorage first as a backup
       localStorage.setItem(`payment_${projectId}`, JSON.stringify({
         paymentId,
         amount,
         timestamp: new Date().toISOString()
       }));
+      
+      // Call the payments API to record the payment
+      const response = await fetch('/api/payments', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          projectId, 
+          razorpayPaymentId: paymentId, 
+          amount,
+          status: 'success',
+          metadata: {
+            timestamp: new Date().toISOString(),
+            projectType: project?.projectType,
+            category: project?.category
+          }
+        })
+      });
+      
+      const responseText = await response.text();
+      console.log('API response status:', response.status);
+      console.log('API response text:', responseText);
+      
+      let data;
+      try {
+        data = JSON.parse(responseText);
+        console.log('Payment recorded in database:', data);
+      } catch (parseError) {
+        console.error('Error parsing API response:', parseError);
+        throw new Error('Invalid response from payment API');
+      }
+      
+      if (!response.ok) {
+        throw new Error(`Failed to record payment in database: ${data.error || 'Unknown error'}`);
+      }
+      
+      toast.success('Payment successfully recorded!', {
+        description: `Your payment of ₹${amount} has been recorded. Receipt ID: ${paymentId.substring(0, 8)}...`,
+        duration: 5000
+      });
     } catch (error) {
       console.error('Error recording payment:', error);
+      toast.error('Payment was successful, but there was an issue recording the details.', {
+        description: 'We stored your payment locally. Please contact support if you have any issues.',
+        duration: 8000
+      });
     }
   };
 
@@ -543,12 +588,12 @@ export default function ProjectDetails() {
             {/* Creator Info */}
             <div className="flex items-center gap-4">
               <div className="relative group">
-                {project.user?.imageUrl ? (
-                  <img
-                    src={project.user.imageUrl}
-                    alt={`${project.user.firstName} ${project.user.lastName}`}
+                  {project.user?.imageUrl ? (
+                    <img
+                      src={project.user.imageUrl}
+                      alt={`${project.user.firstName} ${project.user.lastName}`}
                     className="w-12 h-12 rounded-full border-2 border-blue-500/20"
-                  />
+                    />
                 ) : (
                   <div className="w-12 h-12 rounded-full bg-blue-500/20 flex items-center justify-center">
                     <IconUser className="w-6 h-6 text-blue-400" />
@@ -708,11 +753,11 @@ export default function ProjectDetails() {
                       className="group relative bg-slate-800/50 rounded-xl p-5 border border-slate-700/50 hover:border-blue-500/50 transition-all duration-300"
                     >
                       <div className="flex items-start gap-4">
-                        <div className="mt-1 shrink-0">
+                      <div className="mt-1 shrink-0">
                           <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center group-hover:bg-blue-500/20 transition-colors">
                             <span className="text-blue-400 text-lg">✓</span>
-                          </div>
                         </div>
+                      </div>
                         <div className="space-y-1">
                           <p className="text-gray-200 font-medium">{feature}</p>
                           <p className="text-sm text-gray-400">Included in your purchase</p>
@@ -768,12 +813,12 @@ export default function ProjectDetails() {
                       </div>
                     </div>
                     <div className="p-6 prose prose-invert max-w-none">
-                      <div dangerouslySetInnerHTML={{ 
-                        __html: marked(project.installationGuide, {
-                          gfm: true,
-                          breaks: true
-                        })
-                      }} />
+                        <div dangerouslySetInnerHTML={{ 
+                          __html: marked(project.installationGuide, {
+                            gfm: true,
+                            breaks: true
+                          })
+                        }} />
                     </div>
                   </div>
                 </motion.div>
@@ -784,15 +829,15 @@ export default function ProjectDetails() {
           {/* Sidebar */}
           <div className="space-y-6">
             {/* Price Card - Simplified Design */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3 }}
               className="bg-slate-800 rounded-xl border border-slate-700/50 overflow-hidden shadow-md"
             >
               <div className="p-6 space-y-6">
                 {/* Price Header */}
-                <div>
+                        <div>
                   <h3 className="text-xl font-semibold text-white">Project Price</h3>
                   <p className="text-sm text-gray-400 mt-1">One-time payment</p>
                 </div>
@@ -808,7 +853,7 @@ export default function ProjectDetails() {
                     ₹{project.price?.toLocaleString()}
                   </motion.p>
                   <p className="text-sm text-gray-400 pb-1">INR</p>
-                </div>
+                        </div>
                 
                 {/* Payment Button */}
                 <motion.div
@@ -816,39 +861,52 @@ export default function ProjectDetails() {
                   whileTap={{ scale: 0.99 }}
                   transition={{ duration: 0.2 }}
                 >
-                  <Button
-                    onClick={handleRazorpayPayment}
-                    disabled={isProcessingPayment || !razorpayLoaded || paymentCompleted}
-                    className={`w-full ${
-                      paymentCompleted 
-                        ? 'bg-green-600 hover:bg-green-600 cursor-default' 
-                        : 'bg-blue-600 hover:bg-blue-700'
-                    } text-white rounded-md py-5 transition-colors duration-300`}
-                  >
-                    <div className="flex items-center justify-center">
-                      {paymentCompleted ? (
-                        <>
-                          <IconCheck className="w-5 h-5 mr-2" />
-                          <span>Payment Complete</span>
-                        </>
-                      ) : isProcessingPayment ? (
-                        <span className="flex items-center">
-                          <div className="mr-2 h-4 w-4 border-2 border-t-transparent border-white rounded-full animate-spin"></div>
-                          Processing...
-                        </span>
-                      ) : !razorpayLoaded ? (
-                        <span className="flex items-center">
-                          <div className="mr-2 h-4 w-4 border-2 border-t-transparent border-white rounded-full animate-spin"></div>
-                          Loading...
-                        </span>
-                      ) : (
-                        <>
-                          <IconCreditCard className="w-5 h-5 mr-2" />
-                          <span>Pay Now</span>
-                        </>
-                      )}
-                    </div>
-                  </Button>
+                  {!isSignedIn ? (
+                    <SignInButton mode="modal" fallbackRedirectUrl={`/projects/${project.id}`}>
+                      <Button
+                        className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-md py-5 transition-colors duration-300"
+                      >
+                        <div className="flex items-center justify-center">
+                          <IconUser className="w-5 h-5 mr-2" />
+                          <span>Sign in to Purchase</span>
+                        </div>
+                      </Button>
+                    </SignInButton>
+                  ) : (
+                    <Button
+                      onClick={handleRazorpayPayment}
+                      disabled={isProcessingPayment || !razorpayLoaded || paymentCompleted}
+                      className={`w-full ${
+                        paymentCompleted 
+                          ? 'bg-green-600 hover:bg-green-600 cursor-default' 
+                          : 'bg-blue-600 hover:bg-blue-700'
+                      } text-white rounded-md py-5 transition-colors duration-300`}
+                    >
+                      <div className="flex items-center justify-center">
+                        {paymentCompleted ? (
+                          <>
+                            <IconCheck className="w-5 h-5 mr-2" />
+                            <span>Payment Complete</span>
+                          </>
+                        ) : isProcessingPayment ? (
+                          <span className="flex items-center">
+                            <div className="mr-2 h-4 w-4 border-2 border-t-transparent border-white rounded-full animate-spin"></div>
+                            Processing...
+                          </span>
+                        ) : !razorpayLoaded ? (
+                          <span className="flex items-center">
+                            <div className="mr-2 h-4 w-4 border-2 border-t-transparent border-white rounded-full animate-spin"></div>
+                            Loading...
+                          </span>
+                        ) : (
+                          <>
+                            <IconCreditCard className="w-5 h-5 mr-2" />
+                            <span>Pay Now</span>
+                          </>
+                        )}
+                          </div>
+                    </Button>
+                  )}
                 </motion.div>
                 
                 {/* What's Included */}
@@ -858,7 +916,7 @@ export default function ProjectDetails() {
                     <div className="flex items-center gap-2">
                       <IconCheck className="w-4 h-4 text-blue-400" />
                       <span className="text-sm text-gray-300">Complete source code</span>
-                    </div>
+                        </div>
                     <div className="flex items-center gap-2">
                       <IconCheck className="w-4 h-4 text-blue-400" />
                       <span className="text-sm text-gray-300">Remote setup assistance</span>
@@ -877,17 +935,45 @@ export default function ProjectDetails() {
                   <span className="text-xs text-gray-400">Secure payment via Razorpay</span>
                 </div>
               </div>
+              
+              {/* Sign In Prompt for unauthenticated users */}
+              {!isSignedIn && (
+                <div className="px-6 py-3 bg-blue-500/10 border-t border-blue-500/20 mt-1 rounded-b-xl">
+                  <div className="flex items-center justify-center gap-2 text-xs text-blue-400">
+                    <IconInfoCircle className="w-4 h-4" />
+                    <span>Sign in to save your payment history and access purchased projects</span>
+                  </div>
+                </div>
+              )}
             </motion.div>
 
+            {/* View Project Payments Button - visible only if payment is completed */}
+            {paymentCompleted && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2, duration: 0.3 }}
+                className="mt-4"
+              >
+                <Button
+                  onClick={() => router.push(`/payments`)}
+                  className="w-full flex items-center justify-center gap-2 bg-slate-700 hover:bg-slate-600 text-white"
+                >
+                  <IconCreditCard className="w-4 h-4" />
+                  View Payment History
+                </Button>
+              </motion.div>
+            )}
+
             {/* Project Details Card */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
               className="bg-slate-800/50 rounded-xl p-6 border border-slate-700/50"
-            >
+                >
               <h3 className="text-lg font-semibold text-white mb-4">Project Details</h3>
               <div className="space-y-4">
-                <div>
+                  <div>
                   <p className="text-sm text-gray-400">Project Type</p>
                   <p className="text-white mt-1 capitalize">
                     {project.projectType === 'readymade' ? 'Ready Made' : 
@@ -895,7 +981,7 @@ export default function ProjectDetails() {
                      project.projectType === 'template' ? 'Template' : 
                      'Project'}
                   </p>
-                </div>
+                  </div>
                 <div>
                   <p className="text-sm text-gray-400">Last Updated</p>
                   <p className="text-white mt-1">
@@ -905,7 +991,7 @@ export default function ProjectDetails() {
                       day: 'numeric'
                     })}
                   </p>
-                </div>
+                  </div>
                 <div className="border-t border-slate-700 pt-4">
                   <h4 className="text-sm font-medium text-gray-400 mb-3">Project Includes</h4>
                   <div className="grid grid-cols-1 gap-3">
@@ -916,9 +1002,9 @@ export default function ProjectDetails() {
                           : 'bg-red-500/20 text-red-400'
                       }`}>
                         {project.includesDocumentation ? '✓' : '✗'}
-                      </div>
+            </div>
                       <span className="text-sm text-gray-300">Documentation & Report</span>
-                    </div>
+          </div>
                     <div className="flex items-center gap-2">
                       <div className={`w-4 h-4 rounded-full flex items-center justify-center ${
                         project.includesSourceCode 
@@ -926,9 +1012,9 @@ export default function ProjectDetails() {
                           : 'bg-red-500/20 text-red-400'
                       }`}>
                         {project.includesSourceCode ? '✓' : '✗'}
-                      </div>
+              </div>
                       <span className="text-sm text-gray-300">Source Code</span>
-                    </div>
+                  </div>
                     <div className="flex items-center gap-2">
                       <div className={`w-4 h-4 rounded-full flex items-center justify-center ${
                         project.includesSupport 
@@ -936,9 +1022,9 @@ export default function ProjectDetails() {
                           : 'bg-red-500/20 text-red-400'
                       }`}>
                         {project.includesSupport ? '✓' : '✗'}
-                      </div>
+                </div>
                       <span className="text-sm text-gray-300">Technical Support</span>
-                    </div>
+                  </div>
                     {project.includesSupport && (
                       <div className="flex items-center gap-2">
                         <div className="w-4 h-4 rounded-full flex items-center justify-center bg-green-500/20 text-green-400">
@@ -947,11 +1033,11 @@ export default function ProjectDetails() {
                         <span className="text-sm text-gray-300">
                           {project.supportDuration} Month{parseInt(project.supportDuration) > 1 ? 's' : ''} Support
                         </span>
-                      </div>
-                    )}
-                  </div>
                 </div>
-              </div>
+              )}
+            </div>
+          </div>
+                </div>
             </motion.div>
 
             {/* Contact Information */}

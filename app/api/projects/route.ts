@@ -165,7 +165,9 @@ export async function POST(req: Request) {
     });
 
     if (!dbUser) {
+      // User should have been created by webhook, but if not, create them now as a fallback
       try {
+        console.log('User not found in database, creating via API fallback mechanism');
         // Create user if they don't exist
         dbUser = await prisma.user.create({
           data: {
@@ -185,22 +187,8 @@ export async function POST(req: Request) {
         );
       }
     } else {
-      // Update user profile if it exists
-      try {
-        dbUser = await prisma.user.update({
-          where: { clerkId: userId },
-          data: {
-            firstName: user?.firstName || dbUser.firstName,
-            lastName: user?.lastName || dbUser.lastName,
-            imageUrl: user?.imageUrl || dbUser.imageUrl,
-            email: user?.emailAddresses?.[0]?.emailAddress || dbUser.email,
-          }
-        });
-        console.log('Updated user profile:', dbUser);
-      } catch (updateError) {
-        console.error('Error updating user profile:', updateError);
-        // Continue with project creation even if profile update fails
-      }
+      // User exists, no need to update as webhook handles this
+      console.log('Found existing user:', dbUser.id);
     }
 
     // Create project with essential fields and optional fields

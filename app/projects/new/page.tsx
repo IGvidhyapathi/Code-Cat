@@ -4,7 +4,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { useUser } from "@clerk/nextjs";
-import { IconUpload, IconLock, IconCheck, IconCopy, IconTrash, IconEdit, IconPlus, IconChevronLeft, IconAlertTriangle } from "@tabler/icons-react";
+import { IconUpload, IconLock, IconCheck, IconCopy, IconTrash, IconEdit, IconPlus, IconChevronLeft, IconAlertTriangle, IconCreditCard } from "@tabler/icons-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -714,7 +714,7 @@ export default function NewProject() {
                 </p>
               </div>
 
-              <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
                 <motion.button
                   whileHover={{ scale: 1.03 }}
                   whileTap={{ scale: 0.98 }}
@@ -739,6 +739,25 @@ export default function NewProject() {
                   </div>
                   <h3 className="text-lg font-semibold text-white">Edit Projects</h3>
                   <p className="text-sm text-gray-400 mt-1">Manage existing projects</p>
+                </motion.button>
+
+                <motion.button
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="flex flex-col items-center justify-center p-6 bg-slate-800/70 border border-slate-700/50 rounded-xl hover:bg-slate-800 transition-all"
+                  onClick={() => {
+                    // Store verification state for payment history
+                    if (typeof window !== 'undefined') {
+                      localStorage.setItem('admin_pin_verified', 'true');
+                    }
+                    router.push('/projects/new/admin-payments');
+                  }}
+                >
+                  <div className="h-12 w-12 rounded-full bg-green-600/10 flex items-center justify-center mb-3">
+                    <IconCreditCard className="h-6 w-6 text-green-500" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-white">Payment History</h3>
+                  <p className="text-sm text-gray-400 mt-1">View all transaction records</p>
                 </motion.button>
               </div>
             </motion.div>

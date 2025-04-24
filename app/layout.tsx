@@ -6,6 +6,7 @@ import { Toaster } from "sonner";
 import "./globals.css";
 import { dark } from '@clerk/themes'
 import { Sparkles } from "@/components/ui/sparkles";
+import { PhoneCollectionModal } from "@/components/ui/phone-collection-modal";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -98,6 +99,7 @@ export default function RootLayout({
         <body className={inter.className}>
           <Navbar />
           <div className="pt-16">{children}</div>
+          <PhoneCollectionModal />
           <Toaster richColors position="top-center" theme="dark" />
         </body>
       </html>
