@@ -7,6 +7,40 @@ const phoneSchema = z.object({
   phone: z.string().min(1, "Phone number is required")
 });
 
+export async function GET(req: Request) {
+  try {
+    // Check authentication
+    const { userId } = await auth();
+    if (!userId) {
+      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+    }
+
+    // Find the user in database
+    const dbUser = await prisma.user.findUnique({
+      where: { clerkId: userId },
+      select: {
+        id: true,
+        phone: true
+      }
+    });
+
+    if (!dbUser) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+
+    return NextResponse.json({
+      hasPhone: !!dbUser.phone,
+      phone: dbUser.phone
+    });
+  } catch (error) {
+    console.error('Error checking phone status:', error);
+    return NextResponse.json(
+      { error: 'Failed to check phone status' },
+      { status: 500 }
+    );
+  }
+}
+
 export async function POST(req: Request) {
   try {
     // Check authentication

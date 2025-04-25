@@ -52,37 +52,86 @@ function getYouTubeEmbedUrl(url: string) {
 function ProjectSkeleton() {
   return (
     <div className="min-h-screen bg-slate-900">
+      {/* Hero Section Skeleton */}
       <div className="relative bg-gradient-to-b from-blue-600/20 to-slate-900 border-b border-slate-800">
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
-          <div className="space-y-4 sm:space-y-6 animate-pulse">
-            <div className="h-4 w-24 bg-slate-700 rounded"></div>
-            <div className="space-y-3">
-              <div className="h-8 w-3/4 bg-slate-700 rounded"></div>
-              <div className="flex gap-2">
-                <div className="h-6 w-20 bg-slate-700 rounded-full"></div>
-                <div className="h-6 w-32 bg-slate-700 rounded-full"></div>
+          <div className="space-y-6">
+            {/* Back Button Skeleton */}
+            <div className="h-10 w-24 bg-slate-800 rounded-md animate-pulse"></div>
+            
+            {/* Title and Category Skeleton */}
+            <div className="space-y-4">
+              <div className="h-12 w-3/4 bg-slate-800 rounded-lg animate-pulse"></div>
+              <div className="flex gap-3">
+                <div className="h-8 w-32 bg-slate-800 rounded-full animate-pulse"></div>
+                <div className="h-8 w-24 bg-slate-800 rounded-full animate-pulse"></div>
+              </div>
+            </div>
+
+            {/* Creator Info Skeleton */}
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-full bg-slate-800 animate-pulse"></div>
+              <div className="flex-1 space-y-2">
+                <div className="h-4 w-32 bg-slate-800 rounded animate-pulse"></div>
+                <div className="h-4 w-24 bg-slate-800 rounded animate-pulse"></div>
               </div>
             </div>
           </div>
         </div>
       </div>
 
+      {/* Main Content Skeleton */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
-          <div className="lg:col-span-2 space-y-6 sm:space-y-8">
+          {/* Left Column */}
+          <div className="lg:col-span-2 space-y-8">
+            {/* Video Skeleton */}
             <div className="aspect-video rounded-xl bg-slate-800 animate-pulse"></div>
+            
+            {/* Description Skeleton */}
             <div className="space-y-4">
-              <div className="h-6 w-1/4 bg-slate-700 rounded"></div>
+              <div className="h-8 w-48 bg-slate-800 rounded animate-pulse"></div>
               <div className="space-y-2">
-                <div className="h-4 w-full bg-slate-700 rounded"></div>
-                <div className="h-4 w-5/6 bg-slate-700 rounded"></div>
+                <div className="h-4 w-full bg-slate-800 rounded animate-pulse"></div>
+                <div className="h-4 w-5/6 bg-slate-800 rounded animate-pulse"></div>
+                <div className="h-4 w-4/6 bg-slate-800 rounded animate-pulse"></div>
+              </div>
+            </div>
+
+            {/* Features Skeleton */}
+            <div className="space-y-4">
+              <div className="h-8 w-40 bg-slate-800 rounded animate-pulse"></div>
+              <div className="grid gap-4 sm:grid-cols-2">
+                {[1, 2, 3, 4].map((i) => (
+                  <div key={i} className="bg-slate-800/50 rounded-xl p-5 border border-slate-700/50 animate-pulse">
+                    <div className="h-16 w-full bg-slate-800 rounded"></div>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
+
+          {/* Right Column */}
           <div className="hidden lg:block">
-            <div className="sticky top-6 space-y-4 bg-slate-800/50 border border-slate-700 rounded-xl p-6 animate-pulse">
-              <div className="h-10 w-full bg-slate-700 rounded"></div>
-              <div className="h-10 w-full bg-slate-700 rounded"></div>
+            <div className="sticky top-6 space-y-6">
+              {/* Price Card Skeleton */}
+              <div className="bg-slate-800 rounded-xl border border-slate-700/50 overflow-hidden">
+                <div className="p-6 space-y-6">
+                  <div className="space-y-2">
+                    <div className="h-6 w-32 bg-slate-700 rounded animate-pulse"></div>
+                    <div className="h-8 w-40 bg-slate-700 rounded animate-pulse"></div>
+                  </div>
+                  <div className="h-12 w-full bg-slate-700 rounded animate-pulse"></div>
+                  <div className="space-y-3 pt-4 border-t border-slate-700">
+                    {[1, 2, 3].map((i) => (
+                      <div key={i} className="flex items-center gap-2">
+                        <div className="h-4 w-4 rounded-full bg-slate-700 animate-pulse"></div>
+                        <div className="h-4 flex-1 bg-slate-700 rounded animate-pulse"></div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -101,9 +150,10 @@ export default function ProjectDetails() {
   const [razorpayLoaded, setRazorpayLoaded] = useState(false);
   const [paymentCompleted, setPaymentCompleted] = useState(false);
   const [paidAmount, setPaidAmount] = useState<number | null>(null);
-  const [editPaymentCompleted, setEditPaymentCompleted] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [paymentId, setPaymentId] = useState<string | null>(null);
+  const [paymentStatus, setPaymentStatus] = useState<{ hasPaid: boolean; payment: any | null } | null>(null);
+  const [isCheckingPayment, setIsCheckingPayment] = useState(true);
 
   const isOwner = user?.id === project?.userId;
   const successModalRef = useRef<HTMLDivElement>(null);
@@ -121,6 +171,38 @@ export default function ProjectDetails() {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
+  // Check payment status
+  useEffect(() => {
+    async function checkPaymentStatus() {
+      if (!isSignedIn || !params.id) {
+        setIsCheckingPayment(false);
+        return;
+      }
+
+      setIsCheckingPayment(true);
+      try {
+        const response = await fetch(`/api/projects/${params.id}/payment-status`);
+        const data = await response.json();
+
+        if (response.ok) {
+          setPaymentStatus(data);
+          if (data.hasPaid) {
+            setPaymentCompleted(true);
+            setPaidAmount(data.payment.amount);
+            setPaymentId(data.payment.razorpayPaymentId);
+          }
+        }
+      } catch (error) {
+        console.error('Error checking payment status:', error);
+        toast.error('Failed to check payment status');
+      } finally {
+        setIsCheckingPayment(false);
+      }
+    }
+
+    checkPaymentStatus();
+  }, [isSignedIn, params.id]);
 
   const handleRazorpayPayment = () => {
     // Check if user is signed in first
@@ -142,32 +224,40 @@ export default function ProjectDetails() {
       
       // Create a new instance of Razorpay
       const rzp = new (window as any).Razorpay({
-        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID, // Using environment variable
-        amount: projectPrice * 100, // Amount in smallest currency unit (paise for INR)
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+        amount: projectPrice * 100,
         currency: 'INR',
         name: 'Codecat',
         description: `Payment for ${project.title} (${project.category})`,
-        image: '/logo.png', // Update with your actual logo path
-        handler: function(response: any) {
+        image: '/logo.png',
+        handler: async function(response: any) {
           // Handle successful payment
-      toast.success(
+          toast.success(
             'Payment Successful!',
-        {
+            {
               description: `Your payment of ₹${projectPrice} for ${project.title} was successful. Reference: ${response.razorpay_payment_id}`,
-          duration: 5000,
-        }
-      );
+              duration: 5000,
+            }
+          );
           
-          // Set payment completed state and amount
+          // Record the successful payment
+          await recordPayment(project.id, response.razorpay_payment_id, projectPrice);
+          
+          // Update payment status
           setPaymentCompleted(true);
           setPaidAmount(projectPrice);
           setPaymentId(response.razorpay_payment_id);
+          setPaymentStatus({
+            hasPaid: true,
+            payment: {
+              amount: projectPrice,
+              razorpayPaymentId: response.razorpay_payment_id,
+              createdAt: new Date().toISOString()
+            }
+          });
           
           // Show success modal with next steps
           setShowSuccessModal(true);
-          
-          // Record the successful payment
-          recordPayment(project.id, response.razorpay_payment_id, projectPrice);
         },
         prefill: {
           name: user?.fullName || '',
@@ -245,18 +335,9 @@ export default function ProjectDetails() {
     return Math.round(basePrice); // Round to nearest whole number
   };
 
-  // Record payment in database or local storage
+  // Record payment in database
   const recordPayment = async (projectId: string, paymentId: string, amount: number) => {
     try {
-      console.log(`Attempting to record payment: Project ${projectId}, Payment ${paymentId}, Amount ₹${amount}`);
-      
-      // Store in localStorage first as a backup
-      localStorage.setItem(`payment_${projectId}`, JSON.stringify({
-        paymentId,
-        amount,
-        timestamp: new Date().toISOString()
-      }));
-      
       // Call the payments API to record the payment
       const response = await fetch('/api/payments', {
         method: 'POST',
@@ -274,22 +355,12 @@ export default function ProjectDetails() {
         })
       });
       
-      const responseText = await response.text();
-      console.log('API response status:', response.status);
-      console.log('API response text:', responseText);
-      
-      let data;
-      try {
-        data = JSON.parse(responseText);
-        console.log('Payment recorded in database:', data);
-      } catch (parseError) {
-        console.error('Error parsing API response:', parseError);
-        throw new Error('Invalid response from payment API');
-      }
-      
       if (!response.ok) {
-        throw new Error(`Failed to record payment in database: ${data.error || 'Unknown error'}`);
+        throw new Error('Failed to record payment in database');
       }
+
+      const data = await response.json();
+      console.log('Payment recorded in database:', data);
       
       toast.success('Payment successfully recorded!', {
         description: `Your payment of ₹${amount} has been recorded. Receipt ID: ${paymentId.substring(0, 8)}...`,
@@ -297,8 +368,8 @@ export default function ProjectDetails() {
       });
     } catch (error) {
       console.error('Error recording payment:', error);
-      toast.error('Payment was successful, but there was an issue recording the details.', {
-        description: 'We stored your payment locally. Please contact support if you have any issues.',
+      toast.error('Error recording payment details', {
+        description: 'Please contact support if you continue to have issues.',
         duration: 8000
       });
     }
@@ -323,6 +394,7 @@ export default function ProjectDetails() {
     const controller = new AbortController();
     
     async function fetchProject() {
+      setIsLoading(true);
       try {
         const response = await fetch(`/api/projects/${params.id}`, {
           signal: controller.signal,
@@ -375,59 +447,8 @@ export default function ProjectDetails() {
     }
   }, [project?.user?.imageUrl]);
 
-  // Check if payment is stored in localStorage when component loads
-  useEffect(() => {
-    if (project) {
-      try {
-        const storedPayment = localStorage.getItem(`payment_${project.id}`);
-        if (storedPayment) {
-          const paymentData = JSON.parse(storedPayment);
-          setPaymentCompleted(true);
-          setPaidAmount(paymentData.amount);
-        }
-      } catch (error) {
-        console.error('Error checking stored payment:', error);
-      }
-    }
-  }, [project]);
-
-  // Check localStorage for edit payment status in useEffect
-  useEffect(() => {
-    if (project) {
-      // Check custom edit payment
-      try {
-        const editPaymentStatus = localStorage.getItem(`edit_payment_${project.id}`);
-        if (editPaymentStatus) {
-          setEditPaymentCompleted(true);
-        }
-      } catch (error) {
-        console.error('Error checking edit payment status:', error);
-      }
-    }
-  }, [project]);
-
-  // Add function to handle edit payment completion
-  const handleEditPaymentComplete = () => {
-    if (!project) return;
-    
-    // Store edit payment status
-    try {
-      localStorage.setItem(`edit_payment_${project.id}`, 'completed');
-      setEditPaymentCompleted(true);
-      
-      toast.success(
-        'Edit Payment Recorded',
-        {
-          description: 'Your custom edit payment has been recorded successfully.',
-          duration: 5000,
-        }
-      );
-    } catch (error) {
-      console.error('Error storing edit payment status:', error);
-    }
-  };
-
-  if (isLoading) {
+  // Update the return statement to show skeleton on initial load
+  if (!project || isLoading) {
     return <ProjectSkeleton />;
   }
 
@@ -444,8 +465,7 @@ export default function ProjectDetails() {
         src="https://checkout.razorpay.com/v1/checkout.js"
         onLoad={handleRazorpayScriptLoad}
         strategy="afterInteractive"
-      />
-      
+      />  
       {/* Payment Success Modal */}
       <AnimatePresence>
         {showSuccessModal && (
@@ -840,7 +860,7 @@ export default function ProjectDetails() {
                         <div>
                   <h3 className="text-xl font-semibold text-white">Project Price</h3>
                   <p className="text-sm text-gray-400 mt-1">One-time payment</p>
-                </div>
+                        </div>
                 
                 {/* Price Display */}
                 <div className="flex items-end gap-2">
@@ -854,7 +874,7 @@ export default function ProjectDetails() {
                   </motion.p>
                   <p className="text-sm text-gray-400 pb-1">INR</p>
                         </div>
-                
+
                 {/* Payment Button */}
                 <motion.div
                   whileHover={{ scale: 1.01 }}
@@ -875,10 +895,12 @@ export default function ProjectDetails() {
                   ) : (
                     <Button
                       onClick={handleRazorpayPayment}
-                      disabled={isProcessingPayment || !razorpayLoaded || paymentCompleted}
+                      disabled={isProcessingPayment || !razorpayLoaded || paymentCompleted || isCheckingPayment}
                       className={`w-full ${
                         paymentCompleted 
                           ? 'bg-green-600 hover:bg-green-600 cursor-default' 
+                          : isCheckingPayment
+                          ? 'bg-slate-600 hover:bg-slate-600 cursor-wait'
                           : 'bg-blue-600 hover:bg-blue-700'
                       } text-white rounded-md py-5 transition-colors duration-300`}
                     >
@@ -888,6 +910,11 @@ export default function ProjectDetails() {
                             <IconCheck className="w-5 h-5 mr-2" />
                             <span>Payment Complete</span>
                           </>
+                        ) : isCheckingPayment ? (
+                          <span className="flex items-center">
+                            <div className="mr-2 h-4 w-4 border-2 border-t-transparent border-white rounded-full animate-spin"></div>
+                            Checking Payment Status...
+                          </span>
                         ) : isProcessingPayment ? (
                           <span className="flex items-center">
                             <div className="mr-2 h-4 w-4 border-2 border-t-transparent border-white rounded-full animate-spin"></div>
@@ -904,7 +931,7 @@ export default function ProjectDetails() {
                             <span>Pay Now</span>
                           </>
                         )}
-                          </div>
+                      </div>
                     </Button>
                   )}
                 </motion.div>
@@ -928,7 +955,7 @@ export default function ProjectDetails() {
                   </div>
                 </div>
               </div>
-              
+
               {/* Footer */}
               <div className="px-6 py-3 bg-slate-850 border-t border-slate-700">
                 <div className="flex items-center justify-center">
@@ -991,7 +1018,7 @@ export default function ProjectDetails() {
                       day: 'numeric'
                     })}
                   </p>
-                  </div>
+                </div>
                 <div className="border-t border-slate-700 pt-4">
                   <h4 className="text-sm font-medium text-gray-400 mb-3">Project Includes</h4>
                   <div className="grid grid-cols-1 gap-3">
@@ -1012,7 +1039,7 @@ export default function ProjectDetails() {
                           : 'bg-red-500/20 text-red-400'
                       }`}>
                         {project.includesSourceCode ? '✓' : '✗'}
-              </div>
+                </div>
                       <span className="text-sm text-gray-300">Source Code</span>
                   </div>
                     <div className="flex items-center gap-2">
@@ -1033,8 +1060,8 @@ export default function ProjectDetails() {
                         <span className="text-sm text-gray-300">
                           {project.supportDuration} Month{parseInt(project.supportDuration) > 1 ? 's' : ''} Support
                         </span>
-                </div>
-              )}
+              </div>
+            )}
             </div>
           </div>
                 </div>

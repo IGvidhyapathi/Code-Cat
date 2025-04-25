@@ -131,3 +131,54 @@ export async function PUT(request: NextRequest) {
     );
   }
 }
+
+export async function DELETE(request: NextRequest) {
+  const id = request.nextUrl.pathname.split('/').pop();
+
+  if (!id) {
+    return NextResponse.json({ error: 'ID is required' }, { status: 400 });
+  }
+
+  try {
+    // Check if project exists and get its payment information
+    const project = await prisma.project.findUnique({
+      where: { id },
+      include: {
+        payments: true
+      }
+    });
+
+    if (!project) {
+      return NextResponse.json({ error: 'Project not found' }, { status: 404 });
+    }
+
+    // If there are associated payments, we should handle them appropriately
+    if (project.payments.length > 0) {
+      // Option 1: Prevent deletion if there are payments
+      return NextResponse.json(
+        { error: 'Cannot delete project with existing payments' },
+        { status: 400 }
+      );
+      
+      // Option 2: Delete associated payments first (uncomment if this is the preferred behavior)
+      // await prisma.payment.deleteMany({
+      //   where: { projectId: id }
+      // });
+    }
+
+    // Delete the project
+    await prisma.project.delete({
+      where: { id }
+    });
+
+    return NextResponse.json({
+      message: 'Project deleted successfully'
+    });
+  } catch (error) {
+    console.error('Error deleting project:', error);
+    return NextResponse.json(
+      { error: 'Failed to delete project' },
+      { status: 500 }
+    );
+  }
+}

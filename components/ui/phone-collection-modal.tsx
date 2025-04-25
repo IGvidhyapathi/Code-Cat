@@ -14,24 +14,38 @@ export function PhoneCollectionModal() {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [hasSubmitted, setHasSubmitted] = useState(false);
+  const [isChecking, setIsChecking] = useState(true);
 
-  // Show modal if user is logged in and hasn't submitted a phone number
+  // Check if user has phone number in database
   useEffect(() => {
-    // Check if user just logged in and if we should show the modal
-    if (isSignedIn && user) {
-      // Check if we've already collected the phone number for this user
-      const hasPhoneStored = localStorage.getItem(`phoneCollected_${user.id}`);
-      
-      // Only show if we haven't collected for this user
-      if (!hasPhoneStored) {
-        // Delay opening to avoid interrupting login flow
+    async function checkPhoneStatus() {
+      if (!isSignedIn || !user) return;
+
+      try {
+        const response = await fetch("/api/user/phone");
+        const data = await response.json();
+
+        if (response.ok && data.hasPhone) {
+          // User already has a phone number
+          setIsOpen(false);
+          setIsChecking(false);
+          return;
+        }
+
+        // User doesn't have a phone number, show the modal
         const timer = setTimeout(() => {
           setIsOpen(true);
+          setIsChecking(false);
         }, 1500);
-        
+
         return () => clearTimeout(timer);
+      } catch (error) {
+        console.error("Error checking phone status:", error);
+        setIsChecking(false);
       }
     }
+
+    checkPhoneStatus();
   }, [isSignedIn, user]);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -72,9 +86,6 @@ export function PhoneCollectionModal() {
       
       console.log("API Success Response:", data);
       
-      // Mark as collected in localStorage
-      localStorage.setItem(`phoneCollected_${user.id}`, "true");
-      
       toast.success("Phone number saved successfully");
       setHasSubmitted(true);
       
@@ -89,6 +100,9 @@ export function PhoneCollectionModal() {
       setIsSubmitting(false);
     }
   };
+
+  // Don't render anything while checking status
+  if (isChecking) return null;
 
   return (
     <AnimatePresence>

@@ -330,7 +330,11 @@ export default function ExplorePage() {
                 We'll help you build it from scratch! Just tell us what you need.
               </p>
             </div>
-            <Button asChild variant="outline" size="lg" className="border-white/10 hover:bg-white/5">
+            <Button 
+              asChild 
+              size="lg" 
+              className="bg-gradient-to-r from-blue-600 to-cyan-600 text-white hover:from-blue-700 hover:to-cyan-700 shadow-lg shadow-blue-500/20 hover:shadow-blue-500/30 transition-all duration-200 border-0 font-medium"
+            >
               <Link 
                 href="https://docs.google.com/forms/d/e/1FAIpQLSc7JsIwygkP47Bj8N1d8GNefLqPLSSuKFU-WfR12XMB-LaWUg/viewform?usp=header" 
                 target="_blank"
@@ -338,7 +342,7 @@ export default function ExplorePage() {
                 className="inline-flex items-center gap-2"
               >
                 <IconTools className="w-5 h-5" />
-                Request project
+                Request Project
               </Link>
             </Button>
           </div>
