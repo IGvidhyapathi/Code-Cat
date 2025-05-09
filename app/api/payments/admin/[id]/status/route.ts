@@ -1,19 +1,19 @@
-import { NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { db } from '@/lib/db';
 
 export async function PATCH(
-  request: Request,
+  req: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
-    const { projectStatus } = await request.json();
+    const { projectStatus } = await req.json();
     const { id } = params;
 
     // Validate project status
     const validStatuses = ['Ordered', 'Communication', 'DeliveryInProgress', 'Delivered'];
     if (!validStatuses.includes(projectStatus)) {
-      return NextResponse.json(
-        { error: 'Invalid project status' },
+      return new Response(
+        JSON.stringify({ error: 'Invalid project status' }),
         { status: 400 }
       );
     }
@@ -28,17 +28,20 @@ export async function PATCH(
     );
 
     if (result.rows.length === 0) {
-      return NextResponse.json(
-        { error: 'Payment not found' },
+      return new Response(
+        JSON.stringify({ error: 'Payment not found' }),
         { status: 404 }
       );
     }
 
-    return NextResponse.json(result.rows[0]);
+    return new Response(
+      JSON.stringify(result.rows[0]),
+      { status: 200 }
+    );
   } catch (error) {
     console.error('Error updating payment status:', error);
-    return NextResponse.json(
-      { error: 'Failed to update payment status' },
+    return new Response(
+      JSON.stringify({ error: 'Failed to update payment status' }),
       { status: 500 }
     );
   }
