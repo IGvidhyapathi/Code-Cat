@@ -149,12 +149,14 @@ export async function GET(req: Request) {
     try {
       let sqlQuery = `
         SELECT 
-          p.id, p.amount, p.currency, p.status, p."razorpayPaymentId", 
+          p.id, p.amount, p.currency, p.status, p."projectStatus", p."razorpayPaymentId", 
           p."projectId", p."createdAt", p."userId",
           proj.id as "project_id", proj.title as "project_title", 
-          proj.category as "project_category"
+          proj.category as "project_category",
+          u."firstName" as "user_firstName", u."lastName" as "user_lastName"
         FROM payments p
         JOIN projects proj ON p."projectId" = proj.id
+        JOIN "User" u ON p."userId" = u.id
         WHERE p."userId" = $1
       `;
       
@@ -187,6 +189,7 @@ export async function GET(req: Request) {
         amount: row.amount,
         currency: row.currency,
         status: row.status,
+        projectStatus: row.projectStatus || 'Ordered',
         razorpayPaymentId: row.razorpayPaymentId,
         projectId: row.projectId,
         userId: row.userId,
@@ -194,7 +197,11 @@ export async function GET(req: Request) {
         project: {
           id: row.project_id,
           title: row.project_title,
-          category: row.project_category
+          category: row.project_category,
+          user: {
+            firstName: row.user_firstName,
+            lastName: row.user_lastName
+          }
         }
       }));
       

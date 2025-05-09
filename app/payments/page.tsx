@@ -4,25 +4,40 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useUser, SignInButton } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
-import { IconSearch, IconFilter, IconX, IconCreditCard, IconChevronRight, IconCheck, IconArrowLeft } from "@tabler/icons-react";
+import { IconSearch, IconFilter, IconX, IconCreditCard, IconChevronRight, IconCheck, IconArrowLeft, IconInfoCircle } from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Sparkles } from "@/components/ui/sparkles";
 import Link from "next/link";
 import { toast } from "sonner";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface Payment {
   id: string;
   amount: number;
   currency: string;
-  status: string;
+  status: 'success' | 'failed' | 'pending';
+  projectStatus: 'Ordered' | 'Communication' | 'DeliveryInProgress' | 'Delivered';
   razorpayPaymentId: string;
+  razorpayOrderId: string | null;
+  razorpaySignature: string | null;
+  metadata: any;
   projectId: string;
+  userId: string;
   createdAt: string;
   project: {
     id: string;
     title: string;
     category: string;
+    user?: {
+      firstName?: string | null;
+      lastName?: string | null;
+    };
   };
 }
 
@@ -72,7 +87,9 @@ export default function PaymentsPage() {
   // Filter payments based on search
   const filteredPayments = payments.filter(payment => 
     payment.project.title.toLowerCase().includes(debouncedSearchQuery.toLowerCase()) ||
-    payment.razorpayPaymentId.toLowerCase().includes(debouncedSearchQuery.toLowerCase())
+    payment.razorpayPaymentId?.toLowerCase().includes(debouncedSearchQuery.toLowerCase()) ||
+    payment.razorpayOrderId?.toLowerCase().includes(debouncedSearchQuery.toLowerCase()) ||
+    payment.razorpaySignature?.toLowerCase().includes(debouncedSearchQuery.toLowerCase())
   );
 
   const formatDate = (dateString: string) => {
@@ -200,7 +217,8 @@ export default function PaymentsPage() {
                           <th className="px-6 py-4 text-left text-sm font-medium text-gray-400">Project</th>
                           <th className="px-6 py-4 text-left text-sm font-medium text-gray-400">Payment ID</th>
                           <th className="px-6 py-4 text-left text-sm font-medium text-gray-400">Amount</th>
-                          <th className="px-6 py-4 text-left text-sm font-medium text-gray-400">Status</th>
+                          <th className="px-6 py-4 text-left text-sm font-medium text-gray-400">Payment Status</th>
+                          <th className="px-6 py-4 text-left text-sm font-medium text-gray-400">Project Status</th>
                           <th className="px-6 py-4 text-left text-sm font-medium text-gray-400">Date</th>
                           <th className="px-6 py-4 text-right text-sm font-medium text-gray-400">Actions</th>
                         </tr>
@@ -219,27 +237,63 @@ export default function PaymentsPage() {
                               <div className="flex items-center">
                                 <div className="ml-4">
                                   <div className="text-sm font-medium text-white">{payment.project.title}</div>
-                                  <div className="text-xs text-gray-400">{payment.project.category}</div>
+                                  {payment.project.user && (
+                                    <div className="text-xs text-gray-400">
+                                      {payment.project.user.firstName} {payment.project.user.lastName}
+                                    </div>
+                                  )}
                                 </div>
                               </div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="text-sm text-gray-300 font-mono">{payment.razorpayPaymentId}</div>
+                              <div className="text-sm text-gray-300 font-mono">{payment.razorpayPaymentId || payment.razorpayOrderId || payment.razorpaySignature}</div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
                               <div className="text-sm font-semibold text-emerald-400">₹{payment.amount.toLocaleString()}</div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
-                              <span className={`px-2.5 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                                payment.status === 'success' 
-                                  ? 'bg-green-100 text-green-800' 
-                                  : payment.status === 'failed'
-                                  ? 'bg-red-100 text-red-800'
-                                  : 'bg-yellow-100 text-yellow-800'
+                              <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                                payment.status === 'success' ? 'bg-green-100 text-green-800' :
+                                payment.status === 'failed' ? 'bg-red-100 text-red-800' :
+                                'bg-yellow-100 text-yellow-800'
                               }`}>
-                                {payment.status === 'success' && <IconCheck className="w-3 h-3 mr-1" />}
-                                {payment.status.charAt(0).toUpperCase() + payment.status.slice(1)}
+                                {payment.status === 'success' ? 'Success' :
+                                 payment.status === 'failed' ? 'Failed' :
+                                 'Pending'}
                               </span>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="flex items-center gap-2">
+                                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                                  payment.projectStatus === 'Ordered' ? 'bg-blue-100 text-blue-800' :
+                                  payment.projectStatus === 'Communication' ? 'bg-purple-100 text-purple-800' :
+                                  payment.projectStatus === 'DeliveryInProgress' ? 'bg-yellow-100 text-yellow-800' :
+                                  'bg-green-100 text-green-800'
+                                }`}>
+                                  {payment.projectStatus === 'DeliveryInProgress' ? 'Delivery in Progress' : payment.projectStatus}
+                                </span>
+                                <TooltipProvider>
+                                  <Tooltip>
+                                    <TooltipTrigger>
+                                      <IconInfoCircle className="w-4 h-4 text-gray-400 hover:text-gray-300" />
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                      {payment.projectStatus === 'Ordered' && (
+                                        <p>Your order has been received and is being processed.</p>
+                                      )}
+                                      {payment.projectStatus === 'Communication' && (
+                                        <p>We're in touch with you regarding your project details.</p>
+                                      )}
+                                      {payment.projectStatus === 'DeliveryInProgress' && (
+                                        <p>Your project is currently being developed and will be delivered soon.</p>
+                                      )}
+                                      {payment.projectStatus === 'Delivered' && (
+                                        <p>Your project has been completed and delivered.</p>
+                                      )}
+                                    </TooltipContent>
+                                  </Tooltip>
+                                </TooltipProvider>
+                              </div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
                               {formatDate(payment.createdAt)}

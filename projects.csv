@@ -1,0 +1,1318 @@
+"id","title","description","keyFeatures","techStack","youtubeUrl","demoUrl","installationGuide","contactEmail","contactTwitter","contactGithub","category","price","projectType","includesDocumentation","includesSourceCode","includesSupport","supportDuration","lastUpdated","userId","createdAt","updatedAt"
+"cm8e5f9it00022ms6qv642dod","Heart Disease Prediction Using Machine Learning","This project leverages machine learning algorithms to predict the likelihood of heart disease based on patient health data. By analyzing key medical parameters such as blood pressure, cholesterol levels, and heart rate, the model helps healthcare professionals make informed decisions. The system is designed to enhance early diagnosis, reduce manual workload, and improve patient outcomes.","Predicts heart disease risk based on medical input parameters,Uses a trained machine learning model for accurate predictions,User-friendly interface for easy data entry,Generates visual insights like graphs and risk probability,Secure API for seamless integration into healthcare applications","react,flask,mongodb,postgresql,docker,aws","https://www.youtube.com/watch?v=8DaEzhOu_fk",,"# Heart Disease Prediction - Installation Guide
+
+## Prerequisites
+Ensure you have the following installed:
+- Python 3.8+
+- Node.js & npm (for frontend)
+- Virtual environment (optional but recommended)
+
+## Backend Setup (Flask / FastAPI)
+```bash
+# Clone the repository
+git clone https://github.com/yourusername/heart-disease-prediction.git
+cd heart-disease-prediction/backend
+
+# Create virtual environment and activate it
+python -m venv venv
+source venv/bin/activate  # On Windows use `venv\Scripts\activate`
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Run the backend
+flask run  # If using Flask
+# OR
+uvicorn main:app --reload  # If using FastAPI
+```
+
+## Frontend Setup (React.js)
+```bash
+cd ../frontend
+
+# Install dependencies
+npm install
+
+# Start the frontend
+yarn start  # OR npm start
+```
+
+## Running with Docker
+```bash
+# Build and run the container
+docker-compose up --build
+```
+
+## API Endpoints
+- `POST /predict` - Send patient data to get heart disease prediction
+
+## Deployment
+- Deploy backend on AWS/GCP using Docker
+- Deploy frontend on Vercel/Netlify
+
+## License
+This project is open-source under the MIT License.
+","projecthub0003@gmail.com","6382667158","https://www.instagram.com/_vidhyapathi/","web","2599","College project","true","true","true","1","2025-03-18 07:05:05.525","cm8e5f94r00002ms6q0dmfqjg","2025-03-18 07:05:05.525","2025-03-18 07:05:05.525"
+"cm8lmwlyh0001l503fbejrw7y","NCC Portal ","The NCC Portal is a web-based application developed using PHP to efficiently manage the operations of the National Cadet Corps (NCC). It serves as a centralized system for cadet registration, training records, attendance tracking, event management, and communication between cadets, officers, and administrators. The portal enhances digital transformation by automating key processes, reducing paperwork, and ensuring seamless coordination within the NCC framework.","Cadet Registration & Profile Management,Online registration and profile creation,Document upload for verification,Training history and achievements tracking,Attendance & Training Management,Event & Camp Management,Registration and approval for camps & competitions,Automated certificate generation for course completion","PHP,CSS,Javascript,Bootstrap,Mysql","https://www.youtube.com/watch?v=oUHLqV6jbIs",,"# Installation Guide
+
+## Prerequisites
+- Web Server: Apache/Nginx
+- PHP (>=7.4)
+- MySQL/MariaDB Database
+- Composer (for dependency management)
+- Git (optional, for cloning the repository)
+
+## Steps to Install
+
+1. **Clone the Repository (or Download ZIP)**  
+   ```sh
+   git clone https://github.com/your-repo/ncc-portal.git
+   cd ncc-portal
+   ```
+
+2. **Set Up Environment Variables**  
+   Copy the `.env.example` file and rename it to `.env`, then update database credentials.
+   ```sh
+   cp .env.example .env
+   ```
+
+3. **Install Dependencies**  
+   ```sh
+   composer install
+   ```
+
+4. **Set Up Database**  
+   - Create a database in MySQL/MariaDB
+   - Run database migrations:
+     ```sh
+     php artisan migrate
+     ```
+
+5. **Set File Permissions (for Linux users)**  
+   ```sh
+   chmod -R 775 storage bootstrap/cache
+   ```
+
+6. **Start the Application**  
+   ```sh
+   php -S localhost:8000 -t public
+   ```
+   Visit `http://localhost:8000` in your browser.
+
+## Additional Configuration
+- Configure your web server (Apache/Nginx) for better performance.
+- Set up cron jobs if required for background tasks.
+- Enable SSL for secure communication.
+
+You're all set! 🚀","projecthub0003@gmail.com","9025566330","https://www.instagram.com/dharunx7?igsh=dXMxdDNvNGdlaHky","php","1199","College project","true","true","true","1","2025-03-23 12:48:51.497","cm8e5f94r00002ms6q0dmfqjg","2025-03-23 12:48:51.497","2025-03-23 12:48:51.497"
+"cm8vhj2pg0001jy03kne0q9ei","Student Management Platform","This project provides a full-featured Student Management System built with PHP and MySQL, designed to streamline the administrative tasks of Indian universities. It manages student profiles, academic records, departmental operations, and semester progress tracking in a secure, responsive, and user-friendly manner.","Student profile management (personal, academic details),Support for multiple departments (Engineering, Commerce, Arts & Science),Academic history tracking and progress monitoring,Secure user authentication and role-based access control,Responsive design for mobile, tablet, and desktop,Real-time data updates and notifications,Security: Authentication, Authorization","php,mysql,html,css,javascript,bootstrap","https://youtu.be/JUqxlUVjgRU",,"## Requirements
+
+Before you begin, ensure you have the following installed on your local system:
+1. **XAMPP** (or any LAMP stack to run PHP and MySQL)
+2. **Text Editor**: Notepad++, Sublime Text, VS Code, or any preferred editor
+3. **WinRAR or any zip extraction tool**
+
+---
+
+## Installation Steps
+
+Follow these instructions to set up the project:
+
+1. **Download the Source Code**:
+   - Download the source code in ZIP format or clone the repository.
+
+2. **Extract Files**:
+   - Extract the downloaded ZIP file using WinRAR or any extraction tool.
+
+3. **Move Files to XAMPP Directory**:
+   - Copy the extracted folder named `sis`.
+   - Paste it inside the root directory where XAMPP is installed. Usually, it is located in:
+     ```
+     C:/xampp/htdocs/
+     ```
+
+4. **Create Database**:
+   - Open your web browser and go to [PHPMyAdmin](http://localhost/phpmyadmin).
+   - Create a new database named `sis_db`.
+
+5. **Import the Database**:
+   - In PHPMyAdmin, click on the `Import` tab.
+   - Select the `sis_db.sql` file, located in the `SQL` folder inside the extracted project files, and click ""Go"" to import.
+
+6. **Run the Application**:
+   - Open your browser and type `http://localhost/sis` to access the Student Information System.
+
+---
+
+## Admin Login
+
+Use the following credentials to access the admin panel:
+
+- **Email**: `admin@admin.com`
+- **Password**: `admin123`
+
+","projecthub0003@gmail.com","+916380373560","https://github.com/BharathKumar040","php","1199","academic","false","true","true","3","2025-03-30 00:00:00","cm8vgebhn0000jr03jfa4wrm3","2025-03-30 10:16:03.7","2025-03-30 10:16:03.7"
+"cm8vq7on30001l1037glz5gff","Captioncraft AI","CaptionCraft AI is an advanced artificial intelligence tool designed to generate high-quality, engaging, and contextually relevant captions for social media, marketing campaigns, branding efforts, and digital content creation. Whether you're an influencer, business owner, marketer, or content creator, CaptionCraft AI helps you craft compelling captions that captivate audiences and boost engagement.","AI-generated captions tailored for different platforms,Customization options for tone, length, and style,Hashtag and keyword suggestions for better reach,Multilingual support for global audiences,Context-aware captions based on images or text input,Trend analysis to align with current social media trends,User-friendly interface for quick and easy caption generation,Integration with social media scheduling tools","Next JS,Tailwind CSS,Typescript,Gemini AI","https://youtu.be/VqcqctWhFMA","https://captioncraftai.vercel.app/","# CaptionCraft AI
+
+## Description
+CaptionCraft AI is an advanced AI-powered tool designed to generate engaging, creative, and contextually relevant captions for social media, marketing, and content creation. It leverages natural language processing and machine learning to craft captions that enhance user engagement and brand appeal.
+
+## Key Features
+- AI-generated captions tailored for different platforms  
+- Customization options for tone, length, and style  
+- Hashtag and keyword suggestions for better reach  
+- Multilingual support for global audiences  
+- Context-aware captions based on images or text input  
+- Trend analysis to align with current social media trends  
+- User-friendly interface for quick and easy caption generation  
+- Integration with social media scheduling tools  
+
+## How It Works
+1. Upload an image or enter text context.
+2. Select your preferred tone, length, and platform.
+3. Let AI generate the best caption options.
+4. Customize the caption if needed.
+5. Copy and use it for your social media post.
+
+## Use Cases
+- Social media influencers looking for creative captions.
+- Marketing teams optimizing engagement strategies.
+- Brands maintaining a consistent and appealing online presence.
+- Content creators enhancing their storytelling with relevant captions.
+
+## Get Started
+Visit [CaptionCraft AI](#) to start generating captions effortlessly!
+
+## How to Run
+### Using a Markdown Viewer
+1. Open the `.md` file in a Markdown-supported editor such as:
+   - **VS Code** (with Markdown Preview)
+   - **Obsidian**
+   - **Typora**
+   - **Mark Text**
+2. Click on **Preview** to view the formatted content.
+
+### Using a Web Browser
+1. Upload the file to **GitHub** or **GitLab**.
+2. Open it in your browser to see the rendered Markdown.
+
+### Using a Command Line Tool
+1. Install `grip` (for live Markdown rendering):
+   ```sh
+   pip install grip
+   ```
+2. Run the following command:
+   ```sh
+   grip captioncraft_ai.md
+   ```
+3. Open the provided URL in your browser to view the Markdown.
+","projecthub0003@gmail.com","6382667158","https://www.instagram.com/_vidhyapathi/","ai","2999","academic","true","true","true","3","2025-03-30 00:00:00","cm8e5f94r00002ms6q0dmfqjg","2025-03-30 14:19:08.8","2025-03-30 14:19:08.8"
+"cm8vt240c0001ju034ydi6gel","Video call Application using Next JS","This project is a Zoom clone built using the latest Next.js and TypeScript, offering a full-fledged video conferencing platform. It allows users to authenticate securely, create and join meetings, and utilize advanced meeting management features like screen sharing, recording, participant control, and more.
+
+If you're looking for a beginner-friendly guide, the corresponding YouTube tutorial from JavaScript Mastery provides a step-by-step walkthrough of building this project.
+
+","Authentication & Security: The platform integrates Clerk for secure authentication, allowing users to sign in using social login or email/password while managing user permissions and access levels efficiently.,Meeting Management: Users can start new meetings instantly, schedule future meetings, and join via sharable links. Additionally, they can access a list of past meetings and view recorded sessions for future reference.,Advanced Meeting Controls: Participants have full control over meetings, including screen sharing, recording, emoji reactions, mute/unmute, grid layouts, and participant management (such as pinning, muting, blocking, and allowing video sharing).,Real-time & Secure Communication: The platform ensures real-time interaction with smooth updates and a secure communication environment, maintaining data encryption and privacy protection throughout the meetings.,Personal Room & Quick Access: Each user gets a unique personal meeting link for instant access, making it easy to share and join meetings without additional setup.","Next JS,Tailwind CSS,Typescript,Stream,Clerk","https://youtu.be/Qxuua38xXJI","https://vidhyapathimeetapp.vercel.app/","# 🚀 Installation Guide
+
+## 📌 Prerequisites
+Ensure you have the following installed on your machine before proceeding:
+
+- **Git**
+- **Node.js** (Latest LTS version recommended)
+- **npm** (Node Package Manager)
+
+## 📥 Clone the Repository
+To download the project, open your terminal and run:
+
+```sh
+
+cd zoom-clone
+```
+
+## 📦 Install Dependencies
+Run the following command to install all necessary packages:
+
+```sh
+npm install
+```
+
+## 🔑 Set Up Environment Variables
+Create a `.env` file in the root directory and add the following environment variables:
+
+```sh
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
+CLERK_SECRET_KEY=
+
+NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
+NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
+
+NEXT_PUBLIC_STREAM_API_KEY=
+STREAM_SECRET_KEY=
+```
+
+Replace the placeholders with your actual **Clerk** and **getstream** credentials. You can obtain these credentials by signing up on their respective websites.
+
+## ▶️ Run the Project
+Start the development server with:
+
+```sh
+npm run dev
+```
+
+Once started, open **[http://localhost:3000](http://localhost:3000)** in your browser to view the project.
+
+---
+
+Now you’re all set! 🎉 Happy coding! 🚀","projecthub0003@gmail.com","6382667158","https://www.instagram.com/_vidhyapathi/","web","2899","academic","false","true","true","6","2025-03-30 00:00:00","cm8e5f94r00002ms6q0dmfqjg","2025-03-30 15:38:47.628","2025-03-30 15:38:47.628"
+"cm8vuhgir0002l903dcr8ynji","AI Travel Planner App","The AI Travel Planner App is an Android-based application designed to make trip planning seamless and efficient. Powered by advanced AI technologies, the app generates personalized travel plans based on user input, helping users organize their trips effortlessly.
+","Personalized Travel Itineraries with ticket fares, hotel bookings, and attraction recommendations.,Secure User Authentication via Firebase with Google integration.,AI-Powered Travel Recommendations and cost estimates.,Modern UI/UX built with React Native and Expo.,Seamless Navigation using React Navigation with Expo Router.,Fetching real-time travel updates (Flights, Hotels, Places to visit) via APIs","React Native,Expo,Typescript,Firebase,Gemini,Google Place API","https://youtu.be/jIrmLL_VFLA",,"## 🚀 Getting Started
+
+1.Install dependencies:
+npm install
+# or
+yarn install
+
+
+2.Add environment variables: 
+Create a .env file in the root directory and add your environment variables. Example:
+
+EXPO_PUBLIC_API_KEY=<Your Expo API Key>
+FIREBASE_API_KEY=<Your Firebase API Key>
+EXPO_PUBLIC_GOOGLE_GEMINI_API_KEY=<Your Gemini API Key>
+EXPO_PUBLIC_GOOGLE_MAP_API_KEY=<Your Google Maps API Key>
+
+Run the application:
+npm start
+# or
+yarn start
+
+Use the Expo Go app on your iOS or Android device to view the app in development mode.
+
+
+## 🗂️ Project Structure
+components/: Reusable React Native components.
+constants/: Application-wide constants.
+context/: Context providers for managing global state.
+assets/: Images, icons, and other static assets.
+
+
+## 🔒 Authentication
+
+The application uses Firebase for user authentication. Users can sign up, log in, and manage their profiles securely. Some features are only accessible to authenticated users.
+
+
+🔄 Data Management
+User data is stored in Firebase, allowing for real-time updates and synchronization across devices. The app ensures data security and privacy, following best practices for handling user information.
+
+
+🌟 AI Recommendations
+The AI algorithms analyze user preferences and travel history to suggest destinations, accommodations, and activities tailored to individual needs.
+
+","projecthub0003@gmail.com","9884426414","https://www.instagram.com/__manoj__004/","ai","2849","academic","true","true","true","3","2025-03-30 00:00:00","cm8vuhghi0000l903p65r2fyk","2025-03-30 16:18:43.3","2025-03-30 16:18:43.3"
+"cm987yw9c00012mm7t5o1hvyy","Cloth Selling Website using HTML and CSS","
+This is a responsive and visually appealing clothing store website built using only HTML and CSS. It showcases a modern layout for an online fashion store, including a homepage, product listings, and a contact section. The design focuses on user-friendly navigation, clean typography, and a mobile-friendly interface to enhance the shopping experience.","Home page with banner and featured collections, Navigation bar with smooth scroll links,Fully responsive design (mobile, tablet, desktop),Stylish hover effects and transitions,Contact form layout (non-functional)","HTML,CSS,JS,Google fonts","https://youtu.be/PKHo-eDfJ14",,"# 🧰 HTML Setup Guide
+
+This guide will help you get started with a basic HTML project on your local machine.
+
+---
+
+## ✅ Prerequisites
+
+- A code editor (e.g., [VS Code](https://code.visualstudio.com/))
+- A modern web browser (e.g., Chrome, Firefox)
+
+---
+
+## 🛠️ Steps to Create a Basic HTML Page
+
+### 1. Create a Project Folder
+
+```bash
+mkdir my-html-project
+cd my-html-project
+","projecthub0003@gmail.com","6382667158","https://www.instagram.com/_vidhyapathi/","html","300","academic","false","true","true","1","2025-04-08 00:00:00","cm8e5f94r00002ms6q0dmfqjg","2025-04-08 08:09:25.969","2025-04-08 08:09:25.969"
+"cm9gw0dwe0002la04ruwul3yi","AI Mock Interview using Python","An AI mock interview using Python is a simulated interview environment powered by artificial intelligence to help candidates prepare for real-life job interviews. It leverages Python-based machine learning and natural language processing libraries to create an interactive platform that mimics the behavior of a human interviewer. The system can ask relevant questions based on the user's selected domain—such as data science, web development, or machine learning—and analyze the candidate's responses in real-time, providing constructive feedback on communication skills, technical accuracy, and confidence level. With features like speech-to-text conversion, response scoring, and personalized suggestions, this AI-powered tool offers a cost-effective and accessible way for job seekers to refine their interviewing skills and boost their confidence before attending actual interviews.","Interactive interview simulation tailored to various domains like data science and web development,Real-time question and answer environment with instant feedback,Speech-to-text and text-to-speech capabilities for voice-based interaction,Automated evaluation of candidate responses based on accuracy, fluency, and relevance,Personalized feedback and improvement suggestions after each session,Database integration to store interview history and track progress,User-friendly interface with easy navigation and customization options,Integration with machine learning and NLP libraries for intelligent question generation,Support for multiple difficulty levels to match the candidate's experience,Option to conduct technical, HR, or behavioral interview simulations","python,Streamlit,Groq,Langchain","https://youtu.be/W4goPSpaNj8",,"# 🎙 AI Mock Interview Coach
+
+AI Interview Assistant is a Streamlit-based web application that helps users practice job interviews using AI-powered feedback. It generates interview questions based on a job description, allows users to respond via speech, transcribes their answers, and provides AI-driven analysis and feedback.
+
+## 🚀 Features
+- **Job-Specific Interview Questions**: Generates tailored interview questions based on a job description.
+- **Speech-to-Text Processing**: Users can respond verbally, and the app transcribes their answers.
+- **AI-Powered Answer Evaluation**: Uses Groq LLM to analyze responses and provide feedback.
+- **Score and Feedback System**: Provides a numerical score and improvement tips for each answer.
+- **Final Performance Report**: Summarizes overall performance at the end of the interview.
+
+## 🛠 Tech Stack
+- **Frontend**: Streamlit
+- **Backend**: LangChain, Groq LLM (qwen-2.5-32b)
+- **Database**: N/A (session state handling)
+- **Speech Processing**: SpeechRecognition (Google Speech API)
+
+## 📌 Installation
+### **1️⃣ Clone the Repository**
+```bash
+git clone https://github.com/yourusername/ai-interview-assistant.git
+cd ai-interview-assistant
+```
+
+### **2️⃣ Set Up a Virtual Environment**
+```bash
+python -m venv venv
+source venv/bin/activate   # On macOS/Linux
+venv\Scripts\activate     # On Windows
+```
+
+### **3️⃣ Install Dependencies**
+```bash
+pip install -r requirements.txt
+```
+
+### **4️⃣ Add API Key (Groq LLM)**
+Create a `.streamlit/secrets.toml` file and add:
+```toml
+GROQ_API_KEY = ""your_groq_api_key_here""
+```
+
+Alternatively, set the environment variable in your terminal:
+```bash
+export GROQ_API_KEY=""your_groq_api_key_here""
+```
+
+## ▶️ Running the Application
+```bash
+streamlit run app.py
+```
+
+## 🖥 Deployment (Streamlit Cloud)
+1. Push your project to GitHub.
+2. Go to [Streamlit Cloud](https://share.streamlit.io/).
+3. Deploy the repository and add `GROQ_API_KEY` under app settings > Secrets.
+4. Restart the app if necessary.
+
+## 🔥 Usage Guide
+1. **Enter Job Description**: Provide details about the role you're preparing for.
+2. **Start the Interview**: AI generates relevant questions.
+3. **Answer via Microphone**: Speak your response; the app transcribes it.
+4. **Get AI Feedback**: Receive a score and improvement suggestions.
+5. **Review Final Report**: See an overall summary of your performance.
+
+## 🤖 Future Improvements
+- Support for more LLMs (OpenAI, Gemini, etc.).
+- Saving session history for review.
+- Multi-language support.
+
+🚀 **Happy Interviewing!**
+
+","projecthub0003@gmail.com","9025566330","https://www.instagram.com/dharunx7?igsh=dXMxdDNvNGdlaHky","ai","2599","academic","true","true","true","1","2025-04-14 00:00:00","cm9gw0dvd0000la04b90joxvs","2025-04-14 09:44:35.678","2025-04-14 09:44:35.678"
+"cm9gxspnk0001l7045rdusfjn","Online File Sharing System ","This Online File Sharing System is developed using PHP and MySQL, designed for educational purposes to demonstrate how secure and simple file sharing can be implemented online. The project includes a clean and responsive interface built with HTML, CSS, Bootstrap, JavaScript, AJAX, Modal, and JQuery.
+
+👤 User Role: Upload and share files online.
+🛡️ Admin Role: Monitor and manage uploaded files.
+
+✨ Key Features:
+
+Upload and view files online
+
+Admin monitoring system
+
+Lightweight, fast, and responsive UI
+
+Simple and secure file handling
+
+🛠️ Technologies Used:
+
+Frontend: HTML, CSS, Bootstrap, JavaScript, AJAX, JQuery
+
+Backend: PHP
+
+Database: MySQL
+
+🌐 Compatible Browsers: Opera, Mozilla Firefox, Google Chrome, IE8+, Safari, and more.
+
+💻 Run on: WAMP / XAMPP / LAMP / MAM","🗂️ Simple and secure file upload system,👤 User role: Upload & view files,🔒 Admin role: Monitor and manage uploaded files,📥 File status tracking,📶 Live interaction using AJAX,📁 Separate views for users and admin","bootstrap,html,css,javascript,jquery,php,mysql","https://youtu.be/Xf_KwIJdKFI",,"FIRST Download
+
+1.XAMPP
+
+2.""TEXT EDITOR"" NOTEPAD++ OR SUBLIME TEXT 3 / ETC.
+
+3""document_sharing""
+
+4. Download the zip file/ download winrar
+
+5. Extract the file and copy ""document_sharing"" folder
+
+6.Paste inside root directory/ where you install xammp local disk C: drive D: drive E: paste: (for xampp/htdocs, 
+
+7. Open PHPMyAdmin (http://localhost/phpmyadmin)
+
+8. Create a database with name odss_db
+
+6. Import odss_db.sql file(given inside the zip package in SQL file folder)
+
+7.Run the script http://localhost/Online File Sharing System 
+","projecthub0003@gmail.com","6380373560","https://github.com/BharathKumar040","php","1099","academic","false","true","true","3","2025-04-14 00:00:00","cm8vgebhn0000jr03jfa4wrm3","2025-04-14 10:34:36.896","2025-04-14 10:34:36.896"
+"cm9l4qwhh0001le046msr5o64","Image generating AI","An AI Image Generator using the MERN stack (MongoDB, Express.js, React, and Node.js) is a powerful web application that allows users to create high-quality, AI-generated images through a smooth and responsive interface. The frontend, built with React, offers a user-friendly experience for entering prompts and viewing generated images in real-time. Node.js and Express power the backend, handling API requests and managing communication with AI models, while MongoDB stores user inputs, generated images, and related metadata for future reference and analysis. This full-stack setup ensures efficient data handling, scalability, and fast performance, making the AI Image Generator an innovative and reliable platform for creative image generation.","🖼️ AI-Powered Image Generation — Create unique, high-quality images from text prompts using AI models like DALL·E, Stable Diffusion, or similar.,⚡ Real-Time Image Rendering — Users can submit prompts and instantly view AI-generated images.,💾 Image Gallery & History — Save and browse previously generated images.,🔍 Prompt Suggestions — Helps users craft creative and accurate prompts.,📤 Download & Share — Easily download images or share them on social media.,🗂️ Favorites & Collections — Users can save favorite generations to personal collections.,📊 Usage Analytics — Track popular prompts, generation counts, and user activity.,💬 Feedback System — Allow users to rate or provide feedback on image quality.,🛠️ Tech Used:,OpenAI API / Stable Diffusion API — For AI-powered image generation.,Axios / Fetch API — For frontend-backend communication.","Oauth,JWT,Mongodb,Express,React,Node,AWS,CSS,tailwind","https://youtu.be/gA73Z4OOkFI",,"# Fastest-Text-to-Image-Generator
+Fastest Text-to-Image Generator using fal ai.
+
+
+
+## Prerequisites:  
+[Fal AI](https://fal.ai/) API key (for model access)  
+
+
+
+## Getting Started :white_check_mark:  
+To get started with this project, you'll need to clone the repository and have [Node]((https://nodejs.org/en/download) installed on your system.  
+
+  
+### Cloning the Repository :inbox_tray:
+Run the following command to clone the repository:  
+
+```
+git clone https://github.com/ChatTeach/Fastest-Text-to-Image-Generator.git
+```
+
+### Install Dependencies :wrench: 
+Navigate to the project directory:
+```
+cd Fastest-Text-to-Image-Generator
+```
+
+Install the dependencies:
+```
+npm install -i
+```
+## Running the Application :rocket:
+To run the application, run the following command:
+```
+npm run dev
+```
+
+Access the application in your browser using the URL:
+```
+http://127.0.0.1:3000
+```
+or
+```
+http://localhost:3000
+```
+","projecthub0003@gmail.com","6382667158","https://www.instagram.com/_vidhyapathi/","web","2900","academic","true","true","true","1","2025-04-17 00:00:00","cm8e5f94r00002ms6q0dmfqjg","2025-04-17 09:00:14.454","2025-04-17 09:00:14.454"
+"cm9l70uo70001jl04573k7bl2","Car Rental Website Using React","A fully responsive car rental website built using React and Vite. This project enables users to browse a fleet of available cars, view details, and proceed with rental inquiries. Designed with performance and user experience in mind, it serves as a great template for car rental services or web development portfolios.","View car image, pricing, and details,Responsive & mobile-friendly layout,Smooth animations using AOS,Testimonial & About Us section","react,vite,css,tailwind","https://youtu.be/Sj_qD2ivQf4","https://car-rental-website-main-khaki.vercel.app/","# Go to project directory
+cd car-rental-react
+
+# Install dependencies
+npm install
+
+# Start the development server
+npm run dev","projecthub0003@gmail.com","6380373560","https://github.com/BharathKumar040","web","399","academic","false","true","true","3","2025-04-17 00:00:00","cm8vgebhn0000jr03jfa4wrm3","2025-04-17 10:03:57.896","2025-04-17 10:03:57.896"
+"cm9lb3ph10001l204l4l47v9o","Campus Recruitment Management System","This project provides a full-featured Campus Recruitment Management System built with PHP and MySQL, designed to streamline the placement process in Indian colleges and universities. It manages student profiles, company registrations, job postings, and interview scheduling in a secure, responsive, and user-friendly manner.","Student registration and profile management.,Company registration and job posting management.,Resume upload and application tracking for students.,Real-time notifications for job updates and interview calls.,Role-based dashboards for students, companies, and admin.,Admin approval system for companies and job posts.,Interview scheduling and status tracking.,Secure login and authentication system.","php,mysql,html,css,javascript,bootstrap","https://youtu.be/ybPnOcLwMho",,"🖥️ Installation & Setup Instructions
+✅ Prerequisites
+XAMPP / WAMP installed (includes Apache, MySQL, PHP)
+
+Web browser (e.g., Chrome)
+
+Code editor (e.g., VS Code)
+
+⚙️ Steps to Install and Run
+1. Download the zip file
+2. Extract the file and copy crms folder
+3.Paste inside root directory(for xampp xampp/htdocs, for wamp wamp/www, for lamp var/www/html)
+4. Open PHPMyAdmin (http://localhost/phpmyadmin)
+5. Create a database with name crmsdb
+6. Import crmsdb.sql file(given inside the zip package in SQL file folder)
+7.Run the script http://localhost/crms
+
+🔐 Default Login Credentials
+1.Login Detail for admin
+Username : admin
+Password: Test@123
+
+2.Login Details for Company
+Username : anuj@hsbc.com
+Password: Test@123
+
+3.Login Details for Student / Candidate
+Username : abctest@gmail.com
+Password: Test@123
+","projecthub0003@gmail.com","9884426414","https://www.instagram.com/__manoj__004/","php","1299","major","true","true","true","3","2025-04-17 00:00:00","cm8vuhghi0000l903p65r2fyk","2025-04-17 11:58:09.589","2025-04-17 11:58:09.589"
+"cm9lfbz6f0001l404xc9cjrg4","Bike Rental Management System","This project provides a full-featured Bike Rental Management System built with PHP and MySQL, designed to automate and manage the rental process for bikes. It allows users to book bikes, track availability, and manage rental histories in a secure, responsive, and user-friendly environment.","User registration and login system.,Browse and view available bikes with images.,Book bikes for specific time slots.,Admin dashboard for managing bookings, bikes, and users.,Add, update, or remove bike listings (admin only).,Rental history and active booking tracking for users.,Real-time bike availability status.,Booking status management (pending/approved/returned).,Secure authentication with role-based access control.","php,mysql,html,css,javascript,bootstrap","https://youtu.be/3-tuTOwEaHo",,"⚙️ Installation & Setup Instructions
+✅ Prerequisites
+XAMPP / WAMP installed (includes Apache, MySQL, PHP)
+
+Browser (e.g., Chrome, Firefox)
+
+Code editor (e.g., VS Code)
+
+🧩 Steps to Install and Run
+1. Download the zip file
+2. Extract the file and copy crms folder
+3.Paste inside root directory(for xampp xampp/htdocs, for wamp wamp/www, for lamp var/www/html)
+4. Open PHPMyAdmin (http://localhost/phpmyadmin)
+5. Create a database with name bikerental
+6. Import bikerental.sql file(given inside the zip package in SQL file folder)
+7.Run the script http://localhost/bikerental
+
+🔐 Default Login Credentials 
+For User :-
+
+USERNAME : test@gmail.com
+
+PASSWORD : Test@12345
+
+
+For Admin Panel
+
+Open Your browser put inside browser “http://localhost/bikerental/admin”
+
+USERNAME : admin
+
+PASSWORD : Test@12345
+
+DON'T FORGET TO CREATE A DATABASE NAMING ""bikerental.sql"" AND IMPORT THE SQL FILE AND RUN.
+WITHOUT THE DATABASE THE PROJECT WON'T RUN.","projecthub0003@gmail.com","9884426414","https://www.instagram.com/__manoj__004/","php","1299","major","false","true","true","3","2025-04-17 00:00:00","cm8vuhghi0000l903p65r2fyk","2025-04-17 13:56:33.879","2025-04-17 13:56:33.879"
+"cm9lgpi660001jp043hpt7j7v","Blood Bank Management System","This project provides a full-featured Blood Bank Management System built with PHP and MySQL, designed to manage blood donations, requests, donor records, and blood inventory for hospitals and blood banks. It ensures efficient tracking, secure operations, and a responsive user experience.","Donor registration and profile management.,Blood group-wise inventory tracking.,Blood request form for hospitals and individuals.,Admin panel for approving requests and managing stock.,Search available blood by group, location, or availability.,Notification system for urgent blood requirements.,Record of donation history per donor.,User-friendly dashboards for donors, hospitals, and admin.,Secure login and role-based access control.","php,mysql,html,css,javascript","https://youtu.be/IkOnXK-6JpQ",,"⚙️ Installation & Setup Instructions
+✅ Prerequisites
+XAMPP / WAMP installed (Apache, MySQL, PHP)
+
+Browser (e.g., Chrome, Firefox)
+
+Code editor (e.g., VS Code)
+
+🧩 Steps to Install and Run
+How to run the Blood Bank & Donor Management System Using PHP and MySQL
+
+1. Download the zip file
+
+2. Extract the file and copy bbdms folder
+
+3.Paste inside root directory(for xampp xampp/htdocs, for wamp wamp/www, for lamp var/www/HTML)
+
+4.Open PHPMyAdmin (http://localhost/phpmyadmin)
+
+5. Create a bbdms with the name bbdms
+
+6. Import bbdms.sql file(given inside the zip package in the SQL file folder)
+
+7. Run the script http://localhost/bbdms
+
+🔐 Default Login Credentials 
+Admin Credential
+Username: admin
+Password: Test@123
+
+Donor Credential
+Username: amitk@gmail.com
+Password: Test@123
+Or Register a new user.","projecthub0003@gmail.com","9884426414","https://www.instagram.com/__manoj__004/","php","1199","academic","false","true","true","3","2025-04-17 00:00:00","cm8vuhghi0000l903p65r2fyk","2025-04-17 14:35:04.638","2025-04-17 14:35:04.638"
+"cm9lmad0e0001l404ub2l0h8p","Car Rental Website using React","This is a Car Rental Website built using React.js — a fully responsive and modern web app where users can explore, view, and book rental cars easily. The website includes multiple pages like Home, About, Blog, Car Listings, Car Details, Contact, and a custom 404 Not Found page.
+
+It features a clean UI, smooth navigation, and is structured with reusable components for better maintainability. It also supports Progressive Web App (PWA) features, making it faster and available offline!","Remix Icons (UI Icons),PWA Integration (for speed & offline use),Car listings with model, price, speed & transmission info,User-friendly and responsive UI,Component-based structure,PWA support for better performance","react,css","https://youtu.be/DGhNMDC7kvI","https://react-car-rental-website-master-beige.vercel.app/","
+---
+
+## 🛠️ Manual Steps to Run Locally
+
+Follow the steps below to run the project manually on your system.
+
+### 1. Prerequisites
+
+Make sure you have the following installed:
+
+- **Node.js** (v14 or higher)
+- **npm** (v6 or higher)
+
+Check using:
+
+```bash
+node -v
+npm -v
+
+
+
+cd car-rental-react
+
+npm install
+
+npm start
+
+http://localhost:3000
+","projecthub0003@gmail.com","6380373560","https://github.com/BharathKumar040","web","1599","academic","false","true","true","3","2025-04-17 00:00:00","cm8vgebhn0000jr03jfa4wrm3","2025-04-17 17:11:15.806","2025-04-17 17:11:15.806"
+"cm9mvyb900001i8045ngc8ozm","Car Rental System","This project provides a full-featured Car Rental Management System built with PHP and MySQL, aimed at automating the process of booking, managing, and tracking car rentals for agencies or customers. It offers secure login, vehicle availability tracking, booking management, and admin controls—all within a user-friendly interface.","User registration and login system.,Browse available cars with filters (model, type, price).,Book cars for specific dates and duration.,Admin dashboard to manage cars, bookings, and users.,Real-time availability tracking and booking status updates.,Add, update, or delete car listings (admin only).,Rental history tracking for users.,Automated fare calculation based on rental duration.,Secure authentication and role-based access control.","php,mysql,html,css,javascript","https://youtu.be/gNJba3gj5Os",,"⚙️ Installation & Setup – Car Rental System (PHP & MySQL)
+🧩 How to Run the Project
+Download and Unzip
+
+Download the project ZIP file and extract it.
+
+Copy the folder named carrental.
+
+
+
+🛢️ Database Configuration
+Open your browser and go to:
+
+Copy code
+http://localhost/phpmyadmin
+Create a new database named:
+
+
+Copy code
+carrental
+Import the SQL file:
+
+Locate the carrental.sql file inside the extracted project folder (usually under a folder like SQL File).
+
+Import it into the carrental database.
+
+🌐 Run the Application
+🔸 User Panel
+Open your browser and visit:
+
+
+Copy code
+http://localhost/carrental/index.php
+✅ User Login Credentials
+Username: test@gmail.com
+
+Password: Test@123
+
+🔸 Admin Panel
+Open your browser and visit:
+
+
+Copy code
+http://localhost/carrental/admin
+🔐 Admin Login Credentials
+Username: admin
+
+Password: Test@12345","projecthub0003@gmail.com","9884426414","https://www.instagram.com/__manoj__004/","php","1299","academic","false","true","true","3","2025-04-18 00:00:00","cm8vuhghi0000l903p65r2fyk","2025-04-18 14:29:35.988","2025-04-18 14:29:35.988"
+"cm9mxi4fx0001jv04smwc1bgr","AI Crime Report Application ","The Crime Report App is a modern MERN-stack application designed to simplify and speed up crime reporting for the public while providing real-time case management for authorities. Users can submit reports with location details, descriptions, and evidence like images or videos. One of the key features of this system is its AI-powered image detection — when an image is uploaded, the AI automatically analyzes it and suggests the likely type of incident (e.g., accident, theft, fire). This reduces human error, speeds up the report filing process, and assists law enforcement in quick response and verification.
+
+The app also includes an interactive map view for tracking reported crimes, real-time notifications for nearby users, and an admin dashboard for managing and verifying reports. This solution encourages community participation, supports anonymous submissions, and leverages AI and geolocation to make neighborhoods safer and more aware.","🖼️ AI-Powered Image Analysis — When a user uploads an image, an AI model automatically scans and suggests the likely type of incident (e.g., accident, theft, fire, assault) — speeding up the reporting process.,📁 Secure Image & Evidence Upload — Upload images, videos, or documents to attach evidence to a report.,🧠 Incident Suggestion System — AI suggests possible incident categories based on uploaded images, reducing manual errors.,💬 Anonymous Reporting — Allows community members to submit reports without revealing personal identity.","jwt,mongodb,express,react,node","https://youtu.be/1taMtnyAF0Y",,"div align=""center"">
+  <br />
+    <a href=""your-demo-video-link"" target=""_blank"">
+      <img src=""./public/report.jpg"" alt=""Project Banner"">
+    </a>
+  
+  <br />
+
+  <div>
+    <img src=""https://img.shields.io/badge/-TypeScript-black?style=for-the-badge&logoColor=white&logo=typescript&color=3178C6"" alt=""typescript"" />
+    <img src=""https://img.shields.io/badge/-Next_JS-black?style=for-the-badge&logoColor=white&logo=nextdotjs&color=000000"" alt=""nextdotjs"" />
+    <img src=""https://img.shields.io/badge/-Tailwind_CSS-black?style=for-the-badge&logoColor=white&logo=tailwindcss&color=06B6D4"" alt=""tailwindcss"" />
+    <img src=""https://img.shields.io/badge/-Prisma-black?style=for-the-badge&logoColor=white&logo=prisma&color=2D3748"" alt=""prisma"" />
+  </div>
+
+  <h3 align=""center"">Anonymous Reporting App</h3>
+
+   <div align=""center"">
+     A secure platform for anonymous incident reporting
+    </div>
+</div>
+
+## 📋 <a name=""table"">Table of Contents</a>
+
+1. 🤖 [Introduction](#introduction)
+2. ⚙️ [Tech Stack](#tech-stack)
+3. 🔋 [Features](#features)
+4. 🤸 [Quick Start](#quick-start)
+5. 🕸️ [Environment Setup](#environment)
+6. 🚀 [Deployment](#deployment)
+
+## <a name=""introduction"">🤖 Introduction</a>
+
+This is a state-of-the-art anonymous reporting system built with Next.js 14, designed to provide a secure platform for reporting incidents while maintaining complete anonymity.
+
+## <a name=""tech-stack"">⚙️ Tech Stack</a>
+
+- Next.js 14
+- TypeScript
+- Prisma with Neon Database
+- NextAuth.js for Authentication
+- Tailwind CSS
+- React Hook Form
+- GeminiAI
+- BCrypt for Password Encryption
+
+## <a name=""quick-start"">🤸 Quick Start</a>
+
+**Prerequisites**
+
+Make sure you have the following installed:
+
+- [Node.js](https://nodejs.org/en)
+- [npm](https://www.npmjs.com/)
+- [Git](https://git-scm.com/)
+
+**Installation**
+
+```bash
+# Clone the repository
+git clone <your-repo-url>
+cd anonymous-reporting-system
+
+# Install dependencies
+npm install
+
+# Set up the database
+npx prisma generate
+npx prisma db push
+
+# Start the development server
+npm run dev
+```
+
+## <a name=""environment"">🕸️ Environment Setup</a>
+
+Create a `.env` file in the root directory with the following variables:
+
+```env
+
+NEXT_PUBLIC_MAPBOX_API_KEY=your-mapbox-key
+DATABASE_URL=postgresql:your-database-url
+NEXTAUTH_SECRET=""your-secret-key""
+NEXTAUTH_URL=""http://localhost:3000/api/auth""
+GEMINI_API_KEY=your-gemini-api-key
+NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN=your-mapbox-access-api-key
+
+
+```
+
+## <a name=""deployment"">🚀 Deployment</a>
+
+The application can be easily deployed on [Vercel](https://vercel.com):
+
+1. Push your code to a Git repository
+2. Connect your repository to Vercel
+3. Configure the environment variables
+4. Deploy!
+
+## 🤝 Contributing
+
+Contributions are welcome! Please read our [Contributing Guidelines](CONTRIBUTING.md) first.
+
+## 📝 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.","projecthub0003@gmail.com","6382667158","https://www.instagram.com/_vidhyapathi/","ai","2999","academic","false","true","true","1","2025-04-18 00:00:00","cm8e5f94r00002ms6q0dmfqjg","2025-04-18 15:12:59.902","2025-04-18 15:12:59.902"
+"cm9n0mvt40001l104tcvpmz07","Supply Chain Control Systems","This project provides a full-featured Supply Chain Control System built with PHP and MySQL, designed to manage the flow of goods, track inventory, and coordinate operations between suppliers, manufacturers, distributors, and retailers—ensuring transparency, efficiency, and traceability across the supply chain.","Multi-role access for suppliers, manufacturers, distributors, and admin.,Product and inventory tracking across the entire supply chain.,Order management system with status updates (pending, dispatched, delivered).,Real-time stock monitoring and alerts for low inventory.,Supplier registration and product listing management.,Generate reports for orders, stock levels, and transaction history.,Admin dashboard for monitoring all operations and user activities.,Secure login with role-based access control.,Notifications for order updates and inventory thresholds.,Simple, responsive, and intuitive user interface.","php,mysql,html,css,javascript","https://youtu.be/CXFyWMrbJSk","","⚙️ Installation & Setup Instructions
+✅ Prerequisites
+XAMPP / WAMP (Apache, MySQL, PHP)
+
+Browser (e.g., Chrome, Firefox)
+
+Code editor (e.g., VS Code)
+
+🧩 How to Run the Project
+Download and Extract the Project
+
+Download the ZIP file and extract it.
+
+Copy the folder named scm-master.
+
+Place it in the Server Root Directory
+
+For XAMPP: C:\xampp\htdocs\scm-master
+
+
+🛢️ Database Configuration
+Open phpMyAdmin:
+
+
+Copy code
+http://localhost/phpmyadmin
+Create a new database:
+
+
+Copy code
+sourcecodester_scm_new
+Import the SQL file:
+
+Navigate to the sourcecodester_scm_new.sql file included in the project folder.
+
+Import it into the sourcecodester_scm_new database.
+
+🌐 Running the Application
+🔸 User Panel (Supplier/Distributor/Manufacturer)
+Open your browser and visit:
+
+
+Copy code
+http://localhost/supplychain
+🔸 Admin Panel
+Visit:
+
+
+Copy code
+http://localhost/supplychain/admin
+🔐 Sample Login Credentials
+Admin
+Username: admin
+
+Password: Admin123
+
+
+Other Roles (Supplier, Manufacturer, Distributor)
+Use the registration page or database records for login.","projecthub0003@gmail.com","9884426414","https://www.instagram.com/__manoj__004/","php","1199","academic","false","true","true","1","2025-04-18 00:00:00","cm8vuhghi0000l903p65r2fyk","2025-04-18 16:40:40.84","2025-04-22 14:25:59.805"
+"cm9pbisus0001l404p1vdwvr9","Food Delivery Web App using React.js & Firebase","This is a food delivery web application built with React.js and Firebase. It features a user-friendly interface where customers can browse food items by categories, add items to cart, and place orders. The app includes user authentication via Google Sign-in, a shopping cart system, and an admin panel for adding new food items. The frontend is styled with Tailwind CSS for responsive design, and Firebase provides the backend services including authentication, Firestore database for storing food items and orders, and Storage for image uploads. The project demonstrates modern web development practices with state management using Context API.
+","User-friendly interface for browsing food items by category,Google Sign-In authentication for secure user access,Dynamic shopping cart system for seamless order placement,Admin panel to add and manage food items,Responsive design for mobile and desktop views,Real-time order and data handling with Firestore,Image upload and storage functionality for food items,Efficient global state management using Context API","react,firebase,css,tailwind","https://youtu.be/VJBxAltRNOI","https://foodapp-five-roan.vercel.app/","# 🍔 Food Delivery Web App (React + Firebase)
+
+
+## 🚀 Installation
+1. Redirect to project location:
+   ```bash
+    
+       C:\Users\bhara>D:
+
+       D:\>cd Projects\foodapp
+
+       D:\Projects\foodapp>
+
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+3. Set up Firebase:
+   - Create a Firebase project and enable **Auth, Firestore, Storage**.
+   - Add your config in `src/firebase.js`:
+     ```javascript
+     const firebaseConfig = {
+       apiKey: ""YOUR_API_KEY"",
+       authDomain: ""your-app.firebaseapp.com"",
+       projectId: ""your-app"",
+       storageBucket: ""your-app.appspot.com"",
+       messagingSenderId: ""123456789"",
+       appId: ""1:123456789:web:abcdef123456""
+     };
+     ```
+4. Run the app:
+   ```bash
+   npm start
+   ```
+
+## 📂 Project Structure
+```
+src/
+├── components/      # Reusable UI components
+├── context/         # Context API providers
+├── pages/           # Main views (Home, Cart, Admin)
+├── firebase.js      # Firebase configuration
+└── App.js           # Root component
+```
+","projecthub0003@gmail.com","6380373560","https://www.instagram.com/buildwithcodecat?igsh=bml3anRyNjV1b3Vq","web","1999","academic","false","true","true","3","2025-04-20 00:00:00","cm8vgebhn0000jr03jfa4wrm3","2025-04-20 07:20:58.516","2025-04-21 15:46:14.651"
+"cm9sn6wzq0001jj04cvue3jt4","Animal Detection System using ML","The Animal Detection System leverages advanced machine learning algorithms to accurately identify, classify, and track animals in real-time from images or video feeds. This system is designed to enhance safety, automate wildlife monitoring, support smart farming, and prevent animal-vehicle collisions through intelligent detection and alerting.
+
+Whether deployed in forests, highways, or farms, the system ensures accurate identification and timely notification to reduce risks and optimize wildlife and livestock management.","Real-Time Animal Detection,Detect animals instantly from live video streams or static images with high accuracy.,Multi-Species Classification,Supports classification of various animal species using deep learning-based image recognition models.,Flexibly deploy the system on edge devices (Raspberry Pi, Jetson Nano, etc.) for remote areas or cloud platforms for large-scale applications.,Allows users to train models on custom datasets for location-specific or species-specific detection.,Instantly triggers alerts (SMS, Email, or Push Notifications) when animals are detected in restricted or sensitive zones.","Javascript,Python,Aws,Google cloud,React","https://youtu.be/jblIqdH03W8",,"# 🐾 Animal Detection System - Installation Guide
+
+This document provides step-by-step instructions to install and run the Animal Detection System using Machine Learning.
+
+---
+
+## 📦 Prerequisites
+
+- Python 3.8 or higher
+- pip (Python package installer)
+- Git
+- (Optional) NVIDIA GPU + CUDA drivers for accelerated inference
+- (Optional) Docker for containerized deployment
+
+---
+
+## 💻 Clone the Repository
+
+```bash
+git clone https://github.com/your-username/animal-detection-system.git
+cd animal-detection-system
+python -m venv venv
+source venv/bin/activate      # For Linux & MacOS
+venv\Scripts\activate         # For Windows
+pip install -r requirements.txt
+mkdir models
+# Copy your trained model (e.g., your_model.pt) into this folder.
+python detect.py --source path_to_your_image_or_video --weights models/your_model.pt --conf 0.5
+docker build -t animal-detection .
+docker run --gpus all -v $(pwd):/app animal-detection
+","Projecthub0003@gmail.com","6382667158","https://www.instagram.com/buildwithcodecat?igsh=MW9nMXRwajV6d2oycA==","ml","2499","academic","true","true","true","1","2025-04-22 00:00:00","cm8e5f94r00002ms6q0dmfqjg","2025-04-22 15:10:57.923","2025-04-22 15:10:57.923"
+"cm9snfh3m0003jj04is821yyd","Hospital Management System using PHP","The Hospital Management System is a web-based software application designed to simplify and automate hospital operations — from patient admission and treatment tracking to billing and reporting. Built with PHP and modern web technologies, this system enables hospitals to centralize data, reduce manual errors, and enhance the quality of patient care.","Patient Registration & Management,Easy patient intake with searchable, filterable medical history.,Doctor Scheduling & Appointment Booking,Doctor availability calendar, online booking system, and appointment reminders.,Auto-generate patient bills, insurance support, taxes, and payment tracking.","php,javascript,bootstrap,mysql,jwt","https://youtu.be/2JimJRvO_b8",,"# 🏥 Hospital Management System - Installation Guide
+
+This guide will help you install and run the Hospital Management System (PHP Version) on your local machine or server.
+
+---
+
+## 📋 Prerequisites
+
+- PHP 8.x or higher
+- MySQL / MariaDB
+- Apache / Nginx
+- Composer (for dependency management)
+- Git
+
+---
+
+## 💻 Clone the Repository
+
+```bash
+git clone https://github.com/your-username/hospital-management-system.git
+cd hospital-management-system
+","projecthub0003@gmail.com","6382667158","https://www.instagram.com/buildwithcodecat?igsh=MW9nMXRwajV6d2oycA==","php","1199","academic","false","true","true","1","2025-04-22 00:00:00","cm8e5f94r00002ms6q0dmfqjg","2025-04-22 15:17:37.234","2025-04-22 15:17:37.234"
+"cm9solgo90001jo047hrwfv0k","Crop Recommendation using ML","The Crop Recommendation System leverages machine learning algorithms to provide tailored crop suggestions based on environmental factors such as soil properties, temperature, humidity, rainfall, and pH levels. By using historical agricultural data, the system recommends the most suitable crops for a given set of conditions, aiming to maximize yield and sustainability for farmers. This system can significantly improve farming productivity and help with climate-resilient agricultural practices.","Provides crop recommendations based on soil nutrients (N, P, K), temperature, humidity, pH, and rainfall.,Accepts real-time inputs from farmers to predict the most appropriate crop for current or future growing conditions.,Utilizes advanced algorithms like Decision Trees, Random Forest, or Support Vector Machines (SVM) to train models from historical crop data.,Can be integrated into web or mobile applications for real-time access by farmers, agricultural experts, or government bodies.,A web interface that allows farmers to easily input their farm’s conditions and view crop suggestions.,Visualizes the results and compares different crop yields based on conditions for better decision-making.,Scalable to handle a large number of inputs for regions, crop types, and climate factors.","python,flask,mysql,sqlite","https://youtu.be/bCdzMn0b8jM",,"# 🌾 Crop Recommendation System - Installation Guide
+
+This guide will help you install and run the Crop Recommendation System (Machine Learning Project) on your local machine.
+
+---
+
+## 📋 Prerequisites
+
+- Python 3.8 or higher
+- pip (Python package installer)
+- Git
+- (Optional) Virtual Environment (venv)
+
+---
+
+## 💻 Clone the Repository
+
+```bash
+git clone https://github.com/your-username/crop-recommendation-ml.git
+cd crop-recommendation-ml
+","projecthub0003@gmail.com","6382667158","https://www.instagram.com/buildwithcodecat?igsh=MW9nMXRwajV6d2oycA==","ml","2599","academic","true","true","true","1","2025-04-22 00:00:00","cm8e5f94r00002ms6q0dmfqjg","2025-04-22 15:50:16.234","2025-04-22 15:50:16.234"
+"cm9sotpaa0003jo04zdhb7lct","Salary Prediction using ML","The Salary Prediction System uses machine learning algorithms to predict the salary of an individual based on various factors such as years of experience, education level, location, and other relevant features. By analyzing historical salary data, this system can provide accurate salary predictions for individuals in different industries and roles. It can be used by job seekers to estimate potential earnings or by companies to benchmark salary expectations.","Experience-Based Prediction,Predicts salary based on years of experience and skill set.,Industry & Role-Specific Predictions,Allows salary prediction based on the individual's job role, industry, education, and location.,Utilizes regression models like Linear Regression, Decision Trees, Random Forest, or Gradient Boosting for accurate predictions.,Provides salary predictions based on real-time input of user data.,Handles missing data, feature scaling, and categorical encoding to ensure better prediction accuracy.","python,flask,mysql,aws","https://youtu.be/Z-1kB6_Q_do",,"# 💼 Salary Prediction System - Installation Guide
+
+This guide will help you install and run the Salary Prediction System (Machine Learning Project) on your local machine.
+
+---
+
+## 📋 Prerequisites
+
+- Python 3.8 or higher
+- pip (Python package installer)
+- Git
+- (Optional) Virtual Environment (venv)
+
+---
+
+## 💻 Clone the Repository
+
+```bash
+git clone https://github.com/your-username/salary-prediction-ml.git
+cd salary-prediction-ml
+","projecthub0003@gmail.com","6382667158","https://www.instagram.com/buildwithcodecat?igsh=MW9nMXRwajV6d2oycA==","ml","2899","academic","true","true","true","1","2025-04-22 00:00:00","cm8e5f94r00002ms6q0dmfqjg","2025-04-22 15:56:40.63","2025-04-22 15:56:40.63"
+"cm9spjbwv0001jy0405b94r1l","Turf Management System using PHP","The Turf Management System (TMS) is a web-based application designed to manage and optimize the operations of sports fields, parks, and recreational facilities. It helps administrators manage turf bookings, maintenance schedules, field availability, and payment processing, providing a seamless experience for both the facility managers and users. By automating processes, the system ensures the effective use and maintenance of turf resources.","Turf Booking System,Allows users to book sports fields or turfs for specific timeslots, showing available dates and hours.,Schedule and track regular maintenance activities like mowing, fertilizing, or cleaning for each turf.,Manage users with role-based access (Admin, Facility Manager, User) and secure login via email and password.,Supports integration with payment gateways for online payments during booking, such as PayPal, Stripe, or custom options.,Users can view their booking history, while the system sends notifications for upcoming bookings, maintenance schedules, and payments.,Generate reports for field usage, revenue, maintenance logs, and more to help facility managers with decision-making.,A responsive interface that works seamlessly on mobile devices for users to manage bookings and track maintenance.","php,javascript,bootstrap,mysql,jwt","https://youtu.be/gbP_gjAygWo",,"# 🏟️ Turf Management System - Installation Guide
+
+This guide will help you install and run the Turf Management System (PHP Version) on your local machine or server.
+
+---
+
+## 📋 Prerequisites
+
+- PHP 7.x or 8.x
+- MySQL / MariaDB
+- Apache / Nginx
+- Composer (for dependency management)
+- Git
+
+---
+
+## 💻 Clone the Repository
+
+```bash
+git clone https://github.com/your-username/turf-management-system.git
+cd turf-management-system
+","projecthub0003@gmail.com","6382667158","https://www.instagram.com/buildwithcodecat?igsh=MW9nMXRwajV6d2oycA==","php","1299","academic","true","true","true","1","2025-04-22 00:00:00","cm8e5f94r00002ms6q0dmfqjg","2025-04-22 16:16:36.365","2025-04-22 16:16:36.365"
+"cm9sq5o2s0001ld04nkjqh7q9","Heart Disease Prediction Using Machine Learning","This project leverages machine learning algorithms to predict the likelihood of heart disease based on patient health data. By analyzing key medical parameters such as blood pressure, cholesterol levels, and heart rate, the model helps healthcare professionals make informed decisions. The system is designed to enhance early diagnosis, reduce manual workload, and improve patient outcomes.","Predicts heart disease risk based on medical input parameters,Uses a trained machine learning model for accurate predictions,User-friendly interface for easy data entry,Generates visual insights like graphs and risk probability,Secure API for seamless integration into healthcare applications","react,flask,mongodb,postgresql,docker,aws","https://youtu.be/5VV4dp1MFvs",,"Heart Disease Prediction - Installation Guide
+Prerequisites
+Ensure you have the following installed:
+
+Python 3.8+
+Node.js & npm (for frontend)
+Virtual environment (optional but recommended)
+Backend Setup (Flask / FastAPI)
+# Clone the repository
+git clone https://github.com/yourusername/heart-disease-prediction.git
+cd heart-disease-prediction/backend
+
+# Create virtual environment and activate it
+python -m venv venv
+source venv/bin/activate  # On Windows use `venv\Scripts\activate`
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Run the backend
+flask run  # If using Flask
+# OR
+uvicorn main:app --reload  # If using FastAPI
+Frontend Setup (React.js)
+cd ../frontend
+
+# Install dependencies
+npm install
+
+# Start the frontend
+yarn start  # OR npm start
+Running with Docker
+# Build and run the container
+docker-compose up --build
+API Endpoints
+POST /predict - Send patient data to get heart disease prediction
+Deployment
+Deploy backend on AWS/GCP using Docker
+Deploy frontend on Vercel/Netlify
+License
+This project is open-source under the MIT License.","projecthub0003@gmail.com","6382667158","https://www.instagram.com/buildwithcodecat?igsh=MW9nMXRwajV6d2oycA==","ml","2299","academic","true","true","true","1","2025-04-22 00:00:00","cm8e5f94r00002ms6q0dmfqjg","2025-04-22 16:33:58.564","2025-04-22 16:33:58.564"
+"cm9sqcxbu0001l804albdmf2k","Learning Management System using PHP","A Learning Management System (LMS) is a software application designed to facilitate the management, tracking, and delivery of educational courses, training programs, or learning and development programs. This system allows educators and administrators to create, distribute, and manage online courses while providing learners with an interactive and user-friendly platform to access their educational content, track progress, and interact with instructors and peers.
+
+The LMS can support various content formats like videos, assignments, quizzes, and forums, creating a robust learning environment.","Admin can manage users with different roles (Admin, Instructor, Student) and permissions, ensuring role-based access to courses, content, and settings.,Instructors can create and organize courses with modules, lessons, quizzes, and assignments. They can upload media content and set deadlines for assignments.,Students can follow a guided learning path with courses and certifications tailored to their learning objectives and progress.,The system allows instructors to create quizzes with multiple question types (MCQs, true/false, short answer) and automatically grade student submissions.,Tracks the progress of each student, providing insights into completed lessons, pending assignments, and exam results.,Provides interaction between students and instructors through discussion boards, announcements, and private messaging.,Upon course completion, students can receive certificates. Admins and instructors can generate reports for performance analysis.,A mobile-friendly interface ensures students can access courses, assignments, and exams on any device, anywhere.","php,javascript,bootstrap,mysql,jwt","https://youtu.be/OPa4ovcKVeA",,"# 📚 Learning Management System - Installation Guide
+
+This guide will help you install and run the Learning Management System (PHP Version) on your local machine or server.
+
+---
+
+## 📋 Prerequisites
+
+- PHP 7.x or 8.x
+- MySQL / MariaDB
+- Apache / Nginx
+- Composer (for dependency management)
+- Git
+
+---
+
+## 💻 Clone the Repository
+
+```bash
+git clone https://github.com/your-username/learning-management-system.git
+cd learning-management-system
+","projecthub0003@gmail.com","6382667158","https://www.instagram.com/buildwithcodecat?igsh=MW9nMXRwajV6d2oycA==","php","1299","academic","true","true","true","1","2025-04-22 00:00:00","cm8e5f94r00002ms6q0dmfqjg","2025-04-22 16:39:37.144","2025-04-22 16:39:37.144"
+"cm9sqli9q0001lb04b2uprqen","Machinery Fault Detection System Using Machine Learning","The Machinery Fault Detection System uses machine learning algorithms to predict and detect faults in machinery and industrial equipment. By analyzing sensor data such as vibration, temperature, pressure, and sound, the system can identify anomalies and patterns that indicate potential failures. This system helps in proactive maintenance, reducing downtime and improving the efficiency of machinery by predicting issues before they occur.","Continuously monitors machine sensors (vibration, temperature, etc.) and identifies potential faults as soon as they occur.,Uses machine learning models to predict future machinery failures and schedule maintenance before actual breakdowns happen, minimizing downtime.,Leverages historical data from machinery to identify fault patterns and establish predictive models for various types of failures.,The system detects abnormal readings and flags unusual behavior such as sudden spikes in vibration or temperature, helping to identify issues early.,Can handle multiple types of sensor data, including vibration, temperature, pressure, current, and noise, ensuring comprehensive fault detection.,Uses algorithms like Random Forest, Support Vector Machines (SVM), and Neural Networks to train the model on historical machinery data and detect patterns indicative of specific faults.,Classifies faults based on severity and type (e.g., wear and tear, mechanical failure, electrical issues), allowing targeted maintenance.","python,postgresql,mysql,sqlite,django","https://youtu.be/lH0WNbC3O2k",,"# ⚙️ Machinery Fault Detection System - Installation Guide
+
+This guide will help you install and run the Machinery Fault Detection System (Machine Learning Project) on your local machine or server.
+
+---
+
+## 📋 Prerequisites
+
+- Python 3.8 or higher
+- pip (Python package installer)
+- Git
+- MQTT Broker (for real-time sensor data) or REST API access for sensor integration
+- (Optional) Virtual Environment (venv)
+
+---
+
+## 💻 Clone the Repository
+
+```bash
+git clone https://github.com/your-username/machinery-fault-detection-ml.git
+cd machinery-fault-detection-ml
+","projecthub0003@gmail.com","6382667158","https://www.instagram.com/buildwithcodecat?igsh=MW9nMXRwajV6d2oycA==","ml","2899","academic","true","true","true","1","2025-04-22 00:00:00","cm8e5f94r00002ms6q0dmfqjg","2025-04-22 16:46:17.532","2025-04-22 16:46:17.532"
+"cm9sqqhcj0003lb049jp02a2f","Framers Ecommerce using PHP","The Farmers Ecommerce System is a web-based platform designed to connect farmers directly with consumers and retailers. It allows farmers to list and sell their fresh produce, such as fruits, vegetables, and grains, while providing a seamless shopping experience for buyers. The platform also supports features like order management, payment integration, inventory tracking, and reviews, empowering farmers to increase their reach and improve their sales.","Farmers can easily list their products, including descriptions, prices, and images. They can manage stock levels, update product information, and set availability.,Buyers can search and filter products by category (fruits, vegetables, grains), price, availability, and other parameters to find the produce they want quickly.,A user-friendly shopping cart allows buyers to add products, view their total, apply discounts, and proceed to checkout with multiple payment options.,Supports payment gateways like PayPal, Stripe, or custom payment solutions for secure online transactions.,Farmers can track orders in real-time, manage order statuses (pending, shipped, delivered), and communicate with customers regarding their orders.,Both farmers and customers can create accounts, track their orders, and manage their profiles. Secure login with email/password authentication or social logins (Google, Facebook).,Customers can leave reviews and ratings for the products they purchase, helping others make informed decisions and allowing farmers to improve quality.,Farmers can easily update stock quantities, set availability, and get notified when stock levels are low.,Admin users can manage all aspects of the platform, including user accounts, product listings, and orders. The dashboard offers detailed analytics and reports.,The system is responsive and works smoothly on mobile devices, ensuring a good shopping experience on any device.","php,javascript,bootstrap,mysql,jwt","https://youtu.be/Q4ZKyaSBJ4I",,"# 🌾 Farmers Ecommerce System - Installation Guide
+
+This guide will help you install and run the Farmers Ecommerce System (PHP Version) on your local machine or server.
+
+---
+
+## 📋 Prerequisites
+
+- PHP 7.x or 8.x
+- MySQL / MariaDB
+- Apache / Nginx
+- Composer (for dependency management)
+- Git
+
+---
+
+## 💻 Clone the Repository
+
+```bash
+git clone https://github.com/your-username/farmers-ecommerce-system.git
+cd farmers-ecommerce-system
+","projecthub0003@gmail.com","6382667158","https://www.instagram.com/buildwithcodecat?igsh=MW9nMXRwajV6d2oycA==","php","1299","academic","true","true","true","1","2025-04-22 00:00:00","cm8e5f94r00002ms6q0dmfqjg","2025-04-22 16:50:09.62","2025-04-22 16:50:09.62"
+"cm9sqy16q0001l704x45k7vfa","Breast Cancer Prediction System Using Machine Learning","The Breast Cancer Prediction System uses machine learning algorithms to predict the likelihood of breast cancer based on various diagnostic features. It analyzes datasets with information like cell size, shape, and texture to classify tumors as malignant (cancerous) or benign (non-cancerous). The system can help doctors in early detection, assisting in diagnosis and treatment planning. The application is designed for use by medical professionals, offering an efficient tool for predicting breast cancer based on patient data.","The system can handle and clean datasets, handling missing values, normalizing data, and selecting relevant features for accurate predictions.,Uses algorithms like Logistic Regression, Support Vector Machine (SVM), Random Forest, and K-Nearest Neighbors (KNN) to train on the provided dataset for cancer classification.,Provides predictions based on user inputs, classifying the tumor as either benign or malignant, with a confidence score.,Implements various metrics like accuracy, precision, recall, and F1-score to evaluate the performance of the trained models.,Supports cross-validation techniques to ensure the generalization of the model and avoid overfitting.,A simple interface for inputting new data (e.g., tumor measurements), viewing the prediction, and displaying results like accuracy and classification.,Allows users to input new test data and get predictions for breast cancer diagnosis instantly.,Once the model is trained, it can be saved for future use or deployed into production environments for integration into other medical systems.","python,django,flask,docker,aws","https://youtu.be/Mkf8yVfnm7E",,"# 🎗️ Breast Cancer Prediction System - Installation Guide
+
+This guide will help you install and run the Breast Cancer Prediction System using Machine Learning on your local machine or server.
+
+---
+
+## 📋 Prerequisites
+
+- Python 3.8 or higher
+- pip (Python package installer)
+- Git
+- Jupyter Notebook (optional, for interactive development)
+
+---
+
+## 💻 Clone the Repository
+
+```bash
+git clone https://github.com/your-username/breast-cancer-prediction-ml.git
+cd breast-cancer-prediction-ml
+","projecthub0003@gmail.com","6382667158","https://www.instagram.com/buildwithcodecat?igsh=MW9nMXRwajV6d2oycA==","ml","2999","academic","true","true","true","1","2025-04-22 00:00:00","cm8e5f94r00002ms6q0dmfqjg","2025-04-22 16:56:01.92","2025-04-22 16:56:01.92"
+"cm9srmi9c0005l704sxk64uic","Smart Farming using PHP","The Smart Agriculture System is a web-based platform designed to enhance farming practices by leveraging modern technology. It integrates IoT devices, real-time data analytics, and automation to monitor and manage agricultural activities. The system helps farmers optimize irrigation, monitor crop health, and analyze soil conditions, improving productivity and reducing resource wastage. Through real-time insights and automated processes, this system empowers farmers to make informed decisions and implement sustainable agricultural practices.","The system collects data from IoT sensors placed in the field, such as soil moisture, temperature, humidity, and light. It displays this data in real-time, allowing farmers to monitor environmental conditions easily.,Based on soil moisture data, the system automatically adjusts the irrigation schedule to ensure optimal water usage, reducing water waste while keeping crops healthy.,Using image recognition (optional integration with machine learning), the system can analyze crop health by detecting diseases or pest infestations, allowing farmers to take early action.,The system provides weather forecasts and alerts for upcoming events like rainfall, storms, or extreme temperature changes to help farmers prepare in advance.,The system generates data analytics reports based on environmental conditions, irrigation patterns, and crop health, offering insights to improve farming techniques.,Sends automated notifications to the farmer via email/SMS about critical events such as low soil moisture, irrigation requirements, or adverse weather conditions.,The system is responsive, allowing farmers to access the dashboard and monitor their farm from mobile devices or desktops.,Farmers, farm managers, and agricultural experts can create accounts with different access levels, ensuring proper management and data security.","mysql,php,javascript,python","https://youtu.be/DwWbydUoZ9o","","# 🌱 Smart Agriculture System - Installation Guide
+
+This guide will help you install and run the Smart Agriculture System (PHP Version) on your local machine or server.
+
+---
+
+## 📋 Prerequisites
+
+- PHP 7.x or 8.x
+- MySQL / MariaDB
+- Apache / Nginx
+- Composer (for dependency management)
+- Git
+
+---
+
+## 💻 Clone the Repository
+
+```bash
+git clone https://github.com/your-username/smart-agriculture-system.git
+cd smart-agriculture-system
+","projecthub0003@gmail.com","6382667158","https://www.instagram.com/buildwithcodecat?igsh=MW9nMXRwajV6d2oycA==","php","1299","academic","true","true","true","1","2025-04-22 00:00:00","cm8e5f94r00002ms6q0dmfqjg","2025-04-22 17:15:03.792","2025-04-22 17:15:59.14"
+"cm9u3rkt70001jr04g52er5d4","Inventory Management System "," Inventory Management System is a powerful and user-friendly web application built using PHP and MySQL for managing products and monitoring inventory. It provides an efficient platform for users to add, update, delete, and track stock levels in real-time. Designed with Bootstrap, JavaScript, and AJAX, the system ensures reliability, faster performance, and an intuitive UI.","🔐 Admin Login Panel,➕ Add, ✏️ Edit, 🗑️ Delete Products,📦 Real-time Inventory Tracking,📊 Dashboard for Inventory Overview,📁 Category and Supplier Management,🔍 Live Search with AJAX,📈 Stock In/Out Management,📃 Sales and Purchase Report,🧾 Printable Invoices,📅 Date-wise filtering and report generation,🛠️ Technologies Used","php,mysql,javascript,bootstrap,jquery,html,css","https://youtu.be/ShnCFrOob9o",,"# 📦 Advance Inventory Management System
+
+## ⚙️ Setup Instructions
+
+1. Download and install [XAMPP](https://www.apachefriends.org/) or WAMP.
+2. Extract the downloaded zip file.
+3. Copy the folder `inventory-management-system` into your `htdocs` directory (`C:\xampp\htdocs`).
+4. Open your browser and go to `http://localhost/phpmyadmin`
+5. Create a database named `shop_inventory`
+6. Import the SQL file `shop_inventory.sql` found in the SQL folder.
+7. Run the system in your browser: `http://localhost/inventory-management-system`
+8. Login Credentials:
+   - **Username:** `admin`
+   - **Password:** `Admin`
+
+---
+
+","projecthub0003@gmail.com","6380373560","https://www.instagram.com/buildwithcodecat?igsh=MW9nMXRwajV6d2oycA==","php","1199","academic","false","true","true","3","2025-04-23 00:00:00","cm8vgebhn0000jr03jfa4wrm3","2025-04-23 15:42:41.944","2025-04-23 15:42:41.944"
+"cm9uzll5h0001if04xn75frob","Payroll Management System","The Payroll Management System is a web-based application designed to simplify and automate salary computation, attendance tracking, and employee record management. Built using PHP and MySQL, this system ensures accuracy, reliability, and user-friendliness through its clean Bootstrap-powered UI and efficient JavaScript/AJAX-based interactions.","Admin Dashboard with full CRUD operations,Role-based access control (Admin & Staff),Employee management (Add, Edit, Delete, View),Attendance tracking with Time In/Time Out,Automated payroll calculation and history,Department and Position management,Allowance and Deduction configuration,User management with login authentication,Real-time search, filter, and pagination options,Secure login system with validation,Local Server: XAMPP / WAMP / MAMP / LAMP,Browser Compatibility: Chrome, Firefox, Opera, Internet Explorer 8+","php,mysql,html,css,bootstrap,javascript,jquery","https://youtu.be/l_2g-aHiuNc",,"# 🔧 How to Run Payroll Management System (PHP + MySQL)
+
+Follow these steps to set up and run the Payroll Management System locally using XAMPP or any compatible local server stack.
+
+---
+
+## 📁 Step-by-Step Installation Guide
+
+### ✅ Step 1: Install Required Software
+- Download and install **XAMPP** (or WAMP/LAMP/MAMP based on your OS)
+- Download and install a **code editor** like **Sublime Text** or **Notepad++**
+
+### 📦 Step 2: Download the Project
+- Download the project ZIP file
+- Extract the folder: `Payroll_Management_System`
+
+### 📂 Step 3: Copy to XAMPP Directory
+- Copy the extracted folder
+- Paste it into your XAMPP directory path:  
+
+### 🌐 Step 4: Setup the Database
+1. Open your browser and go to:  
+http://localhost/phpmyadmin
+
+2. Click on **""New""** to create a new database
+3. Name the database:  
+4. Click **Import**
+5. Upload the file `payroll.sql` from the project's `SQL` folder
+6. Click **Go** to import the database
+
+### 🚀 Step 5: Run the Project
+- Open your browser
+- Go to:  
+http://localhost/Payroll_Management_System/
+
+### 🔐 Step 6: Login Credentials
+- **Username:** `admin`  
+- **Password:** `admin123`  
+
+---
+
+## 📌 Notes
+- Make sure Apache and MySQL are running in XAMPP Control Panel
+- Recommended browsers: Chrome, Firefox, Opera
+
+---
+
+","projecthub0003@gmail.com","6380373560","https://www.instagram.com/buildwithcodecat?igsh=MW9nMXRwajV6d2oycA==","php","1299","academic","false","true","true","3","2025-04-24 00:00:00","cm8vgebhn0000jr03jfa4wrm3","2025-04-24 06:33:50.165","2025-04-24 06:33:50.165"
+"cm9x21g9p0001ld049glbwvyx","DJ Management System","This project provides a full-featured DJ Management System built with PHP and MySQL, designed to manage bookings, schedules, events, and customer relationships for DJs. It helps DJs track their events, communicate with clients, and manage performance schedules, all within a user-friendly, responsive interface.","DJ profile management (personal details).,Event and booking management for DJ performances.,Schedule calendar for tracking bookings and availability.,Client management with contact and event history.,Event details (date, time, location, requirements).,Admin panel to manage DJs, clients, and events.,Real-time notifications for new bookings and updates.,Event and booking status updates (confirmed, completed).,Secure login system with role-based access control.","php,mysql,html,css,javascript","https://youtu.be/HrAb5JwPU_o",,"🎶 Online DJ Management System - Installation Guide
+📥 Prerequisites
+Download XAMPP
+
+XAMPP is required to run Apache and MySQL locally. Download from XAMPP.
+
+Download a Text Editor
+
+Install a text editor for coding, such as:
+
+Notepad++
+
+Sublime Text 3
+
+Or any other text editor of your choice.
+
+Download ""CSMS"" (Online DJ Management System)
+
+Download the ZIP file of the Online DJ Management System (odjms).
+
+Extract the ZIP File
+
+Use WinRAR or your preferred file extraction tool to extract the ZIP file.
+
+Copy the ""odjms"" Folder
+
+After extracting the ZIP file, copy the folder named odjms.
+
+Paste Inside the Root Directory
+
+Paste the odjms folder inside the root directory of your XAMPP installation:
+
+For XAMPP:
+
+makefile
+Copy code
+C:\xampp\htdocs\
+🛢️ Database Configuration
+Open PHPMyAdmin
+
+In your web browser, open:
+
+arduino
+Copy code
+http://localhost/phpmyadmin
+Create a New Database
+
+In PHPMyAdmin, create a new database named:
+
+nginx
+Copy code
+odjms_db
+Import the SQL File
+
+Go to the SQL tab in the PHPMyAdmin interface.
+
+Import the SQL file provided inside the ZIP package:
+
+Navigate to the odjms_db.sql file located in the SQL folder within the extracted ZIP package.
+
+Click Go to import the database schema.
+
+🌐 Running the Application
+Open the Application
+
+In your browser, visit:
+
+arduino
+Copy code
+http://localhost/odjms
+🔑 Login Details
+Admin Panel
+Email: admin
+
+Password: admin123
+
+Sample User Access
+----------------------------------------------------
+create your own
+
+
+
+","projecthub0003@gmail.com","9884426414","https://www.instagram.com/buildwithcodecat?igsh=MW9nMXRwajV6d2oycA==","php","1199","academic","false","true","true","3","2025-04-25 00:00:00","cm8vuhghi0000l903p65r2fyk","2025-04-25 17:17:41.909","2025-04-25 17:17:41.909"

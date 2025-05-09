@@ -4,7 +4,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { Navbar } from "@/components/ui/navbar";
 import { Toaster } from "sonner";
 import "./globals.css";
-import { dark } from '@clerk/themes'
+import { dark, neobrutalism } from '@clerk/themes'
 import { Sparkles } from "@/components/ui/sparkles";
 import { PhoneCollectionModal } from "@/components/ui/phone-collection-modal";
 
@@ -78,7 +78,7 @@ export default function RootLayout({
   return (
     <ClerkProvider
       appearance={{
-        baseTheme: dark,
+        baseTheme: neobrutalism,
         elements: {
           card: "bg-slate-900/50 border border-slate-800/50 backdrop-blur-xl",
           headerTitle: "text-white",

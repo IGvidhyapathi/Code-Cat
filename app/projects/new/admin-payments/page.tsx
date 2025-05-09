@@ -15,20 +15,29 @@ interface Payment {
   amount: number;
   currency: string;
   status: string;
-  razorpayPaymentId: string;
+  projectStatus: string;
+  razorpayPaymentId: string | null;
+  razorpayOrderId: string | null;
+  razorpaySignature: string | null;
+  metadata: any;
   projectId: string;
+  userId: string;
   createdAt: string;
   project: {
     id: string;
     title: string;
-    category: string;
+    user: {
+      firstName: string;
+      lastName: string;
+    };
   };
   user: {
     id: string;
-    firstName: string | null;
-    lastName: string | null;
+    firstName: string;
+    lastName: string;
     email: string | null;
     phone: string | null;
+    imageUrl?: string;
   };
 }
 
@@ -87,7 +96,7 @@ export default function AdminPaymentsPage() {
   // Filter payments based on search
   const filteredPayments = payments.filter(payment => 
     payment.project.title.toLowerCase().includes(debouncedSearchQuery.toLowerCase()) ||
-    payment.razorpayPaymentId.toLowerCase().includes(debouncedSearchQuery.toLowerCase()) ||
+    payment.razorpayPaymentId?.toLowerCase().includes(debouncedSearchQuery.toLowerCase()) ||
     (payment.user.firstName && payment.user.firstName.toLowerCase().includes(debouncedSearchQuery.toLowerCase())) ||
     (payment.user.lastName && payment.user.lastName.toLowerCase().includes(debouncedSearchQuery.toLowerCase())) ||
     (payment.user.email && payment.user.email.toLowerCase().includes(debouncedSearchQuery.toLowerCase())) ||
@@ -120,6 +129,37 @@ export default function AdminPaymentsPage() {
       router.push('/projects/new');
     }
   }, [isLoading, isPinVerified, isSignedIn, router]);
+
+  const updateProjectStatus = async (paymentId: string, newStatus: string) => {
+    try {
+      const response = await fetch(`/api/payments/admin/${paymentId}/status`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ projectStatus: newStatus }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to update status');
+      }
+
+      const updatedPayment = await response.json();
+      
+      // Update the local state with the new status
+      setPayments(payments.map(payment => 
+        payment.id === paymentId 
+          ? { ...payment, projectStatus: updatedPayment.projectStatus }
+          : payment
+      ));
+      
+      toast.success('Status updated successfully');
+    } catch (error) {
+      console.error('Error updating status:', error);
+      toast.error(error instanceof Error ? error.message : 'Failed to update status');
+    }
+  };
 
   if (!isSignedIn) {
     return (
@@ -271,7 +311,10 @@ export default function AdminPaymentsPage() {
                             Amount
                           </th>
                           <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                            Status
+                            Project Status
+                          </th>
+                          <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                            Payment Status
                           </th>
                           <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
                             Date
@@ -305,15 +348,25 @@ export default function AdminPaymentsPage() {
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
                               <div className="flex items-center">
-                                <span className="flex-shrink-0 h-8 w-8 rounded-full bg-slate-700 flex items-center justify-center text-sm text-white">
-                                  <IconUser className="h-4 w-4" />
-                                </span>
-                                <div className="ml-3">
+                                <div className="h-10 w-10 flex-shrink-0">
+                                  {payment.user?.imageUrl ? (
+                                    <img
+                                      src={payment.user.imageUrl}
+                                      alt={`${payment.user.firstName} ${payment.user.lastName}`}
+                                      className="h-10 w-10 rounded-full object-cover"
+                                    />
+                                  ) : (
+                                    <div className="h-10 w-10 rounded-full bg-slate-700 flex items-center justify-center">
+                                      <IconUser className="h-6 w-6 text-slate-400" />
+                                    </div>
+                                  )}
+                                </div>
+                                <div className="ml-4">
                                   <div className="text-sm font-medium text-white">
-                                    {payment.user.firstName} {payment.user.lastName}
+                                    {payment.user?.firstName} {payment.user?.lastName}
                                   </div>
                                   <div className="text-xs text-gray-400">
-                                    {payment.user.email}
+                                    {payment.user?.email}
                                   </div>
                                 </div>
                               </div>
@@ -328,19 +381,36 @@ export default function AdminPaymentsPage() {
                                 <span className="text-gray-500 italic">Not provided</span>
                               )}
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
-                              {formatAmount(payment.amount, payment.currency)}
+                            <td className="px-6 py-4 whitespace-nowrap text-sm">
+                              <span className={`font-semibold ${
+                                payment.status === 'success' ? 'text-emerald-400' :
+                                payment.status === 'failed' ? 'text-red-400' :
+                                'text-yellow-400'
+                              }`}>
+                                {formatAmount(payment.amount, payment.currency)}
+                              </span>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
-                              <span className={`px-2.5 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                                payment.status === 'success' 
-                                  ? 'bg-green-100 text-green-800' 
-                                  : payment.status === 'failed'
-                                  ? 'bg-red-100 text-red-800'
-                                  : 'bg-yellow-100 text-yellow-800'
+                              <select
+                                value={payment.projectStatus}
+                                onChange={(e) => updateProjectStatus(payment.id, e.target.value)}
+                                className="bg-slate-800 border border-slate-700 rounded-md px-3 py-1.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                              >
+                                <option value="Ordered">Ordered</option>
+                                <option value="Communication">Communication</option>
+                                <option value="DeliveryInProgress">Delivery in Progress</option>
+                                <option value="Delivered">Delivered</option>
+                              </select>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                                payment.status === 'success' ? 'bg-green-100 text-green-800' :
+                                payment.status === 'failed' ? 'bg-red-100 text-red-800' :
+                                'bg-yellow-100 text-yellow-800'
                               }`}>
-                                {payment.status === 'success' && <IconCheck className="w-3 h-3 mr-1" />}
-                                {payment.status.charAt(0).toUpperCase() + payment.status.slice(1)}
+                                {payment.status === 'success' ? 'Success' :
+                                 payment.status === 'failed' ? 'Failed' :
+                                 'Pending'}
                               </span>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">

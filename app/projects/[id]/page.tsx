@@ -4,7 +4,7 @@ import { useEffect, useState, useRef } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
-import { IconBrandYoutube, IconExternalLink, IconShare, IconDownload, IconArrowLeft, IconStar, IconEye, IconHeart, IconUser, IconMail, IconBrandGithub, IconBrandTwitter, IconBrandGoogle, IconCreditCard, IconInfoCircle, IconDeviceDesktop, IconCheck, IconPhone, IconCalendar, IconX } from "@tabler/icons-react";
+import { IconArrowLeft, IconBrandGithub, IconBrandGoogle, IconBrandTwitter, IconBrandYoutube, IconCalendar, IconCheck, IconCreditCard, IconDeviceDesktop, IconDownload, IconExternalLink, IconEye, IconHeart, IconHome, IconInfoCircle, IconMail, IconPhone, IconShare, IconStar, IconUser, IconX } from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
 import { Sparkles } from "@/components/ui/sparkles";
 import { marked } from "marked";
@@ -105,7 +105,7 @@ function ProjectSkeleton() {
                 {[1, 2, 3, 4].map((i) => (
                   <div key={i} className="bg-slate-800/50 rounded-xl p-5 border border-slate-700/50 animate-pulse">
                     <div className="h-16 w-full bg-slate-800 rounded"></div>
-                  </div>
+          </div>
                 ))}
               </div>
             </div>
@@ -120,7 +120,7 @@ function ProjectSkeleton() {
                   <div className="space-y-2">
                     <div className="h-6 w-32 bg-slate-700 rounded animate-pulse"></div>
                     <div className="h-8 w-40 bg-slate-700 rounded animate-pulse"></div>
-                  </div>
+            </div>
                   <div className="h-12 w-full bg-slate-700 rounded animate-pulse"></div>
                   <div className="space-y-3 pt-4 border-t border-slate-700">
                     {[1, 2, 3].map((i) => (
@@ -232,13 +232,13 @@ export default function ProjectDetails() {
         image: '/logo.png',
         handler: async function(response: any) {
           // Handle successful payment
-          toast.success(
+      toast.success(
             'Payment Successful!',
-            {
+        {
               description: `Your payment of ₹${projectPrice} for ${project.title} was successful. Reference: ${response.razorpay_payment_id}`,
-              duration: 5000,
-            }
-          );
+          duration: 5000,
+        }
+      );
           
           // Record the successful payment
           await recordPayment(project.id, response.razorpay_payment_id, projectPrice);
@@ -495,6 +495,9 @@ export default function ProjectDetails() {
                   {paymentId && (
                     <p className="text-xs text-gray-500 mt-2">Transaction ID: {paymentId}</p>
                   )}
+                  <p className="text-sm text-blue-400 mt-2">
+                    Thank you {project.user?.firstName} {project.user?.lastName} for creating this amazing project!
+                  </p>
                 </div>
                 
                 <div className="space-y-4 mb-6">
@@ -504,13 +507,30 @@ export default function ProjectDetails() {
                     <div className="flex gap-3">
                       <div className="w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center text-xs">1</div>
                       <div>
+                        <p className="text-sm text-gray-200">Download AnyDesk</p>
+                        <p className="text-xs text-gray-400">Install AnyDesk for remote setup assistance</p>
+                        <a 
+                          href="https://anydesk.com/download" 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-2 mt-2 px-3 py-1.5 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 rounded-md text-xs transition-colors"
+                        >
+                          <IconDownload className="w-4 h-4" />
+                          Download AnyDesk
+                        </a>
+                      </div>
+                    </div>
+                    
+                    <div className="flex gap-3">
+                      <div className="w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center text-xs">2</div>
+                      <div>
                         <p className="text-sm text-gray-200">Our team will contact you</p>
                         <p className="text-xs text-gray-400">We'll reach out within 24 hours via your registered email</p>
                       </div>
                     </div>
                     
                     <div className="flex gap-3">
-                      <div className="w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center text-xs">2</div>
+                      <div className="w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center text-xs">3</div>
                       <div>
                         <p className="text-sm text-gray-200">Schedule remote setup</p>
                         <p className="text-xs text-gray-400">We'll find a convenient time for project installation</p>
@@ -518,7 +538,7 @@ export default function ProjectDetails() {
                     </div>
                     
                     <div className="flex gap-3">
-                      <div className="w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center text-xs">3</div>
+                      <div className="w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center text-xs">4</div>
                       <div>
                         <p className="text-sm text-gray-200">Project setup & training</p>
                         <p className="text-xs text-gray-400">We'll install everything and teach you how to use it</p>
@@ -537,11 +557,11 @@ export default function ProjectDetails() {
                   <Button 
                     className="flex-1 bg-blue-600 hover:bg-blue-700"
                     onClick={() => {
-                      window.location.href = '/dashboard';
+                      window.location.href = '/explore';
                     }}
                   >
-                    <IconUser className="w-4 h-4 mr-2" />
-                    Dashboard
+                    <IconHome className="w-4 h-4 mr-2" />
+                    Explore More Projects
                   </Button>
                 </div>
               </div>
@@ -883,17 +903,17 @@ export default function ProjectDetails() {
                 >
                   {!isSignedIn ? (
                     <SignInButton mode="modal" fallbackRedirectUrl={`/projects/${project.id}`}>
-                      <Button
+              <Button
                         className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-md py-5 transition-colors duration-300"
-                      >
+              >
                         <div className="flex items-center justify-center">
                           <IconUser className="w-5 h-5 mr-2" />
                           <span>Sign in to Purchase</span>
                         </div>
-                      </Button>
+              </Button>
                     </SignInButton>
                   ) : (
-                    <Button
+                  <Button
                       onClick={handleRazorpayPayment}
                       disabled={isProcessingPayment || !razorpayLoaded || paymentCompleted || isCheckingPayment}
                       className={`w-full ${
@@ -932,7 +952,7 @@ export default function ProjectDetails() {
                           </>
                         )}
                       </div>
-                    </Button>
+                </Button>
                   )}
                 </motion.div>
                 

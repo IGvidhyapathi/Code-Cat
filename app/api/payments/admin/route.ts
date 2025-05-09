@@ -22,15 +22,17 @@ export async function GET(req: Request) {
     try {
       let sqlQuery = `
         SELECT 
-          p.id, p.amount, p.currency, p.status, p."razorpayPaymentId", 
+          p.id, p.amount, p.currency, p.status, p."projectStatus", p."razorpayPaymentId", 
           p."projectId", p."createdAt", p."userId",
           proj.id as "project_id", proj.title as "project_title", 
           proj.category as "project_category",
-          u.id as "user_id", u."firstName" as "user_firstName", u."lastName" as "user_lastName", 
-          u.email as "user_email", u.phone as "user_phone"
+          u."firstName" as "user_firstName", u."lastName" as "user_lastName",
+          u."email" as "user_email", u."imageUrl" as "user_imageUrl",
+          u."phone" as "user_phone"
         FROM payments p
         JOIN projects proj ON p."projectId" = proj.id
         JOIN "User" u ON p."userId" = u.id
+        WHERE 1=1
       `;
       
       const queryParams: any[] = [];
@@ -38,7 +40,7 @@ export async function GET(req: Request) {
       
       // Start WHERE clause if we have filters
       if (projectId || searchQuery) {
-        sqlQuery += ' WHERE';
+        sqlQuery += ' AND';
       }
       
       // Add project filter if provided
@@ -60,14 +62,17 @@ export async function GET(req: Request) {
           p."razorpayPaymentId" ILIKE $${paramCounter} OR
           u."firstName" ILIKE $${paramCounter} OR
           u."lastName" ILIKE $${paramCounter} OR
-          u.email ILIKE $${paramCounter} OR
-          u.phone ILIKE $${paramCounter}
+          u."email" ILIKE $${paramCounter} OR
+          u."phone" ILIKE $${paramCounter}
         )`;
         queryParams.push(`%${searchQuery}%`);
       }
       
       // Add order by
       sqlQuery += ` ORDER BY p."createdAt" DESC`;
+      
+      console.log('Executing SQL query:', sqlQuery);
+      console.log('With parameters:', queryParams);
       
       const results: any[] = await prisma.$queryRawUnsafe(sqlQuery, ...queryParams);
       
@@ -77,6 +82,7 @@ export async function GET(req: Request) {
         amount: row.amount,
         currency: row.currency,
         status: row.status,
+        projectStatus: row.projectStatus || 'Ordered',
         razorpayPaymentId: row.razorpayPaymentId,
         projectId: row.projectId,
         userId: row.userId,
@@ -87,10 +93,10 @@ export async function GET(req: Request) {
           category: row.project_category
         },
         user: {
-          id: row.user_id,
           firstName: row.user_firstName,
           lastName: row.user_lastName,
           email: row.user_email,
+          imageUrl: row.user_imageUrl,
           phone: row.user_phone
         }
       }));

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useState, useEffect } from "react";
-import { IconMenu2, IconX, IconPlus, IconSearch, IconHome, IconApps, IconChartBar, IconHelp, IconCreditCard } from "@tabler/icons-react";
+import { IconMenu2, IconX, IconPlus, IconSearch, IconHome, IconApps, IconChartBar, IconHelp, IconCreditCard, IconAdjustmentsSpark } from "@tabler/icons-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { SignInButton, UserButton, useUser } from "@clerk/nextjs";
 import { cn } from "@/lib/utils";
@@ -92,8 +92,8 @@ export function Navbar() {
                   className="bg-slate-800/50 hover:bg-slate-800/80 text-white"
                 >
                   <Link href="/projects/new">
-                    <IconPlus className="mr-2 h-4 w-4" />
-                    Add Project
+                    <IconAdjustmentsSpark className="mr-2 h-4 w-4" />
+                    Admin 
                   </Link>
                 </Button>
               </div>
@@ -171,8 +171,8 @@ export function Navbar() {
                     asChild
                   >
                     <Link href="/projects/new">
-                      <IconPlus size={18} />
-                      <span>Add Project</span>
+                      <IconAdjustmentsSpark size={18} />
+                      <span>Admin</span>
                     </Link>
                   </Button>
                   <div className="flex items-center justify-between">
