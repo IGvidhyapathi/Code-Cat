@@ -16,6 +16,7 @@ interface Payment {
   currency: string;
   status: string;
   projectStatus: string;
+  project_taken: string | null;
   razorpayPaymentId: string | null;
   razorpayOrderId: string | null;
   razorpaySignature: string | null;
@@ -81,7 +82,12 @@ export default function AdminPaymentsPage() {
         }
         
         const data = await response.json();
-        setPayments(data);
+        // Ensure project_taken is included in the data
+        const formattedData = data.map((payment: any) => ({
+          ...payment,
+          project_taken: payment.project_taken || null
+        }));
+        setPayments(formattedData);
       } catch (error) {
         console.error('Error fetching payments:', error);
         toast.error('Failed to load payment history');
@@ -159,6 +165,41 @@ export default function AdminPaymentsPage() {
     } catch (error) {
       console.error('Error updating status:', error);
       toast.error(error instanceof Error ? error.message : 'Failed to update status');
+      
+      // Revert the local state if the update failed
+      setPayments(payments);
+    }
+  };
+
+  const updateProjectTaken = async (paymentId: string, projectTaken: string) => {
+    try {
+      // Update the local state immediately for better UX
+      setPayments(payments.map(payment => 
+        payment.id === paymentId 
+          ? { ...payment, project_taken: projectTaken }
+          : payment
+      ));
+
+      // Update in database
+      const response = await fetch(`/api/payments/update-status`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          paymentId,
+          projectTaken 
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update project taken');
+      }
+      
+      toast.success('Project taken updated successfully');
+    } catch (error) {
+      console.error('Error updating project taken:', error);
+      toast.error(error instanceof Error ? error.message : 'Failed to update project taken');
       
       // Revert the local state if the update failed
       setPayments(payments);
@@ -318,6 +359,9 @@ export default function AdminPaymentsPage() {
                             Project Status
                           </th>
                           <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                            Project Taken
+                          </th>
+                          <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
                             Payment Status
                           </th>
                           <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
@@ -404,6 +448,19 @@ export default function AdminPaymentsPage() {
                                 <option value="Communication">Communication</option>
                                 <option value="DeliveryInProgress">Delivery in Progress</option>
                                 <option value="Delivered">Delivered</option>
+                              </select>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <select
+                                value={payment.project_taken || ''}
+                                onChange={(e) => updateProjectTaken(payment.id, e.target.value)}
+                                className="bg-slate-800 border border-slate-700 rounded-md px-3 py-1.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                              >
+                                <option value="">Select Person</option>
+                                <option value="Vidhyapathi">Vidhyapathi</option>
+                                <option value="Dharun">Dharun</option>
+                                <option value="Bharathkumar">Bharathkumar</option>
+                                <option value="Manoj">Manoj</option>
                               </select>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">

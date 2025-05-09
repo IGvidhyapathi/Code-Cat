@@ -30,6 +30,7 @@ interface Payment {
   projectId: string;
   userId: string;
   createdAt: string;
+  project_taken: string | null;
   project: {
     id: string;
     title: string;
@@ -219,6 +220,7 @@ export default function PaymentsPage() {
                           <th className="px-6 py-4 text-left text-sm font-medium text-gray-400">Amount</th>
                           <th className="px-6 py-4 text-left text-sm font-medium text-gray-400">Payment Status</th>
                           <th className="px-6 py-4 text-left text-sm font-medium text-gray-400">Project Status</th>
+                          <th className="px-6 py-4 text-left text-sm font-medium text-gray-400">Project Taken By</th>
                           <th className="px-6 py-4 text-left text-sm font-medium text-gray-400">Date</th>
                           <th className="px-6 py-4 text-right text-sm font-medium text-gray-400">Actions</th>
                         </tr>
@@ -294,6 +296,13 @@ export default function PaymentsPage() {
                                   </Tooltip>
                                 </TooltipProvider>
                               </div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm">
+                              {payment.project_taken ? (
+                                <span className="text-emerald-400 font-medium">{payment.project_taken}</span>
+                              ) : (
+                                <span className="text-gray-500 italic">Not yet assigned</span>
+                              )}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
                               {formatDate(payment.createdAt)}

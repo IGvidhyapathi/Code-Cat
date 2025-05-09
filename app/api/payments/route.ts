@@ -150,7 +150,7 @@ export async function GET(req: Request) {
       let sqlQuery = `
         SELECT 
           p.id, p.amount, p.currency, p.status, p."projectStatus", p."razorpayPaymentId", 
-          p."projectId", p."createdAt", p."userId",
+          p."projectId", p."createdAt", p."userId", p."project_taken",
           proj.id as "project_id", proj.title as "project_title", 
           proj.category as "project_category",
           u."firstName" as "user_firstName", u."lastName" as "user_lastName"
@@ -194,6 +194,7 @@ export async function GET(req: Request) {
         projectId: row.projectId,
         userId: row.userId,
         createdAt: row.createdAt,
+        project_taken: row.project_taken,
         project: {
           id: row.project_id,
           title: row.project_title,
