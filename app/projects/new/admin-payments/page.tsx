@@ -132,32 +132,36 @@ export default function AdminPaymentsPage() {
 
   const updateProjectStatus = async (paymentId: string, newStatus: string) => {
     try {
-      const response = await fetch(`/api/payments/admin/${paymentId}/status`, {
-        method: 'PATCH',
+      // Update the local state immediately for better UX
+      setPayments(payments.map(payment => 
+        payment.id === paymentId 
+          ? { ...payment, projectStatus: newStatus }
+          : payment
+      ));
+
+      // Update in database
+      const response = await fetch(`/api/payments/update-status`, {
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ projectStatus: newStatus }),
+        body: JSON.stringify({ 
+          paymentId,
+          projectStatus: newStatus 
+        }),
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to update status');
+        throw new Error('Failed to update status');
       }
-
-      const updatedPayment = await response.json();
-      
-      // Update the local state with the new status
-      setPayments(payments.map(payment => 
-        payment.id === paymentId 
-          ? { ...payment, projectStatus: updatedPayment.projectStatus }
-          : payment
-      ));
       
       toast.success('Status updated successfully');
     } catch (error) {
       console.error('Error updating status:', error);
       toast.error(error instanceof Error ? error.message : 'Failed to update status');
+      
+      // Revert the local state if the update failed
+      setPayments(payments);
     }
   };
 
