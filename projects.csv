@@ -309,7 +309,7 @@ The AI algorithms analyze user preferences and travel history to suggest destina
 
 ","projecthub0003@gmail.com","9884426414","https://www.instagram.com/__manoj__004/","ai","2849","academic","true","true","true","3","2025-03-30 00:00:00","cm8vuhghi0000l903p65r2fyk","2025-03-30 16:18:43.3","2025-03-30 16:18:43.3"
 "cm987yw9c00012mm7t5o1hvyy","Cloth Selling Website using HTML and CSS","
-This is a responsive and visually appealing clothing store website built using only HTML and CSS. It showcases a modern layout for an online fashion store, including a homepage, product listings, and a contact section. The design focuses on user-friendly navigation, clean typography, and a mobile-friendly interface to enhance the shopping experience.","Home page with banner and featured collections, Navigation bar with smooth scroll links,Fully responsive design (mobile, tablet, desktop),Stylish hover effects and transitions,Contact form layout (non-functional)","HTML,CSS,JS,Google fonts","https://youtu.be/PKHo-eDfJ14",,"# 🧰 HTML Setup Guide
+This is a responsive and visually appealing clothing store website built using only HTML and CSS. It showcases a modern layout for an online fashion store, including a homepage, product listings, and a contact section. The design focuses on user-friendly navigation, clean typography, and a mobile-friendly interface to enhance the shopping experience.","Home page with banner and featured collections, Navigation bar with smooth scroll links,Fully responsive design (mobile, tablet, desktop),Stylish hover effects and transitions,Contact form layout (non-functional)","HTML,CSS,JS,Google fonts","https://youtu.be/PKHo-eDfJ14","","# 🧰 HTML Setup Guide
 
 This guide will help you get started with a basic HTML project on your local machine.
 
@@ -329,7 +329,7 @@ This guide will help you get started with a basic HTML project on your local mac
 ```bash
 mkdir my-html-project
 cd my-html-project
-","projecthub0003@gmail.com","6382667158","https://www.instagram.com/_vidhyapathi/","html","300","academic","false","true","true","1","2025-04-08 00:00:00","cm8e5f94r00002ms6q0dmfqjg","2025-04-08 08:09:25.969","2025-04-08 08:09:25.969"
+","projecthub0003@gmail.com","6382667158","https://www.instagram.com/_vidhyapathi/","html","299","academic","false","true","true","1","2025-04-08 00:00:00","cm8e5f94r00002ms6q0dmfqjg","2025-04-08 08:09:25.969","2025-05-02 13:45:54.044"
 "cm9gw0dwe0002la04ruwul3yi","AI Mock Interview using Python","An AI mock interview using Python is a simulated interview environment powered by artificial intelligence to help candidates prepare for real-life job interviews. It leverages Python-based machine learning and natural language processing libraries to create an interactive platform that mimics the behavior of a human interviewer. The system can ask relevant questions based on the user's selected domain—such as data science, web development, or machine learning—and analyze the candidate's responses in real-time, providing constructive feedback on communication skills, technical accuracy, and confidence level. With features like speech-to-text conversion, response scoring, and personalized suggestions, this AI-powered tool offers a cost-effective and accessible way for job seekers to refine their interviewing skills and boost their confidence before attending actual interviews.","Interactive interview simulation tailored to various domains like data science and web development,Real-time question and answer environment with instant feedback,Speech-to-text and text-to-speech capabilities for voice-based interaction,Automated evaluation of candidate responses based on accuracy, fluency, and relevance,Personalized feedback and improvement suggestions after each session,Database integration to store interview history and track progress,User-friendly interface with easy navigation and customization options,Integration with machine learning and NLP libraries for intelligent question generation,Support for multiple difficulty levels to match the candidate's experience,Option to conduct technical, HR, or behavioral interview simulations","python,Streamlit,Groq,Langchain","https://youtu.be/W4goPSpaNj8",,"# 🎙 AI Mock Interview Coach
 
 AI Interview Assistant is a Streamlit-based web application that helps users practice job interviews using AI-powered feedback. It generates interview questions based on a job description, allows users to respond via speech, transcribes their answers, and provides AI-driven analysis and feedback.
@@ -1167,7 +1167,7 @@ This guide will help you install and run the Smart Agriculture System (PHP Versi
 git clone https://github.com/your-username/smart-agriculture-system.git
 cd smart-agriculture-system
 ","projecthub0003@gmail.com","6382667158","https://www.instagram.com/buildwithcodecat?igsh=MW9nMXRwajV6d2oycA==","php","1299","academic","true","true","true","1","2025-04-22 00:00:00","cm8e5f94r00002ms6q0dmfqjg","2025-04-22 17:15:03.792","2025-04-22 17:15:59.14"
-"cm9u3rkt70001jr04g52er5d4","Inventory Management System "," Inventory Management System is a powerful and user-friendly web application built using PHP and MySQL for managing products and monitoring inventory. It provides an efficient platform for users to add, update, delete, and track stock levels in real-time. Designed with Bootstrap, JavaScript, and AJAX, the system ensures reliability, faster performance, and an intuitive UI.","🔐 Admin Login Panel,➕ Add, ✏️ Edit, 🗑️ Delete Products,📦 Real-time Inventory Tracking,📊 Dashboard for Inventory Overview,📁 Category and Supplier Management,🔍 Live Search with AJAX,📈 Stock In/Out Management,📃 Sales and Purchase Report,🧾 Printable Invoices,📅 Date-wise filtering and report generation,🛠️ Technologies Used","php,mysql,javascript,bootstrap,jquery,html,css","https://youtu.be/ShnCFrOob9o",,"# 📦 Advance Inventory Management System
+"cm9u3rkt70001jr04g52er5d4","Inventory Management System "," Inventory Management System is a powerful and user-friendly web application built using PHP and MySQL for managing products and monitoring inventory. It provides an efficient platform for users to add, update, delete, and track stock levels in real-time. Designed with Bootstrap, JavaScript, and AJAX, the system ensures reliability, faster performance, and an intuitive UI.","🔐 Admin Login Panel,➕ Add, ✏️ Edit, 🗑️ Delete Products,📦 Real-time Inventory Tracking,📊 Dashboard for Inventory Overview,📁 Category and Supplier Management,🔍 Live Search with AJAX,📈 Stock In/Out Management,📃 Sales and Purchase Report,🧾 Printable Invoices,📅 Date-wise filtering and report generation,🛠️ Technologies Used","php,mysql,javascript,bootstrap,jquery,html,css","https://youtu.be/ShnCFrOob9o","","# 📦 Advance Inventory Management System
 
 ## ⚙️ Setup Instructions
 
@@ -1184,7 +1184,7 @@ cd smart-agriculture-system
 
 ---
 
-","projecthub0003@gmail.com","6380373560","https://www.instagram.com/buildwithcodecat?igsh=MW9nMXRwajV6d2oycA==","php","1199","academic","false","true","true","3","2025-04-23 00:00:00","cm8vgebhn0000jr03jfa4wrm3","2025-04-23 15:42:41.944","2025-04-23 15:42:41.944"
+","projecthub0003@gmail.com","6380373560","https://www.instagram.com/buildwithcodecat?igsh=MW9nMXRwajV6d2oycA==","php","1199","academic","false","true","true","3","2025-04-23 00:00:00","cm8vgebhn0000jr03jfa4wrm3","2025-04-23 15:42:41.944","2025-04-29 09:17:42.025"
 "cm9uzll5h0001if04xn75frob","Payroll Management System","The Payroll Management System is a web-based application designed to simplify and automate salary computation, attendance tracking, and employee record management. Built using PHP and MySQL, this system ensures accuracy, reliability, and user-friendliness through its clean Bootstrap-powered UI and efficient JavaScript/AJAX-based interactions.","Admin Dashboard with full CRUD operations,Role-based access control (Admin & Staff),Employee management (Add, Edit, Delete, View),Attendance tracking with Time In/Time Out,Automated payroll calculation and history,Department and Position management,Allowance and Deduction configuration,User management with login authentication,Real-time search, filter, and pagination options,Secure login system with validation,Local Server: XAMPP / WAMP / MAMP / LAMP,Browser Compatibility: Chrome, Firefox, Opera, Internet Explorer 8+","php,mysql,html,css,bootstrap,javascript,jquery","https://youtu.be/l_2g-aHiuNc",,"# 🔧 How to Run Payroll Management System (PHP + MySQL)
 
 Follow these steps to set up and run the Payroll Management System locally using XAMPP or any compatible local server stack.
@@ -1316,3 +1316,214 @@ create your own
 
 
 ","projecthub0003@gmail.com","9884426414","https://www.instagram.com/buildwithcodecat?igsh=MW9nMXRwajV6d2oycA==","php","1199","academic","false","true","true","3","2025-04-25 00:00:00","cm8vuhghi0000l903p65r2fyk","2025-04-25 17:17:41.909","2025-04-25 17:17:41.909"
+"cma6uge9t0001i804eq7v9020","Employee Management System","	A PHP-MySQL-based web application that streamlines employee management, including tasks like employee record keeping, project assignment, salary management, and leave processing, with dedicated Admin and User dashboards.
+","Admin and Employee (User) dashboards,Add, edit, view, and delete employee profiles,Assign and track project status,Manage employee salary with bonuses,Process and approve employee leave requests,Employee profile management and password change,Secure authentication for Admin and Users,Data validation and status update using Ajax","bootstrap,php,mysql,javascript,jquery","https://youtu.be/ucAqQwrZgSs",,"## How to Run the Employee Management System Project
+
+Follow these steps to set up and run the project on your local machine:
+
+1. **Install XAMPP / WAMP / LAMP / MAMP**  
+   Download and install a local server environment such as [XAMPP](https://www.apachefriends.org/download.html).
+
+2. **Install a Text Editor (Optional)**  
+   Recommended: [Notepad++](https://notepad-plus-plus.org/downloads/) or [Sublime Text](https://www.sublimetext.com/3).
+
+3. **Download the Project Files**  
+   Extract the ZIP file and locate the folder named `Employee_Management_System`.
+
+4. **Copy the Project Folder**  
+   Paste the `Employee_Management_System` folder into your server root directory:  
+   - For XAMPP: `C:/xampp/htdocs/`  
+   - For WAMP: `C:/wamp/www/`
+
+5. **Start Apache and MySQL**  
+   Open XAMPP/WAMP control panel and start **Apache** and **MySQL** services.
+
+6. **Setup the Database**  
+   - Open your browser and go to [http://localhost/phpmyadmin](http://localhost/phpmyadmin)  
+   - Create a new database named `ems`  
+   - Import the SQL file:  
+     - Go to the **Import** tab  
+     - Select the `ems.sql` file located inside the project’s **SQL** folder  
+     - Click **Go** to import the database
+
+7. **Run the Application**  
+   Open your browser and visit:  
+   [http://localhost/Employee_Management_System](http://localhost/Employee_Management_System)
+
+
+","projecthub0003@gmail.com","6380373560","https://www.instagram.com/buildwithcodecat?igsh=MW9nMXRwajV6d2oycA==","php","1199","academic","false","true","true","3","2025-05-02 00:00:00","cm8vgebhn0000jr03jfa4wrm3","2025-05-02 13:43:03.996","2025-05-02 13:43:03.996"
+"cma71wqap0001jp0435ftlswp","Fitness Training App","This project is a Fitness Training App built using React Native and Expo, designed to guide users through personalized workout sessions with tracking for calories, workout duration, and progress. It features exercise categories, rest timers, and smooth navigation to deliver an engaging and motivating fitness experience.","Top Dashboard Stats showing total Calories burned (Kcal), Workout count, and Time spent,Workout Types Display with exercise names and repetition counts., 5-Second Break Screen between exercises to allow short recovery time.,Skip & Previous Controls to navigate through exercises easily.,Minimalist Home Page UI for quick access and intuitive user experience.,Real-time Workout Tracking updates based on user interaction., Exercise Sequence Management to guide users through a workout routine.","react native,Expo,javascript,typescript,node.js","https://youtu.be/8_8Pl1bems0",,"⚙️ Installation & Setup Instructions
+✅ Prerequisites
+Node.js and npm installed
+
+Expo CLI installed globally:
+
+nginx
+Copy code
+npm install -g expo-cli
+Git (for cloning repositories)
+
+A code editor like VS Code
+
+Expo Go app installed on your mobile device (for testing)
+🚀 Get Started
+📦 Install Dependencies
+Run the following command in your terminal to install the required packages:
+
+bash
+Copy code
+npm install
+▶️ Run the App
+Start the development server using:
+
+bash
+Copy code
+npm start
+This will launch your app in development mode.
+
+Scan the QR code with the Expo Go app on your phone to open the app.
+
+The app will reload automatically on file changes.
+
+You will see build errors and logs directly in the terminal.
+
+📱 Platform-Specific Commands
+🔹 Run on iOS (Mac only)
+bash
+Copy code
+npm run ios
+Opens your app in the iOS Simulator. Requires Xcode and simulator installed.
+
+🔹 Run on Android
+bash
+Copy code
+npm run android
+Opens your app on a connected Android device or emulator. Ensure Android Studio and build tools are installed.
+See React Native Docs for platform setup.
+
+","projecthub0003@gmail.com","9884426414","https://www.instagram.com/buildwithcodecat?igsh=MW9nMXRwajV6d2oycA==","mobile","1299","academic","false","true","true","3","2025-05-02 00:00:00","cm8vuhghi0000l903p65r2fyk","2025-05-02 17:11:43.391","2025-05-02 17:11:43.391"
+"cma7l9als0001l504yeypcon4","Membership Management System ","A comprehensive Membership Management System that enables administrators to manage memberships, renewals, revenues, and membership cards using PHP and MySQL. The system offers an intuitive admin panel, detailed reporting, and fully functional membership card generation. Ideal for student projects and small organizations.","Admin Panel,Membership Types Management,Manage Members (Add/Edit/Delete),Membership Renewal,Generate & Print Membership Cards,Membership Reports (Printable),Revenue Reports (Printable),System Settings (Name, Logo, Currency),Change Admin Password,Server: XAMPP (Localhost)","bootstrap,html,css,javascript,php,mysql","https://youtu.be/j_rCzPqqPiM","","## How to Run the Membership Management System Project
+
+Follow these step-by-step instructions to set up and run the project locally on your system:
+
+### Requirements
+
+- XAMPP (or any local server with PHP & MySQL support)  
+- Browser (Recommended: Google Chrome or Mozilla Firefox)
+
+### Installation Steps
+
+1. **Download and Extract Project**  
+   Download the project ZIP file and extract it.
+
+2. **Move Project Folder to XAMPP**  
+   Copy the extracted project folder and paste it inside the `htdocs` folder.  
+   **Path Example**: `C:/xampp/htdocs/MembershipM-PHP`
+
+3. **Create MySQL Database**  
+   - Open your browser and go to `http://localhost/phpmyadmin/`  
+   - Click on **Databases** and create a new database 
+
+4. **Import SQL Database File**  
+   - Click on your created database  
+   - Go to the **Import** tab  
+   - Choose the `.sql` file located inside the `DATABASE FILE` folder  
+   - Click **Go** to import the database structure and data
+
+5. **Run the Project**  
+   Open your browser and navigate to:  
+   `http://localhost/[project_folder_name]/`
+
+6. **Login and Use**  
+   Use the login credentials provided in `01 LOGIN DETAILS & PROJECT INFO.txt` to access the Admin Panel and start using the system
+
+### Notes
+
+- Ensure Apache and MySQL services are running from your XAMPP control panel  
+- Recommended PHP version is **7.x**
+
+You're all set! The Membership Management System should now be up and running on your localhost.
+","projecthub0003@gmail.com","6380373560","https://www.instagram.com/buildwithcodecat?igsh=MW9nMXRwajV6d2oycA==","php","1299","academic","false","true","true","1","2025-05-03 00:00:00","cm8vgebhn0000jr03jfa4wrm3","2025-05-03 02:13:22.288","2025-05-03 02:14:09.027"
+"cmac9fuoj0001jx04yunj8de8","POS & Inventory Management System","A comprehensive POS (Point of Sale) and Inventory Management System designed to streamline retail operations, manage stock, process sales, and generate insightful business reports. Built using PHP and CodeIgniter framework with a clean, responsive dashboard UI — perfect for small and medium-sized businesses.","✅ User Authentication (Admin & Staff),✅ Product Management (Add/Edit/Delete Products),✅ Inventory Tracking & Stock Alerts,✅ Sales Management (POS Interface),✅ Customer Management,✅ Daily/Monthly Sales Reports,✅ Invoice Generation & Printing,✅ Secure Payment Handling,✅ Responsive Dashboard UI,✅ Role-Based Access Control,✅ Data Backup & Restore","php,mysql,bootstrap,javascript,jquery","https://youtu.be/0e4HGHEEM_A",,"# PHP Project Setup Guide (XAMPP)
+
+## Installation Steps
+
+1. **Download & Extract**  
+   - Unzip the downloaded project file  
+   - Extract to get `[PROJECT_FOLDER_NAME]` folder  
+
+2. **Move to XAMPP**  
+   - Navigate to XAMPP directory:  
+     `C:\xampp\htdocs\` (Windows) or `/opt/lampp/htdocs/` (Linux/Mac)  
+   - Paste the `[PROJECT_FOLDER_NAME]` folder here  
+
+3. **Database Setup**  
+   - Access phpMyAdmin: `http://localhost/phpmyadmin`  
+   - Create database named as in `01_LOGIN_DETAILS.txt`  
+   - Import SQL file from: `[PROJECT_FOLDER_NAME]/DATABASE_FILE/database.sql`  
+
+4. **Run Project**  
+   Access in browser: `http://localhost/[PROJECT_FOLDER_NAME]/`  
+
+## Login Credentials  
+Admin Access:  
+- URL: `http://localhost/[PROJECT_FOLDER_NAME]/admin`  
+- Username: `admin`  
+- Password: `admin123`  
+
+
+
+
+","projecthub0003@gmail.com","6380373560","https://www.instagram.com/buildwithcodecat?igsh=MW9nMXRwajV6d2oycA==","php","1299","academic","false","true","true","3","2025-05-06 00:00:00","cm8vgebhn0000jr03jfa4wrm3","2025-05-06 08:41:23.726","2025-05-06 08:41:23.726"
+"cmae42x7b0001jy04n7c15gaw","Resort Management System","The Online Resort Management System is a web-based application developed using PHP and MySQL to streamline operations like room bookings, check-in/check-out, billing, and resort activity scheduling. It provides an all-in-one platform for resort staff and customers to manage reservations, services, and resort experiences online.","Online room booking system with availability calendar.,User registration and login system with email verification.,Admin dashboard to manage bookings, rooms, users, and reports.,Real-time check-in/check-out tracking and room status updates.,Billing and invoice generation for guests.,Resort activity (e.g., spa, tours).,Secure login with role-based access for  admin.,Responsive UI for desktop, tablet, and mobile users.","php,mysql,html,css,javascript,bootstrap","https://youtu.be/5U96cN-CzFI",,"⚙️ Installation & Setup Instructions
+✅ Requirements
+XAMPP / WAMP / LAMP stack
+
+Browser (Chrome, Firefox, etc.)
+
+Code editor (VS Code, Sublime, etc.)
+
+🧩 Steps to Run the Project
+Download and Extract the Project
+
+Download the ZIP file of the project.
+
+Extract it and copy the folder named resortms.
+
+Place the Folder in Your Server’s Root Directory
+
+For XAMPP:
+
+makefile
+Copy code
+C:\xampp\htdocs\resortms
+Set Up the Database
+
+Open your browser and go to:
+
+arduino
+Copy code
+http://localhost/phpmyadmin
+Create a new database:
+
+nginx
+Copy code
+orms_db
+Import the SQL file:
+
+Inside the extracted project folder, locate orms_db.sql.
+
+Import it into the database you just created.
+
+Run the Application
+
+Open your browser and visit:
+
+arduino
+Copy code
+http://localhost/resortms
+🔐 Login Details
+Admin Login
+Username: admin
+
+Password: admin123","projecthub0003@gmail.com","9884426414","https://www.instagram.com/buildwithcodecat?igsh=MW9nMXRwajV6d2oycA==","php","1199","academic","false","true","true","3","2025-05-07 00:00:00","cm8vuhghi0000l903p65r2fyk","2025-05-07 15:46:54.74","2025-05-07 15:46:54.74"

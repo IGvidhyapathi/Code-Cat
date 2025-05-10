@@ -86,17 +86,6 @@ export function Navbar() {
           {/* Auth Section */}
           {isSignedIn ? (
             <div className="flex items-center space-x-4">
-              <div className="hidden sm:block">
-                <Button
-                  asChild
-                  className="bg-slate-800/50 hover:bg-slate-800/80 text-white"
-                >
-                  <Link href="/projects/new">
-                    <IconAdjustmentsSpark className="mr-2 h-4 w-4" />
-                    Admin 
-                  </Link>
-                </Button>
-              </div>
               <UserButton 
                 afterSignOutUrl="/"
                 appearance={{
@@ -164,17 +153,6 @@ export function Navbar() {
               {/* Auth Section */}
               {isSignedIn ? (
                 <div className="pt-4 border-t border-slate-800/50 space-y-4">
-                  <Button
-                    variant="ghost"
-                    className="w-full justify-start space-x-2 bg-blue-600/10 text-blue-400 hover:bg-blue-600/20 hover:text-blue-400"
-                    onClick={() => setIsOpen(false)}
-                    asChild
-                  >
-                    <Link href="/projects/new">
-                      <IconAdjustmentsSpark size={18} />
-                      <span>Admin</span>
-                    </Link>
-                  </Button>
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-gray-400">Account</span>
                     <UserButton 
