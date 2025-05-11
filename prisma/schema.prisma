@@ -17,6 +17,13 @@ enum ProjectStatus {
   Delivered
 }
 
+enum UserRole {
+  Admin
+  Member
+  Seller
+  Marketer
+}
+
 model User {
   id        String    @id @default(cuid())
   clerkId   String    @unique
@@ -25,6 +32,7 @@ model User {
   imageUrl  String?
   email     String?
   phone     String?
+  roles     UserRole  @default(Member)
   projects  Project[]
   payments  Payment[]
   createdAt DateTime  @default(now())
@@ -66,6 +74,7 @@ model Payment {
   currency         String        @default("INR")
   status           String
   projectStatus    ProjectStatus @default(Ordered)
+  project_taken String?
   razorpayPaymentId String?      @unique
   razorpayOrderId  String?
   razorpaySignature String?

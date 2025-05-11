@@ -56,6 +56,7 @@ const categoryColors: Record<string, { bg: string, text: string, icon: string }>
 export default function EditProjectList() {
   const router = useRouter();
   const { user, isLoaded } = useUser();
+  const userRole = user?.publicMetadata?.role as string || 'member';
   const [projects, setProjects] = useState<Project[]>([]);
   const [filteredProjects, setFilteredProjects] = useState<Project[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -861,19 +862,21 @@ export default function EditProjectList() {
                         <IconEdit size={18} />
                       </Button>
                       
-                      <Button
-                        onClick={() => handleDeleteProject(project.id)}
-                        size="sm"
-                        variant="outline"
-                        className="px-2.5 bg-red-700/20 border-red-700/50 text-red-400 hover:bg-red-700/30"
-                        disabled={isDeleting[project.id]}
-                      >
-                        {isDeleting[project.id] ? (
-                          <div className="h-4 w-4 border-2 border-t-2 border-red-400 rounded-full animate-spin" />
-                        ) : (
-                          <IconTrash size={18} />
-                        )}
-                      </Button>
+                      {userRole !== 'seller' && (
+                        <Button
+                          onClick={() => handleDeleteProject(project.id)}
+                          size="sm"
+                          variant="outline"
+                          className="px-2.5 bg-red-700/20 border-red-700/50 text-red-400 hover:bg-red-700/30"
+                          disabled={isDeleting[project.id]}
+                        >
+                          {isDeleting[project.id] ? (
+                            <div className="h-4 w-4 border-2 border-t-2 border-red-400 rounded-full animate-spin" />
+                          ) : (
+                            <IconTrash size={18} />
+                          )}
+                        </Button>
+                      )}
                     </div>
                   </div>
                 </motion.div>

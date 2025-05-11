@@ -4,7 +4,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { useUser } from "@clerk/nextjs";
-import { IconUpload, IconLock, IconCheck, IconCopy, IconTrash, IconEdit, IconPlus, IconChevronLeft, IconAlertTriangle, IconCreditCard } from "@tabler/icons-react";
+import { IconUpload, IconLock, IconCheck, IconCopy, IconTrash, IconEdit, IconPlus, IconChevronLeft, IconAlertTriangle, IconCreditCard, IconRocket, IconChartBar } from "@tabler/icons-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,27 +20,27 @@ const LOCKOUT_DURATION = 30; // in seconds
 const TECH_CATEGORIES = {
   frontend: {
     name: "Frontend",
-    keywords: ["react", "vue", "angular", "nextjs", "html", "css", "javascript", "typescript", "tailwind", "bootstrap", "material-ui", "sass", "less", "jquery", "webpack", "babel", "vite", "threejs", "webgl", "svg", "d3"]
+    keywords: ["React", "Vue", "Angular", "Next JS", "HTML", "CSS", "JavaScript", "TypeScript", "Tailwind", "Bootstrap", "Material-UI", "Sass", "Less", "jQuery", "Webpack", "Babel", "Vite", "ThreeJS", "WebGL", "SVG", "D3"]
   },
   backend: {
     name: "Backend",
-    keywords: ["node", "express", "python", "django", "flask", "php", "laravel", "java", "spring", "ruby", "rails", "go", "rust", "c#", ".net"]
+    keywords: ["Node", "Express", "Python", "Django", "Flask", "PHP", "Laravel", "Java", "Spring", "Ruby", "Rails", "Go", "Rust", "C#", ".NET"]
   },
   database: {
     name: "Database",
-    keywords: ["mongodb", "postgresql", "mysql", "firebase", "redis", "elasticsearch", "sqlite", "oracle", "dynamodb", "cassandra"]
+    keywords: ["MongoDB", "PostgreSQL", "MySQL", "Firebase", "Redis", "Elasticsearch", "SQLite", "Oracle", "DynamoDB", "Cassandra"]
   },
   mobile: {
     name: "Mobile",
-    keywords: ["android", "ios", "swift", "kotlin", "flutter", "react native", "xamarin", "ionic"]
+    keywords: ["Android", "iOS", "Swift", "Kotlin", "Flutter", "React Native", "Xamarin", "Ionic"]
   },
   devops: {
     name: "DevOps",
-    keywords: ["docker", "kubernetes", "aws", "azure", "google cloud", "heroku", "vercel", "netlify", "jenkins", "gitlab", "github actions", "ci/cd"]
+    keywords: ["Docker", "Kubernetes", "AWS", "Azure", "Google Cloud", "Heroku", "Vercel", "Netlify", "Jenkins", "GitLab", "GitHub Actions", "CI/CD"]
   },
   apis: {
     name: "APIs & Auth",
-    keywords: ["rest api", "graphql", "oauth", "jwt", "websocket", "grpc", "soap", "openapi"]
+    keywords: ["REST API", "GraphQL", "OAuth", "JWT", "WebSocket", "gRPC", "SOAP", "OpenAPI"]
   }
 };
 
@@ -91,6 +91,9 @@ export default function NewProject() {
   const [techSuggestions, setTechSuggestions] = useState<string[]>([]);
   const [showTechSuggestions, setShowTechSuggestions] = useState(false);
   const [currentTechInput, setCurrentTechInput] = useState("");
+
+  // Get user role from public metadata
+  const userRole = user?.publicMetadata?.role as string || 'member';
 
   // Load attempts from localStorage on initial load
   useEffect(() => {
@@ -467,6 +470,186 @@ export default function NewProject() {
     }
   };
 
+  // Function to render options based on role
+  const renderOptions = () => {
+    switch (userRole) {
+      case 'admin':
+        return (
+          <>
+            <motion.div
+              whileHover={{ scale: 1.03, y: -5 }}
+              whileTap={{ scale: 0.98 }}
+              className="group relative overflow-hidden"
+            >
+              <button
+                onClick={() => setShowOptions(false)}
+                className="flex flex-col items-center justify-center w-full h-full bg-gradient-to-b from-blue-500/10 to-blue-600/5 border border-blue-500/20 rounded-2xl p-6 text-center aspect-[4/3] shadow-lg hover:shadow-blue-500/10 transition-all"
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <div className="h-16 w-16 rounded-full bg-blue-600/10 flex items-center justify-center mb-3 group-hover:bg-blue-600/20 transition-colors">
+                  <IconPlus className="h-8 w-8 text-blue-500" />
+                </div>
+                <h3 className="text-lg font-bold text-white mb-1">Create Project</h3>
+                <p className="text-gray-400 text-sm">Add a new project to the platform</p>
+              </button>
+            </motion.div>
+
+            <motion.div
+              whileHover={{ scale: 1.03, y: -5 }}
+              whileTap={{ scale: 0.98 }}
+              className="group relative overflow-hidden"
+            >
+              <button
+                onClick={() => router.push('/projects/edit')}
+                className="flex flex-col items-center justify-center w-full h-full bg-gradient-to-b from-purple-500/10 to-purple-600/5 border border-purple-500/20 rounded-2xl p-6 text-center aspect-[4/3] shadow-lg hover:shadow-purple-500/10 transition-all"
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <div className="h-16 w-16 rounded-full bg-purple-600/10 flex items-center justify-center mb-3 group-hover:bg-purple-600/20 transition-colors">
+                  <IconEdit className="h-8 w-8 text-purple-500" />
+                </div>
+                <h3 className="text-lg font-bold text-white mb-1">Edit Projects</h3>
+                <p className="text-gray-400 text-sm">Manage existing projects</p>
+              </button>
+            </motion.div>
+
+            <motion.div
+              whileHover={{ scale: 1.03, y: -5 }}
+              whileTap={{ scale: 0.98 }}
+              className="group relative overflow-hidden"
+            >
+              <button
+                onClick={() => {
+                  if (typeof window !== 'undefined') {
+                    localStorage.setItem('admin_pin_verified', 'true');
+                  }
+                  router.push('/projects/new/admin-payments');
+                }}
+                className="flex flex-col items-center justify-center w-full h-full bg-gradient-to-b from-green-500/10 to-green-600/5 border border-green-500/20 rounded-2xl p-6 text-center aspect-[4/3] shadow-lg hover:shadow-green-500/10 transition-all"
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-green-500/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <div className="h-16 w-16 rounded-full bg-green-600/10 flex items-center justify-center mb-3 group-hover:bg-green-600/20 transition-colors">
+                  <IconCreditCard className="h-8 w-8 text-green-500" />
+                </div>
+                <h3 className="text-lg font-bold text-white mb-1">Payment History</h3>
+                <p className="text-gray-400 text-sm">View all transaction records</p>
+              </button>
+            </motion.div>
+
+            <motion.div
+              whileHover={{ scale: 1.03, y: -5 }}
+              whileTap={{ scale: 0.98 }}
+              className="group relative overflow-hidden"
+            >
+              <button
+                onClick={() => router.push('/projects/seller')}
+                className="flex flex-col items-center justify-center w-full h-full bg-gradient-to-b from-orange-500/10 to-orange-600/5 border border-orange-500/20 rounded-2xl p-6 text-center aspect-[4/3] shadow-lg hover:shadow-orange-500/10 transition-all"
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-orange-500/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <div className="h-16 w-16 rounded-full bg-orange-600/10 flex items-center justify-center mb-3 group-hover:bg-orange-600/20 transition-colors">
+                  <IconRocket className="h-8 w-8 text-orange-400" />
+                </div>
+                <h3 className="text-lg font-bold text-white mb-1">Seller</h3>
+                <p className="text-gray-400 text-sm">Become a project seller</p>
+              </button>
+            </motion.div>
+
+            <motion.div
+              whileHover={{ scale: 1.03, y: -5 }}
+              whileTap={{ scale: 0.98 }}
+              className="group relative overflow-hidden"
+            >
+              <button
+                onClick={() => router.push('/projects/marketer')}
+                className="flex flex-col items-center justify-center w-full h-full bg-gradient-to-b from-purple-500/10 to-purple-600/5 border border-purple-500/20 rounded-2xl p-6 text-center aspect-[4/3] shadow-lg hover:shadow-purple-500/10 transition-all"
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <div className="h-16 w-16 rounded-full bg-purple-600/10 flex items-center justify-center mb-3 group-hover:bg-purple-600/20 transition-colors">
+                  <IconChartBar className="h-8 w-8 text-purple-400" />
+                </div>
+                <h3 className="text-lg font-bold text-white mb-1">Marketer</h3>
+                <p className="text-gray-400 text-sm">Earn by marketing projects</p>
+              </button>
+            </motion.div>
+          </>
+        );
+
+      case 'seller':
+        return (
+          <>
+            <motion.div
+              whileHover={{ scale: 1.03, y: -5 }}
+              whileTap={{ scale: 0.98 }}
+              className="group relative overflow-hidden"
+            >
+              <button
+                onClick={() => setShowOptions(false)}
+                className="flex flex-col items-center justify-center w-full h-full bg-gradient-to-b from-blue-500/10 to-blue-600/5 border border-blue-500/20 rounded-2xl p-6 text-center aspect-[4/3] shadow-lg hover:shadow-blue-500/10 transition-all"
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <div className="h-16 w-16 rounded-full bg-blue-600/10 flex items-center justify-center mb-3 group-hover:bg-blue-600/20 transition-colors">
+                  <IconPlus className="h-8 w-8 text-blue-500" />
+                </div>
+                <h3 className="text-lg font-bold text-white mb-1">Create Project</h3>
+                <p className="text-gray-400 text-sm">Add a new project to the platform</p>
+              </button>
+            </motion.div>
+
+            <motion.div
+              whileHover={{ scale: 1.03, y: -5 }}
+              whileTap={{ scale: 0.98 }}
+              className="group relative overflow-hidden"
+            >
+              <button
+                onClick={() => router.push('/projects/edit')}
+                className="flex flex-col items-center justify-center w-full h-full bg-gradient-to-b from-purple-500/10 to-purple-600/5 border border-purple-500/20 rounded-2xl p-6 text-center aspect-[4/3] shadow-lg hover:shadow-purple-500/10 transition-all"
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <div className="h-16 w-16 rounded-full bg-purple-600/10 flex items-center justify-center mb-3 group-hover:bg-purple-600/20 transition-colors">
+                  <IconEdit className="h-8 w-8 text-purple-500" />
+                </div>
+                <h3 className="text-lg font-bold text-white mb-1">Edit Projects</h3>
+                <p className="text-gray-400 text-sm">Manage existing projects</p>
+              </button>
+            </motion.div>
+          </>
+        );
+
+      case 'marketer':
+        return (
+          <motion.div
+            whileHover={{ scale: 1.03, y: -5 }}
+            whileTap={{ scale: 0.98 }}
+            className="group relative overflow-hidden col-span-full"
+          >
+            <div className="flex flex-col items-center justify-center w-full h-full bg-gradient-to-b from-purple-500/10 to-purple-600/5 border border-purple-500/20 rounded-2xl p-8 text-center aspect-[4/3] shadow-lg">
+              <div className="h-20 w-20 rounded-full bg-purple-600/10 flex items-center justify-center mb-4">
+                <IconChartBar className="h-10 w-10 text-purple-400" />
+              </div>
+              <h3 className="text-xl font-bold text-white mb-2">Coming Soon</h3>
+              <p className="text-gray-400 text-base">Marketing features will be available soon. Stay tuned!</p>
+            </div>
+          </motion.div>
+        );
+
+      default:
+        return (
+          <motion.div
+            whileHover={{ scale: 1.03, y: -5 }}
+            whileTap={{ scale: 0.98 }}
+            className="group relative overflow-hidden col-span-full"
+          >
+            <div className="flex flex-col items-center justify-center w-full h-full bg-gradient-to-b from-red-500/10 to-red-600/5 border border-red-500/20 rounded-2xl p-8 text-center aspect-[4/3] shadow-lg">
+              <div className="h-20 w-20 rounded-full bg-red-600/10 flex items-center justify-center mb-4">
+                <IconLock className="h-10 w-10 text-red-400" />
+              </div>
+              <h3 className="text-xl font-bold text-white mb-2">Not Authorized</h3>
+              <p className="text-gray-400 text-base">You don't have permission to access this area.</p>
+            </div>
+          </motion.div>
+        );
+    }
+  };
+
   if (!isPinVerified) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-950 to-slate-900 flex items-center justify-center p-4">
@@ -696,72 +879,27 @@ export default function NewProject() {
 
   if (showOptions) {
     return (
-      <div className="min-h-screen bg-slate-900 py-24 sm:py-32">
+      <div className="min-h-screen bg-slate-900 py-16 sm:py-24">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="mx-auto max-w-2xl text-center">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="mx-auto w-full max-w-md"
-            >
-              <div className="text-center">
-                <div className="mx-auto h-14 w-14 rounded-full bg-green-600/10 flex items-center justify-center mb-4">
-                  <IconCheck className="h-7 w-7 text-green-500" />
-                </div>
-                <h2 className="text-2xl font-bold tracking-tight text-white">Choose an Option</h2>
-                <p className="mt-2 text-sm text-gray-400">
-                  What would you like to do?
-                </p>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mx-auto"
+          >
+            <div className="text-center mb-14">
+              <div className="mx-auto h-20 w-20 rounded-full bg-green-600/10 flex items-center justify-center mb-6">
+                <IconCheck className="h-10 w-10 text-green-500" />
               </div>
+              <h2 className="text-4xl font-bold tracking-tight text-white mb-4">Choose an Option</h2>
+              <p className="text-lg text-gray-400 max-w-2xl mx-auto">
+                What would you like to do next? Select from the options below to continue.
+              </p>
+            </div>
 
-              <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
-                <motion.button
-                  whileHover={{ scale: 1.03 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="flex flex-col items-center justify-center p-6 bg-slate-800/70 border border-slate-700/50 rounded-xl hover:bg-slate-800 transition-all"
-                  onClick={() => setShowOptions(false)}
-                >
-                  <div className="h-12 w-12 rounded-full bg-blue-600/10 flex items-center justify-center mb-3">
-                    <IconPlus className="h-6 w-6 text-blue-500" />
-                  </div>
-                  <h3 className="text-lg font-semibold text-white">Create Project</h3>
-                  <p className="text-sm text-gray-400 mt-1">Add a new project to the platform</p>
-                </motion.button>
-
-                <motion.button
-                  whileHover={{ scale: 1.03 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="flex flex-col items-center justify-center p-6 bg-slate-800/70 border border-slate-700/50 rounded-xl hover:bg-slate-800 transition-all"
-                  onClick={() => router.push('/projects/edit')}
-                >
-                  <div className="h-12 w-12 rounded-full bg-purple-600/10 flex items-center justify-center mb-3">
-                    <IconEdit className="h-6 w-6 text-purple-500" />
-                  </div>
-                  <h3 className="text-lg font-semibold text-white">Edit Projects</h3>
-                  <p className="text-sm text-gray-400 mt-1">Manage existing projects</p>
-                </motion.button>
-
-                <motion.button
-                  whileHover={{ scale: 1.03 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="flex flex-col items-center justify-center p-6 bg-slate-800/70 border border-slate-700/50 rounded-xl hover:bg-slate-800 transition-all"
-                  onClick={() => {
-                    // Store verification state for payment history
-                    if (typeof window !== 'undefined') {
-                      localStorage.setItem('admin_pin_verified', 'true');
-                    }
-                    router.push('/projects/new/admin-payments');
-                  }}
-                >
-                  <div className="h-12 w-12 rounded-full bg-green-600/10 flex items-center justify-center mb-3">
-                    <IconCreditCard className="h-6 w-6 text-green-500" />
-                  </div>
-                  <h3 className="text-lg font-semibold text-white">Payment History</h3>
-                  <p className="text-sm text-gray-400 mt-1">View all transaction records</p>
-                </motion.button>
-              </div>
-            </motion.div>
-          </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-w-4xl mx-auto">
+              {renderOptions()}
+            </div>
+          </motion.div>
         </div>
       </div>
     );

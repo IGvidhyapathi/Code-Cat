@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Navbar } from "@/components/ui/navbar";
-import { Toaster } from "sonner";
+import { Toaster } from "@/components/ui/toaster";
 import "./globals.css";
-import { dark, neobrutalism } from '@clerk/themes'
+import { dark} from '@clerk/themes'
 import { Sparkles } from "@/components/ui/sparkles";
 import { PhoneCollectionModal } from "@/components/ui/phone-collection-modal";
 
@@ -78,7 +78,7 @@ export default function RootLayout({
   return (
     <ClerkProvider
       appearance={{
-        baseTheme: neobrutalism,
+        baseTheme: dark,
         elements: {
           card: "bg-slate-900/50 border border-slate-800/50 backdrop-blur-xl",
           headerTitle: "text-white",
@@ -100,7 +100,7 @@ export default function RootLayout({
           <Navbar />
           <div className="pt-16">{children}</div>
           <PhoneCollectionModal />
-          <Toaster richColors position="top-center" theme="dark" />
+          <Toaster />
         </body>
       </html>
     </ClerkProvider>

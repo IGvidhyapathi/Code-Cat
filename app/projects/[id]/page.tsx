@@ -10,6 +10,7 @@ import { Sparkles } from "@/components/ui/sparkles";
 import { marked } from "marked";
 import { useUser, SignInButton } from "@clerk/nextjs";
 import Script from "next/script";
+import { PhoneCollectionModal } from "@/components/ui/phone-collection-modal";
 
 interface Project {
   id: string;
@@ -204,13 +205,36 @@ export default function ProjectDetails() {
     checkPaymentStatus();
   }, [isSignedIn, params.id]);
 
-  const handleRazorpayPayment = () => {
+  const handleRazorpayPayment = async () => {
     // Check if user is signed in first
     if (!user || !isSignedIn) {
       toast.error('Authentication Required', {
         description: 'You need to sign in before making a payment.',
         duration: 5000
       });
+      return;
+    }
+
+    // Check if user has phone number
+    try {
+      const response = await fetch("/api/user/phone");
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error('Failed to check phone status');
+      }
+
+      if (!data.hasPhone) {
+        // Show phone collection modal
+        const phoneModal = document.getElementById('phone-collection-modal');
+        if (phoneModal) {
+          phoneModal.style.display = 'flex';
+        }
+        return;
+      }
+    } catch (error) {
+      console.error('Error checking phone status:', error);
+      toast.error('Failed to verify phone number status');
       return;
     }
     
@@ -466,6 +490,10 @@ export default function ProjectDetails() {
         onLoad={handleRazorpayScriptLoad}
         strategy="afterInteractive"
       />  
+      
+      {/* Phone Collection Modal */}
+      <PhoneCollectionModal />
+      
       {/* Payment Success Modal */}
       <AnimatePresence>
         {showSuccessModal && (

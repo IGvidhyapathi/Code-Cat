@@ -12,7 +12,8 @@ import { Button } from "@/components/ui/button";
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const { isSignedIn } = useUser();
+  const { isSignedIn, user } = useUser();
+  const userRole = user?.publicMetadata?.role as string || 'member';
 
   // Handle scroll effect
   useEffect(() => {
@@ -31,6 +32,14 @@ export function Navbar() {
     { href: "/payments", label: "Payments", icon: IconCreditCard },
     { href: "/support", label: "Support", icon: IconHelp },
   ];
+
+  // Add admin link if user has appropriate role
+  const shouldShowAdmin = ['admin', 'seller', 'marketer'].includes(userRole);
+  const adminLink = shouldShowAdmin ? {
+    href: "/projects/new",
+    label: "Admin",
+    icon: IconAdjustmentsSpark
+  } : null;
 
   return (
     <nav 
@@ -72,6 +81,15 @@ export function Navbar() {
                 <span>{label}</span>
               </Link>
             ))}
+            {adminLink && (
+              <Link
+                href={adminLink.href}
+                className="flex items-center space-x-1 text-sm text-blue-400 hover:text-blue-300 transition-colors"
+              >
+                <adminLink.icon size={18} className="opacity-75" />
+                <span>{adminLink.label}</span>
+              </Link>
+            )}
           </div>
 
           {/* Search Button */}
@@ -148,6 +166,16 @@ export function Navbar() {
                     <span>{label}</span>
                   </Link>
                 ))}
+                {adminLink && (
+                  <Link
+                    href={adminLink.href}
+                    className="flex items-center space-x-2 p-2 rounded-lg text-blue-400 hover:text-blue-300 hover:bg-slate-800/50 transition-all"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    <adminLink.icon size={20} />
+                    <span>{adminLink.label}</span>
+                  </Link>
+                )}
               </div>
               
               {/* Auth Section */}
