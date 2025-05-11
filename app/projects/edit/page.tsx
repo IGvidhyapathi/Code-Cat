@@ -863,19 +863,19 @@ export default function EditProjectList() {
                       </Button>
                       
                       {userRole !== 'seller' && (
-                        <Button
-                          onClick={() => handleDeleteProject(project.id)}
-                          size="sm"
-                          variant="outline"
-                          className="px-2.5 bg-red-700/20 border-red-700/50 text-red-400 hover:bg-red-700/30"
-                          disabled={isDeleting[project.id]}
-                        >
-                          {isDeleting[project.id] ? (
-                            <div className="h-4 w-4 border-2 border-t-2 border-red-400 rounded-full animate-spin" />
-                          ) : (
-                            <IconTrash size={18} />
-                          )}
-                        </Button>
+                      <Button
+                        onClick={() => handleDeleteProject(project.id)}
+                        size="sm"
+                        variant="outline"
+                        className="px-2.5 bg-red-700/20 border-red-700/50 text-red-400 hover:bg-red-700/30"
+                        disabled={isDeleting[project.id]}
+                      >
+                        {isDeleting[project.id] ? (
+                          <div className="h-4 w-4 border-2 border-t-2 border-red-400 rounded-full animate-spin" />
+                        ) : (
+                          <IconTrash size={18} />
+                        )}
+                      </Button>
                       )}
                     </div>
                   </div>

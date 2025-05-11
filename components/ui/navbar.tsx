@@ -37,7 +37,7 @@ export function Navbar() {
   const shouldShowAdmin = ['admin', 'seller', 'marketer'].includes(userRole);
   const adminLink = shouldShowAdmin ? {
     href: "/projects/new",
-    label: "Admin",
+    label: userRole === 'seller' ? "Seller Dashboard" : userRole === 'marketer' ? "Marketer Dashboard" : "Admin",
     icon: IconAdjustmentsSpark
   } : null;
 

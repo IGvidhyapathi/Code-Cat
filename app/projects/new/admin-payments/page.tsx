@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
-import { IconSearch, IconX, IconCreditCard, IconChevronRight, IconCheck, IconArrowLeft, IconFilter, IconUser, IconPhone } from "@tabler/icons-react";
+import { IconSearch, IconX, IconCreditCard, IconChevronRight, IconCheck, IconArrowLeft, IconFilter, IconUser, IconPhone, IconChartBar, IconTrendingUp, IconTrendingDown, IconCalendar } from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
@@ -50,6 +50,14 @@ export default function AdminPaymentsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("");
+  const [timeRange, setTimeRange] = useState("all"); // all, week, month, year
+  const [stats, setStats] = useState({
+    totalAmount: 0,
+    totalEarnings: 0,
+    totalProjects: 0,
+    averageEarnings: 0,
+    trend: 0,
+  });
 
   // Check for PIN verification in local storage on initial load
   useEffect(() => {
@@ -206,6 +214,33 @@ export default function AdminPaymentsPage() {
     }
   };
 
+  // Calculate stats when payments or timeRange changes
+  useEffect(() => {
+    // Filter payments by time range and success status
+    const filtered = payments.filter(payment => {
+      if (payment.status !== 'success') return false;
+      const paymentDate = new Date(payment.createdAt);
+      const now = new Date();
+      const diff = now.getTime() - paymentDate.getTime();
+      const days = diff / (1000 * 60 * 60 * 24);
+      switch (timeRange) {
+        case 'week': return days <= 7;
+        case 'month': return days <= 30;
+        case 'year': return days <= 365;
+        default: return true;
+      }
+    });
+    const totalEarnings = filtered.reduce((sum, payment) => sum + payment.amount, 0); // 100% of all successful payments
+    const averageEarnings = filtered.length > 0
+      ? filtered.reduce((sum, payment) => sum + payment.amount, 0) / filtered.length
+      : 0;
+    setStats(prev => ({
+      ...prev,
+      totalEarnings,
+      averageEarnings
+    }));
+  }, [payments, timeRange]);
+
   if (!isSignedIn) {
     return (
       <div className="min-h-screen bg-slate-900 flex items-center justify-center">
@@ -253,6 +288,56 @@ export default function AdminPaymentsPage() {
             <p className="text-lg sm:text-xl text-gray-400 mb-8">
               View all payment transactions across the platform
             </p>
+
+            {/* Time Range Filter */}
+            <div className="flex justify-center gap-2 mb-8">
+              {[
+                { value: 'all', label: 'All Time' },
+                { value: 'week', label: 'This Week' },
+                { value: 'month', label: 'This Month' },
+                { value: 'year', label: 'This Year' }
+              ].map((range) => (
+                <button
+                  key={range.value}
+                  onClick={() => setTimeRange(range.value)}
+                  className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                    timeRange === range.value
+                      ? 'bg-blue-500 text-white'
+                      : 'bg-slate-800 text-gray-400 hover:bg-slate-700'
+                  }`}
+                >
+                  {range.label}
+                </button>
+              ))}
+            </div>
+
+            {/* Stats Cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 mb-8">
+              <div className="bg-slate-800/50 rounded-xl border border-slate-700 p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-gray-400 text-sm">Total Earnings</h3>
+                  <IconCreditCard className="w-5 h-5 text-blue-500" />
+                </div>
+                <div className="text-2xl font-bold text-white mb-1">
+                  {formatAmount(stats.totalEarnings, 'INR')}
+                </div>
+                <div className="text-sm text-gray-400">
+                  100% of all successful payments
+                </div>
+              </div>
+              <div className="bg-slate-800/50 rounded-xl border border-slate-700 p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-gray-400 text-sm">Average Sale</h3>
+                  <IconChartBar className="w-5 h-5 text-emerald-500" />
+                </div>
+                <div className="text-2xl font-bold text-white mb-1">
+                  {formatAmount(stats.averageEarnings, 'INR')}
+                </div>
+                <div className="text-sm text-gray-400">
+                  average per successful sale
+                </div>
+              </div>
+            </div>
 
             {/* Search */}
             <div className="relative max-w-2xl mx-auto">

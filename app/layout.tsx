@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Navbar } from "@/components/ui/navbar";
-import { Toaster } from "@/components/ui/toaster";
+import { Toaster } from "sonner";
 import "./globals.css";
 import { dark} from '@clerk/themes'
 import { Sparkles } from "@/components/ui/sparkles";
@@ -100,7 +100,41 @@ export default function RootLayout({
           <Navbar />
           <div className="pt-16">{children}</div>
           <PhoneCollectionModal />
-          <Toaster />
+          <Toaster
+            richColors
+            position="top-center"
+            expand={true}
+            closeButton
+            theme="dark"
+            style={{
+              '--toast-bg': 'rgba(15, 23, 42, 0.9)',
+              '--toast-border': '1px solid rgba(148, 163, 184, 0.1)',
+              '--toast-radius': '12px',
+              '--toast-shadow': '0 8px 32px rgba(0, 0, 0, 0.2)',
+              '--toast-padding': '16px',
+              '--toast-margin': '8px',
+              '--toast-font-size': '14px',
+              '--toast-font-weight': '500',
+              '--toast-color': '#fff',
+              '--toast-success': '#22c55e',
+              '--toast-error': '#ef4444',
+              '--toast-warning': '#f59e0b',
+              '--toast-info': '#3b82f6',
+            } as React.CSSProperties}
+            toastOptions={{
+              classNames: {
+                toast: "group toast group-[.toaster]:bg-background group-[.toaster]:text-foreground group-[.toaster]:border-border group-[.toaster]:shadow-lg",
+                description: "group-[.toast]:text-muted-foreground",
+                actionButton: "group-[.toast]:bg-primary group-[.toast]:text-primary-foreground",
+                cancelButton: "group-[.toast]:bg-muted group-[.toast]:text-muted-foreground",
+                success: "group-[.toast]:bg-green-500/10 group-[.toast]:text-green-500 group-[.toast]:border-green-500/20",
+                error: "group-[.toast]:bg-red-500/10 group-[.toast]:text-red-500 group-[.toast]:border-red-500/20",
+                warning: "group-[.toast]:bg-yellow-500/10 group-[.toast]:text-yellow-500 group-[.toast]:border-yellow-500/20",
+                info: "group-[.toast]:bg-blue-500/10 group-[.toast]:text-blue-500 group-[.toast]:border-blue-500/20",
+              },
+              duration: 5000,
+            }}
+          />
         </body>
       </html>
     </ClerkProvider>

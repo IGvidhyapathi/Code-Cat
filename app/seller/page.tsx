@@ -1,11 +1,15 @@
 "use client";
 
+import { useState } from "react";
 import { IconCheck, IconAlertCircle, IconCurrencyDollar, IconRocket, IconArrowRight } from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { Sparkles } from "@/components/ui/sparkles";
+import { SellerApplicationModal } from "@/components/ui/seller-application-modal";
 
 export default function SellerPage() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   return (
     <div className="min-h-screen bg-slate-950">
       {/* Hero Section with Gradient Background */}
@@ -133,7 +137,7 @@ export default function SellerPage() {
               </div>
               
               <div className="bg-slate-800/50 rounded-xl p-6">
-              <h3 className="text-lg font-semibold text-white">Without Marketing Agent:</h3>
+                <h3 className="text-lg font-semibold text-white">Without Marketing Agent:</h3>
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
@@ -188,7 +192,7 @@ export default function SellerPage() {
             >
               <Button
                 className="w-full bg-gradient-to-r from-orange-500 via-yellow-400 to-orange-400 hover:opacity-90 text-lg py-6"
-                onClick={() => window.location.href = 'https://docs.google.com/forms/d/e/1FAIpQLSfWzvLjwsKQsdHQKeJMXz0vAZICrZ707pES2IYNBmUuuexUFQ/viewform?usp=header'}
+                onClick={() => setIsModalOpen(true)}
               >
                 <IconRocket className="mr-2 h-5 w-5" />
                 Apply Now
@@ -198,6 +202,12 @@ export default function SellerPage() {
           </div>
         </div>
       </div>
+
+      {/* Application Modal */}
+      <SellerApplicationModal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+      />
     </div>
   );
 } 

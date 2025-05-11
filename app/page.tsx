@@ -14,25 +14,49 @@ export default function Home() {
   const [isLoading, setIsLoading] = React.useState(true);
 
   React.useEffect(() => {
-    // Reduced timeouts for faster initialization
-    Promise.all([
-      new Promise(resolve => setTimeout(resolve, 100)), // Database - reduced from 500
-      new Promise(resolve => setTimeout(resolve, 50)),  // API - reduced from 300
-      new Promise(resolve => setTimeout(resolve, 50))   // Assets - reduced from 200
-    ]).then(() => {
-      setIsLoading(false);
-    });
+    // Simulate loading of all necessary data
+    const loadData = async () => {
+      try {
+        // Load all data in parallel
+        await Promise.all([
+          // Database connection
+          new Promise(resolve => setTimeout(resolve, 100)),
+          // API endpoints
+          new Promise(resolve => setTimeout(resolve, 50)),
+          // Assets and images
+          new Promise(resolve => setTimeout(resolve, 50)),
+          // Analytics and tracking
+          new Promise(resolve => setTimeout(resolve, 30))
+        ]);
+      } catch (error) {
+        console.error("Error loading data:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadData();
   }, []);
 
-  // Simplified loading screen for faster initial render
+  // Enhanced loading screen with better visuals
   if (isLoading) {
     return (
       <div className="fixed inset-0 bg-[#0A0A0F] flex items-center justify-center">
-        <div className="space-y-4">
-          <div className="relative mx-auto w-16 h-16">
-            <div className="absolute inset-0 rounded-full border-t-2 border-purple-500 animate-spin" />
+        <div className="space-y-6 text-center">
+          <div className="relative mx-auto w-20 h-20">
+            {/* Outer ring */}
+            <div className="absolute inset-0 rounded-full border-4 border-purple-500/20" />
+            {/* Spinning ring */}
+            <div className="absolute inset-0 rounded-full border-t-4 border-purple-500 animate-spin" />
+            {/* Inner ring */}
+            <div className="absolute inset-2 rounded-full border-2 border-purple-500/30" />
+            {/* Center dot */}
+            <div className="absolute inset-[35%] rounded-full bg-purple-500/20 animate-pulse" />
           </div>
-          <div className="text-sm text-gray-400">Loading...</div>
+          <div className="space-y-2">
+            <div className="text-lg font-medium text-white">Loading CodeCat</div>
+            <div className="text-sm text-gray-400">Preparing your experience...</div>
+          </div>
         </div>
       </div>
     );
@@ -106,14 +130,20 @@ export default function Home() {
               >
                 <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold tracking-tight text-white mb-4 sm:mb-6">
                   Find{" "}
-                  <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-500 via-blue-500 to-cyan-500">
-                    Quality
+                  <span className="relative inline-block">
+                    <span className="absolute inset-0 bg-gradient-to-r from-purple-600 via-blue-500 to-cyan-400 animate-gradient-shift bg-clip-text text-transparent brightness-125" />
+                    <span className="relative bg-clip-text text-transparent bg-gradient-to-r from-purple-600 via-blue-500 to-cyan-400 brightness-125">
+                      Quality
+                    </span>
                   </span>
                   <br className="hidden sm:block" />
                   <span className="sm:hidden"> </span>
                   Projects{" "}
-                  <span className="bg-clip-text text-transparent bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-500">
-                    Today
+                  <span className="relative inline-block">
+                    <span className="absolute inset-0 bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 animate-gradient-shift bg-clip-text text-transparent brightness-125" />
+                    <span className="relative bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 brightness-125">
+                      Today
+                    </span>
                   </span>
                 </h1>
 
@@ -123,12 +153,23 @@ export default function Home() {
                 </p>
 
                 <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center lg:justify-start px-4 sm:px-0">
-                  <Button asChild size="lg" className="w-full sm:w-auto bg-gradient-to-r from-purple-500 via-blue-500 to-cyan-500 hover:opacity-90">
-                    <Link href="/explore" className="inline-flex items-center gap-2">
-                      Browse Projects
-                      <IconArrowRight className="w-5 h-5" />
-                    </Link>
-                  </Button>
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="w-full sm:w-auto"
+                  >
+                    <Button asChild size="lg" className="w-full relative overflow-hidden group">
+                      <div className="relative">
+                        <Link href="/explore" className="inline-flex items-center gap-2 relative z-10">
+                          Browse Projects
+                          <IconArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
+                        </Link>
+                        <div className="absolute inset-0 bg-gradient-to-r from-purple-600 via-blue-500 to-cyan-400 animate-gradient-shift brightness-125" />
+                        <div className="absolute inset-0 bg-gradient-to-r from-purple-500/0 via-white/30 to-purple-500/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
+                        <div className="absolute inset-0 bg-gradient-to-r from-purple-500/0 via-white/20 to-purple-500/0 translate-x-[-100%] animate-shimmer" />
+                      </div>
+                    </Button>
+                  </motion.div>
                   <Button asChild variant="outline" size="lg" className="w-full sm:w-auto border-white/10 hover:bg-white/5">
                     <Link href="/seller" className="inline-flex items-center gap-2">
                     <IconRocket className="w-5 h-5" />
@@ -167,7 +208,7 @@ export default function Home() {
           </div>
 
             {/* Right Content - Feature Preview */}
-            <div className="flex-1 w-full max-w-xl lg:max-w-none px-4 sm:px-0">
+            <div className="flex-1 w-full max-w-3xl lg:max-w-4xl px-4 sm:px-0">
           <motion.div
                 initial={{ opacity: 0, scale: 0.98 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -180,7 +221,7 @@ export default function Home() {
                   </div>
                   
                   {/* Animated Project Showcase */}
-                  <div className="relative p-4 sm:p-8">
+                  <div className="relative p-6 sm:p-10">
                     <div className="flex items-center justify-between gap-4 mb-6">
                       <div className="flex items-center gap-3">
                         <div className="flex gap-2">
@@ -368,6 +409,42 @@ export default function Home() {
                     animation: marquee 40s linear infinite;
                     will-change: transform;
                   }
+
+                  @keyframes shimmer {
+                    0% {
+                      transform: translateX(-100%);
+                    }
+                    50% {
+                      transform: translateX(100%);
+                    }
+                    100% {
+                      transform: translateX(100%);
+                    }
+                  }
+                  
+                  .animate-shimmer {
+                    animation: shimmer 3s infinite;
+                  }
+
+                  @keyframes gradient-shift {
+                    0% {
+                      background-position: 0% 50%;
+                      filter: brightness(1.2);
+                    }
+                    50% {
+                      background-position: 100% 50%;
+                      filter: brightness(1.4);
+                    }
+                    100% {
+                      background-position: 0% 50%;
+                      filter: brightness(1.2);
+                    }
+                  }
+
+                  .animate-gradient-shift {
+                    animation: gradient-shift 3s ease infinite;
+                    background-size: 200% 200%;
+                  }
                 `}</style>
               </motion.div>
             </div>
@@ -509,3 +586,4 @@ export default function Home() {
     </main>
   );
 }
+

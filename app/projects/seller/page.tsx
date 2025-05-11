@@ -1,403 +1,446 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
 import { useUser } from "@clerk/nextjs";
-import { 
-  IconPlus, 
-  IconEdit, 
-  IconEye, 
-  IconChartBar, 
-  IconCreditCard,
-  IconChevronLeft,
-  IconSearch,
-  IconFilter,
-  IconX,
-  IconCategory,
-  IconCalendar,
-  IconCode
-} from "@tabler/icons-react";
-import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import { IconSearch, IconX, IconCheck, IconUser, IconPhone, IconMail, IconCalendar, IconShieldCheck, IconFilter, IconChevronDown } from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { toast } from "sonner";
+import { motion, AnimatePresence } from "framer-motion";
 
-interface Project {
+interface SellerApplication {
   id: string;
-  title: string;
-  description: string;
-  category: string;
-  youtubeUrl: string;
+  name: string;
+  email: string;
+  phone: string;
+  status: ApplicationStatus;
+  verifiedBy: string | null;
   createdAt: string;
-  price: number;
-  sales: number;
+  updatedAt: string;
+  userId: string;
+  imageUrl?: string;
 }
 
-// Category badges with color mapping
-const categoryColors: Record<string, { bg: string, text: string, icon: string }> = {
-  web: { bg: "bg-blue-500/10", text: "text-blue-400", icon: "🌐" },
-  ai: { bg: "bg-purple-500/10", text: "text-purple-400", icon: "🤖" },
-  ml: { bg: "bg-indigo-500/10", text: "text-indigo-400", icon: "🧠" },
-  mobile: { bg: "bg-green-500/10", text: "text-green-400", icon: "📱" },
-  automation: { bg: "bg-orange-500/10", text: "text-orange-400", icon: "⚙️" },
-  php: { bg: "bg-indigo-500/10", text: "text-indigo-400", icon: "🐘" },
-  html: { bg: "bg-red-500/10", text: "text-red-400", icon: "🔍" },
-  database: { bg: "bg-emerald-500/10", text: "text-emerald-400", icon: "🗄️" },
-  security: { bg: "bg-slate-500/10", text: "text-slate-400", icon: "🔒" },
-  other: { bg: "bg-gray-500/10", text: "text-gray-400", icon: "🔧" }
-};
+type ApplicationStatus = 'approved' | 'rejected' | 'applied';
 
-export default function SellerDashboard() {
+export default function SellerPaymentsPage() {
+  const { isSignedIn, user } = useUser();
   const router = useRouter();
-  const { user, isLoaded } = useUser();
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [filteredProjects, setFilteredProjects] = useState<Project[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [showFilters, setShowFilters] = useState(false);
+  const [applications, setApplications] = useState<SellerApplication[]>([]);
+  const [isLoadingApplications, setIsLoadingApplications] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedVerifier, setSelectedVerifier] = useState<string>("");
+  const [processingApplicationId, setProcessingApplicationId] = useState<string | null>(null);
+  const [statusFilter, setStatusFilter] = useState<ApplicationStatus | 'all'>('all');
 
   useEffect(() => {
-    if (isLoaded && !user) {
-      router.push('/sign-in');
+    if (!isSignedIn) {
+      router.push('/');
       return;
     }
 
-    fetchProjects();
-  }, [user, isLoaded, router]);
+    fetchApplications();
+  }, [isSignedIn, router]);
 
-  const fetchProjects = async () => {
-    setIsLoading(true);
+  const fetchApplications = async () => {
+    setIsLoadingApplications(true);
     try {
-      const response = await fetch('/api/projects/seller');
+      const response = await fetch('/api/sellers/applications');
       if (!response.ok) {
-        throw new Error('Failed to fetch projects');
+        throw new Error('Failed to fetch applications');
       }
       const data = await response.json();
-      setProjects(data);
-      setFilteredProjects(data);
-    } catch (error) {
-      console.error('Error fetching projects:', error);
-      toast.error('Failed to load projects');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleViewProject = (projectId: string) => {
-    window.open(`/projects/${projectId}`, '_blank');
-  };
-
-  const handleEditProject = (projectId: string) => {
-    router.push(`/projects/edit/${projectId}`);
-  };
-
-  const handleGoBack = () => {
-    router.push('/');
-  };
-
-  const resetFilters = () => {
-    setSearchTerm("");
-    setSelectedCategory(null);
-    setShowFilters(false);
-  };
-
-  const getUniqueCategories = () => {
-    const categories = projects.map(project => project.category);
-    return Array.from(new Set(categories));
-  };
-
-  // Filter projects when search term or category changes
-  useEffect(() => {
-    let filtered = [...projects];
-
-    if (searchTerm) {
-      const term = searchTerm.toLowerCase();
-      filtered = filtered.filter(
-        project => 
-          project.title.toLowerCase().includes(term) || 
-          project.description.toLowerCase().includes(term)
+      
+      const applicationsWithImages = await Promise.all(
+        data.map(async (app: SellerApplication) => {
+          try {
+            const userResponse = await fetch(`/api/users/db/${app.userId}`);
+            if (userResponse.ok) {
+              const userData = await userResponse.json();
+              const clerkResponse = await fetch(`/api/users/${userData.clerkId}`);
+              if (clerkResponse.ok) {
+                const clerkData = await clerkResponse.json();
+                return {
+                  ...app,
+                  imageUrl: clerkData.imageUrl
+                };
+              }
+            }
+          } catch (error) {
+            console.error('Error fetching user data:', error);
+          }
+          return app;
+        })
       );
+
+      setApplications(applicationsWithImages);
+    } catch (error) {
+      console.error('Error fetching applications:', error);
+      toast.error('Failed to load applications');
+    } finally {
+      setIsLoadingApplications(false);
+    }
+  };
+
+  const handleApplicationStatus = async (applicationId: string, status: ApplicationStatus) => {
+    if (status === 'approved' && !selectedVerifier) {
+      toast.error("Please select a verifier");
+      return;
     }
 
-    if (selectedCategory) {
-      filtered = filtered.filter(project => project.category === selectedCategory);
+    setProcessingApplicationId(applicationId);
+    try {
+      const statusResponse = await fetch(`/api/sellers/applications/${applicationId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ status }),
+      });
+
+      if (!statusResponse.ok) {
+        throw new Error('Failed to update application status');
+      }
+
+      if (status === 'approved') {
+        const verifyResponse = await fetch(`/api/sellers/applications/${applicationId}/verify`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ verifiedBy: selectedVerifier }),
+        });
+
+        if (!verifyResponse.ok) {
+          throw new Error('Failed to update verification');
+        }
+      }
+
+      toast.success(`Application ${status} successfully`);
+      setSelectedVerifier("");
+      fetchApplications();
+    } catch (error) {
+      console.error('Error updating application:', error);
+      toast.error('Failed to update application');
+    } finally {
+      setProcessingApplicationId(null);
     }
+  };
 
-    setFilteredProjects(filtered);
-  }, [projects, searchTerm, selectedCategory]);
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return new Intl.DateTimeFormat('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: 'numeric'
+    }).format(date);
+  };
 
-  const uniqueCategories = getUniqueCategories();
+  const filteredApplications = applications.filter(app => {
+    const matchesSearch = 
+      app.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      app.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      app.phone.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    const matchesStatus = statusFilter === 'all' || app.status === statusFilter;
+    
+    return matchesSearch && matchesStatus;
+  });
+
+  if (!isSignedIn) {
+    return (
+      <div className="min-h-screen bg-slate-900 flex items-center justify-center">
+        <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 max-w-md w-full p-8 text-center">
+          <div className="w-16 h-16 bg-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
+            <IconShieldCheck className="w-8 h-8 text-blue-400" />
+          </div>
+          <h2 className="text-2xl font-bold text-white mb-3">Seller Management</h2>
+          <p className="text-gray-400 mb-6">Sign in to manage seller applications.</p>
+          <Button 
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+            onClick={() => router.push('/')}
+          >
+            Go Home
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-slate-900 py-16 sm:py-24">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800">
+      {/* Header */}
+      <motion.div 
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="bg-slate-800/30 backdrop-blur-lg border-b border-slate-700/50 sticky top-0 z-10"
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.2 }}
+            >
+              <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
+                Seller Management
+              </h1>
+              <p className="text-gray-400 mt-1">Manage and verify seller applications</p>
+            </motion.div>
+            <motion.div 
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.3 }}
+              className="flex items-center gap-4"
+            >
+              <div className="relative group">
+                <Input
+                  type="text"
+                  placeholder="Search applications..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full bg-slate-700/30 border-slate-600 text-white placeholder-gray-400 pl-10 transition-all duration-200 group-hover:bg-slate-700/50 focus:bg-slate-700/50"
+                />
+                <IconSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 transition-colors duration-200 group-hover:text-gray-300" />
+                {searchQuery && (
+                  <motion.button
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                    onClick={() => setSearchQuery("")}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-300 transition-colors duration-200"
+                  >
+                    <IconX className="w-5 h-5" />
+                  </motion.button>
+                )}
+              </div>
+              <div className="relative group">
+                <select
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value as ApplicationStatus | 'all')}
+                  className="block w-full rounded-md border-0 bg-slate-700/30 py-2 pl-3 pr-10 text-white shadow-sm ring-1 ring-inset ring-slate-600 focus:ring-2 focus:ring-inset focus:ring-blue-500 sm:text-sm sm:leading-6 transition-all duration-200 group-hover:bg-slate-700/50 focus:bg-slate-700/50 appearance-none"
+                >
+                  <option value="all" className="bg-slate-800">All Status</option>
+                  <option value="applied" className="bg-slate-800">Applied</option>
+                  <option value="approved" className="bg-slate-800">Approved</option>
+                  <option value="rejected" className="bg-slate-800">Rejected</option>
+                </select>
+                <IconChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none transition-transform duration-200 group-hover:rotate-180" />
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </motion.div>
+
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mx-auto max-w-5xl"
+          transition={{ delay: 0.4 }}
+          className="bg-slate-800/30 backdrop-blur-lg rounded-xl border border-slate-700/50 overflow-hidden shadow-xl"
         >
-          {/* Header with gradients */}
-          <div className="relative mb-12 overflow-hidden rounded-2xl bg-slate-800/50 border border-slate-700/50 p-6 sm:p-8">
-            <div className="absolute -top-24 right-0 w-72 h-72 bg-blue-500/10 rounded-full blur-3xl"></div>
-            <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-purple-500/10 rounded-full blur-3xl"></div>
-            
-            <div className="relative flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-              <div>
-                <h1 className="text-3xl font-bold text-white">Seller Dashboard</h1>
-                <p className="mt-2 text-gray-400 max-w-lg">
-                  Manage your projects and track your sales performance.
-                  {filteredProjects.length > 0 && (
-                    <span className="ml-1">
-                      Currently showing <span className="text-white font-medium">{filteredProjects.length}</span> projects.
-                    </span>
-                  )}
-                </p>
-              </div>
-              
-              <div className="flex flex-wrap gap-2 sm:justify-end">
-                <Button
-                  onClick={handleGoBack}
-                  variant="outline"
-                  size="sm"
-                  className="text-sm"
-                >
-                  <IconChevronLeft className="mr-1 h-4 w-4" />
-                  Back to Home
-                </Button>
-                
-                <Button
-                  onClick={() => router.push('/projects/new')}
-                  className="bg-blue-600 hover:bg-blue-500"
-                  size="sm"
-                >
-                  <IconPlus className="mr-1 h-4 w-4" />
-                  New Project
-                </Button>
-              </div>
-            </div>
-          </div>
-
-          {/* Stats Overview */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-            <div className="bg-slate-800/30 rounded-xl p-6 border border-slate-700/50">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-sm font-medium text-gray-400">Total Projects</h3>
-                <IconChartBar className="h-5 w-5 text-blue-400" />
-              </div>
-              <p className="text-2xl font-bold text-white">{projects.length}</p>
-            </div>
-            
-            <div className="bg-slate-800/30 rounded-xl p-6 border border-slate-700/50">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-sm font-medium text-gray-400">Total Sales</h3>
-                <IconCreditCard className="h-5 w-5 text-green-400" />
-              </div>
-              <p className="text-2xl font-bold text-white">
-              ₹{projects.reduce((sum, project) => sum + (project.sales * project.price), 0).toFixed(2)}
-              </p>
-            </div>
-            
-            <div className="bg-slate-800/30 rounded-xl p-6 border border-slate-700/50">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-sm font-medium text-gray-400">Average Price</h3>
-                <IconCreditCard className="h-5 w-5 text-purple-400" />
-              </div>
-              <p className="text-2xl font-bold text-white">
-              ₹{(projects.reduce((sum, project) => sum + project.price, 0) / (projects.length || 1)).toFixed(2)}
-              </p>
-            </div>
-          </div>
-
-          {/* Filters Section */}
-          <div className="mb-8 space-y-4">
-            <div className="flex flex-col sm:flex-row gap-4 justify-between">
-              {/* Search bar */}
-              <div className="relative flex-1">
-                <IconSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
-                <input
-                  type="text"
-                  placeholder="Search by title or description..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 bg-slate-800/50 border border-slate-700/50 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
-                />
-                {searchTerm && (
-                  <button 
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white"
-                    onClick={() => setSearchTerm("")}
-                  >
-                    <IconX size={16} />
-                  </button>
-                )}
-              </div>
-
-              {/* Filter button */}
-              <Button
-                variant={showFilters ? "default" : "outline"}
-                size="sm"
-                onClick={() => setShowFilters(!showFilters)}
-                className={showFilters ? "bg-blue-600 hover:bg-blue-500" : ""}
+          {isLoadingApplications ? (
+            <div className="p-8 flex flex-col items-center justify-center">
+              <motion.div 
+                animate={{ rotate: 360 }}
+                transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                className="w-16 h-16 mb-4"
               >
-                <IconFilter className="mr-1 h-4 w-4" />
-                Filters
-                {selectedCategory && <span className="ml-1 text-xs bg-blue-700/50 px-1.5 py-0.5 rounded-full">1</span>}
-              </Button>
+                <div className="absolute inset-0 rounded-full border-4 border-t-transparent border-blue-500"></div>
+              </motion.div>
+              <p className="text-gray-400">Loading applications...</p>
             </div>
-
-            {/* Category filters */}
-            {showFilters && (
-              <div className="p-4 bg-slate-800/50 rounded-lg border border-slate-700/50">
-                <div className="flex items-center justify-between mb-3">
-                  <h3 className="text-sm font-medium text-white flex items-center">
-                    <IconCategory size={16} className="mr-2 text-gray-400" />
-                    Categories
-                  </h3>
-                  {selectedCategory && (
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      onClick={resetFilters}
-                      className="text-xs text-gray-400 hover:text-white"
-                    >
-                      Reset filters
-                    </Button>
-                  )}
-                </div>
-
-                <div className="flex flex-wrap gap-2">
-                  {uniqueCategories.map(category => (
-                    <button
-                      key={category}
-                      onClick={() => setSelectedCategory(selectedCategory === category ? null : category)}
-                      className={`px-3 py-1.5 text-xs rounded-full transition-colors ${
-                        selectedCategory === category
-                          ? `${categoryColors[category]?.bg || "bg-blue-500/10"} ${categoryColors[category]?.text || "text-blue-400"} ring-1 ring-blue-500/30`
-                          : "bg-slate-700/50 text-gray-300 hover:bg-slate-700"
-                      }`}
-                    >
-                      <span>{categoryColors[category]?.icon || "🔹"} {category.charAt(0).toUpperCase() + category.slice(1)}</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Projects List */}
-          {isLoading ? (
-            <div className="flex flex-col items-center justify-center py-16 space-y-4">
-              <div className="relative w-16 h-16">
-                <div className="absolute inset-0 rounded-full border-4 border-t-4 border-blue-500 animate-spin"></div>
-                <div className="absolute inset-0 rounded-full border-4 border-blue-500/20"></div>
-              </div>
-              <p className="text-gray-400 animate-pulse">Loading projects...</p>
-            </div>
-          ) : filteredProjects.length === 0 ? (
-            <div className="bg-slate-800/30 rounded-xl p-10 text-center border border-slate-700/50">
-              <div className="mx-auto w-16 h-16 bg-slate-700/40 rounded-full flex items-center justify-center mb-4">
-                <IconSearch className="text-gray-400" size={28} />
-              </div>
-              <h3 className="text-xl font-semibold text-white mb-2">No Projects Found</h3>
-              <p className="text-gray-400 mb-6 max-w-md mx-auto">
-                {searchTerm || selectedCategory
-                  ? "No projects match your current filters. Try adjusting your search criteria."
-                  : "You haven't created any projects yet. Get started by creating your first project."}
-              </p>
-              
-              <div className="flex flex-wrap justify-center gap-3">
-                {(searchTerm || selectedCategory) && (
-                  <Button
-                    variant="outline"
-                    onClick={resetFilters}
-                    className="text-sm"
-                  >
-                    <IconX size={16} className="mr-1.5" />
-                    Clear Filters
-                  </Button>
-                )}
-                
-                <Button
-                  onClick={() => router.push('/projects/new')}
-                  className="bg-blue-600 hover:bg-blue-500 text-sm"
-                >
-                  <IconPlus size={16} className="mr-1.5" />
-                  Create New Project
-                </Button>
-              </div>
+          ) : filteredApplications.length > 0 ? (
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-slate-700/50">
+                    <th className="px-6 py-4 text-left text-sm font-medium text-gray-400">Applicant</th>
+                    <th className="px-6 py-4 text-left text-sm font-medium text-gray-400">Contact</th>
+                    <th className="px-6 py-4 text-left text-sm font-medium text-gray-400">Status</th>
+                    <th className="px-6 py-4 text-left text-sm font-medium text-gray-400">Date</th>
+                    <th className="px-6 py-4 text-left text-sm font-medium text-gray-400">Verified By</th>
+                    <th className="px-6 py-4 text-right text-sm font-medium text-gray-400">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-700/50">
+                  <AnimatePresence>
+                    {filteredApplications.map((application) => (
+                      <motion.tr
+                        key={application.id}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -20 }}
+                        transition={{ duration: 0.2 }}
+                        className="hover:bg-slate-700/20 transition-colors duration-200"
+                      >
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="flex items-center">
+                            {application.imageUrl ? (
+                              <motion.img
+                                whileHover={{ scale: 1.1 }}
+                                transition={{ duration: 0.2 }}
+                                src={application.imageUrl}
+                                alt={application.name}
+                                className="h-10 w-10 rounded-full ring-2 ring-slate-600"
+                              />
+                            ) : (
+                              <div className="h-10 w-10 rounded-full bg-slate-700/50 flex items-center justify-center ring-2 ring-slate-600">
+                                <IconUser className="w-6 h-6 text-gray-400" />
+                              </div>
+                            )}
+                            <div className="ml-4">
+                              <div className="text-sm font-medium text-white">{application.name}</div>
+                              <div className="text-xs text-gray-400">ID: {application.userId}</div>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="flex flex-col space-y-1">
+                            <div className="text-sm text-white flex items-center group">
+                              <IconMail className="w-4 h-4 mr-2 text-gray-400 group-hover:text-blue-400 transition-colors duration-200" />
+                              {application.email}
+                            </div>
+                            <div className="text-sm text-white flex items-center group">
+                              <IconPhone className="w-4 h-4 mr-2 text-gray-400 group-hover:text-blue-400 transition-colors duration-200" />
+                              {application.phone}
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <motion.span
+                            whileHover={{ scale: 1.05 }}
+                            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                              application.status === 'approved' ? 'bg-green-500/10 text-green-400' :
+                              application.status === 'rejected' ? 'bg-red-500/10 text-red-400' :
+                              'bg-yellow-500/10 text-yellow-400'
+                            }`}
+                          >
+                            {application.status === 'approved' ? 'Approved' :
+                             application.status === 'rejected' ? 'Rejected' :
+                             'Applied'}
+                          </motion.span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="flex items-center text-sm text-gray-300 group">
+                            <IconCalendar className="w-4 h-4 mr-2 text-gray-400 group-hover:text-blue-400 transition-colors duration-200" />
+                            {formatDate(application.createdAt)}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                          {application.verifiedBy ? (
+                            <div className="flex items-center group">
+                              <IconShieldCheck className="w-4 h-4 mr-2 text-green-400 group-hover:text-green-300 transition-colors duration-200" />
+                              {application.verifiedBy}
+                            </div>
+                          ) : (
+                            <span className="text-gray-500">-</span>
+                          )}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                          <div className="flex items-center justify-end space-x-2">
+                            {application.status !== 'approved' && (
+                              <div className="flex items-center space-x-2">
+                                <div className="relative group">
+                                  <select
+                                    value={selectedVerifier}
+                                    onChange={(e) => setSelectedVerifier(e.target.value)}
+                                    className="block rounded-md border-0 bg-slate-700/30 py-2 px-3 text-white shadow-sm ring-1 ring-inset ring-slate-600 focus:ring-2 focus:ring-inset focus:ring-blue-500 sm:text-sm sm:leading-6 transition-all duration-200 group-hover:bg-slate-700/50 focus:bg-slate-700/50 appearance-none"
+                                    disabled={processingApplicationId === application.id}
+                                  >
+                                    <option value="" className="bg-slate-800">Select Verifier</option>
+                                    <option value="Vidhyapathi" className="bg-slate-800">Vidhyapathi</option>
+                                    <option value="Dharun" className="bg-slate-800">Dharun</option>
+                                    <option value="Bharathkumar" className="bg-slate-800">Bharathkumar</option>
+                                    <option value="Manoj" className="bg-slate-800">Manoj</option>
+                                  </select>
+                                  <IconChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none transition-transform duration-200 group-hover:rotate-180" />
+                                </div>
+                                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="bg-green-500/10 text-green-400 hover:bg-green-500/20 hover:text-green-300 transition-colors duration-200"
+                                    onClick={() => handleApplicationStatus(application.id, 'approved')}
+                                    disabled={processingApplicationId === application.id}
+                                  >
+                                    {processingApplicationId === application.id ? (
+                                      <div className="flex items-center">
+                                        <motion.div
+                                          animate={{ rotate: 360 }}
+                                          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                                          className="w-4 h-4 border-2 border-green-400 border-t-transparent rounded-full mr-2"
+                                        />
+                                        Processing...
+                                      </div>
+                                    ) : (
+                                      <>
+                                        <IconCheck className="w-4 h-4 mr-1" />
+                                        Approve
+                                      </>
+                                    )}
+                                  </Button>
+                                </motion.div>
+                              </div>
+                            )}
+                            {application.status !== 'rejected' && (
+                              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="bg-red-500/10 text-red-400 hover:bg-red-500/20 hover:text-red-300 transition-colors duration-200"
+                                  onClick={() => handleApplicationStatus(application.id, 'rejected')}
+                                  disabled={processingApplicationId === application.id}
+                                >
+                                  {processingApplicationId === application.id ? (
+                                    <div className="flex items-center">
+                                      <motion.div
+                                        animate={{ rotate: 360 }}
+                                        transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                                        className="w-4 h-4 border-2 border-red-400 border-t-transparent rounded-full mr-2"
+                                      />
+                                      Processing...
+                                    </div>
+                                  ) : (
+                                    <>
+                                      <IconX className="w-4 h-4 mr-1" />
+                                      Reject
+                                    </>
+                                  )}
+                                </Button>
+                              </motion.div>
+                            )}
+                          </div>
+                        </td>
+                      </motion.tr>
+                    ))}
+                  </AnimatePresence>
+                </tbody>
+              </table>
             </div>
           ) : (
-            <div className="grid gap-4">
-              {filteredProjects.map((project, index) => (
-                <motion.div
-                  key={project.id}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.05 }}
-                  className="group relative bg-slate-800/30 hover:bg-slate-800/50 rounded-xl p-5 border border-slate-700/50 transition-all duration-200"
-                >
-                  <div className="flex flex-col sm:flex-row gap-4">
-                    {/* Project info */}
-                    <div className="flex-1 sm:pr-4">
-                      <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-2">
-                        <h3 className="text-xl font-semibold text-white group-hover:text-blue-400 transition-colors">{project.title}</h3>
-                        <div className="flex items-center gap-2">
-                          <span className={`px-2 py-0.5 text-xs rounded-full ${categoryColors[project.category]?.bg || "bg-blue-500/10"} ${categoryColors[project.category]?.text || "text-blue-400"}`}>
-                            <span>{categoryColors[project.category]?.icon || "🔹"} {project.category}</span>
-                          </span>
-                          <span className="flex items-center text-xs text-gray-400">
-                            <IconCalendar size={14} className="mr-1" />
-                            {new Date(project.createdAt).toLocaleDateString()}
-                          </span>
-                        </div>
-                      </div>
-                      
-                      <p className="text-gray-300 mb-3 line-clamp-2">{project.description}</p>
-                      
-                      {/* Project URL */}
-                      {project.youtubeUrl && (
-                        <div className="mb-3 flex items-center text-xs text-gray-400">
-                          <IconCode size={14} className="mr-1" />
-                          <span className="truncate max-w-xs">{project.youtubeUrl}</span>
-                        </div>
-                      )}
-
-                      {/* Sales info */}
-                      <div className="flex items-center gap-4 text-sm">
-                        <span className="text-green-400">${project.price}</span>
-                        <span className="text-gray-400">•</span>
-                        <span className="text-gray-400">{project.sales} sales</span>
-                        <span className="text-gray-400">•</span>
-                        <span className="text-green-400">${(project.price * project.sales).toFixed(2)} total</span>
-                      </div>
-                    </div>
-
-                    {/* Action buttons */}
-                    <div className="flex sm:flex-col gap-2 justify-end">
-                      <Button
-                        onClick={() => handleViewProject(project.id)}
-                        size="sm"
-                        variant="outline"
-                        className="px-2.5 bg-slate-700/50 border-slate-600/50 hover:bg-slate-700 hover:text-white"
-                      >
-                        <IconEye size={18} />
-                      </Button>
-                      
-                      <Button
-                        onClick={() => handleEditProject(project.id)}
-                        size="sm"
-                        variant="outline"
-                        className="px-2.5 bg-blue-700/20 border-blue-700/50 text-blue-400 hover:bg-blue-700/30"
-                      >
-                        <IconEdit size={18} />
-                      </Button>
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.3 }}
+              className="p-12 flex flex-col items-center justify-center"
+            >
+              <div className="w-16 h-16 bg-slate-700/30 rounded-full flex items-center justify-center mb-4 ring-2 ring-slate-600">
+                <IconUser className="w-8 h-8 text-gray-500" />
+              </div>
+              <h3 className="text-lg font-medium text-white mb-2">No applications found</h3>
+              <p className="text-gray-400 text-center">
+                {searchQuery ? 'No applications match your search criteria.' : 'There are no seller applications at the moment.'}
+              </p>
+            </motion.div>
           )}
         </motion.div>
       </div>
     </div>
   );
-}
+} 

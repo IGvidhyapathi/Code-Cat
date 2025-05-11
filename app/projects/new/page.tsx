@@ -489,8 +489,8 @@ export default function NewProject() {
                 <div className="h-16 w-16 rounded-full bg-blue-600/10 flex items-center justify-center mb-3 group-hover:bg-blue-600/20 transition-colors">
                   <IconPlus className="h-8 w-8 text-blue-500" />
                 </div>
-                <h3 className="text-lg font-bold text-white mb-1">Create Project</h3>
-                <p className="text-gray-400 text-sm">Add a new project to the platform</p>
+                <h3 className="text-lg font-bold text-white mb-1">New Project</h3>
+                <p className="text-gray-400 text-sm">Create a new project</p>
               </button>
             </motion.div>
 
@@ -501,11 +501,11 @@ export default function NewProject() {
             >
               <button
                 onClick={() => router.push('/projects/edit')}
-                className="flex flex-col items-center justify-center w-full h-full bg-gradient-to-b from-purple-500/10 to-purple-600/5 border border-purple-500/20 rounded-2xl p-6 text-center aspect-[4/3] shadow-lg hover:shadow-purple-500/10 transition-all"
+                className="flex flex-col items-center justify-center w-full h-full bg-gradient-to-b from-teal-500/10 to-teal-600/5 border border-teal-500/20 rounded-2xl p-6 text-center aspect-[4/3] shadow-lg hover:shadow-teal-500/10 transition-all"
               >
-                <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                <div className="h-16 w-16 rounded-full bg-purple-600/10 flex items-center justify-center mb-3 group-hover:bg-purple-600/20 transition-colors">
-                  <IconEdit className="h-8 w-8 text-purple-500" />
+                <div className="absolute inset-0 bg-gradient-to-br from-teal-500/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <div className="h-16 w-16 rounded-full bg-teal-600/10 flex items-center justify-center mb-3 group-hover:bg-teal-600/20 transition-colors">
+                  <IconEdit className="h-8 w-8 text-teal-500" />
                 </div>
                 <h3 className="text-lg font-bold text-white mb-1">Edit Projects</h3>
                 <p className="text-gray-400 text-sm">Manage existing projects</p>
@@ -560,11 +560,11 @@ export default function NewProject() {
             >
               <button
                 onClick={() => router.push('/projects/marketer')}
-                className="flex flex-col items-center justify-center w-full h-full bg-gradient-to-b from-purple-500/10 to-purple-600/5 border border-purple-500/20 rounded-2xl p-6 text-center aspect-[4/3] shadow-lg hover:shadow-purple-500/10 transition-all"
+                className="flex flex-col items-center justify-center w-full h-full bg-gradient-to-b from-pink-500/10 to-pink-600/5 border border-pink-500/20 rounded-2xl p-6 text-center aspect-[4/3] shadow-lg hover:shadow-pink-500/10 transition-all"
               >
-                <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                <div className="h-16 w-16 rounded-full bg-purple-600/10 flex items-center justify-center mb-3 group-hover:bg-purple-600/20 transition-colors">
-                  <IconChartBar className="h-8 w-8 text-purple-400" />
+                <div className="absolute inset-0 bg-gradient-to-br from-pink-500/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <div className="h-16 w-16 rounded-full bg-pink-600/10 flex items-center justify-center mb-3 group-hover:bg-pink-600/20 transition-colors">
+                  <IconChartBar className="h-8 w-8 text-pink-500" />
                 </div>
                 <h3 className="text-lg font-bold text-white mb-1">Marketer</h3>
                 <p className="text-gray-400 text-sm">Earn by marketing projects</p>
@@ -582,15 +582,18 @@ export default function NewProject() {
               className="group relative overflow-hidden"
             >
               <button
-                onClick={() => setShowOptions(false)}
+                onClick={() => {
+                  setShowOptions(false);
+                  setIsPinVerified(true);
+                }}
                 className="flex flex-col items-center justify-center w-full h-full bg-gradient-to-b from-blue-500/10 to-blue-600/5 border border-blue-500/20 rounded-2xl p-6 text-center aspect-[4/3] shadow-lg hover:shadow-blue-500/10 transition-all"
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
                 <div className="h-16 w-16 rounded-full bg-blue-600/10 flex items-center justify-center mb-3 group-hover:bg-blue-600/20 transition-colors">
                   <IconPlus className="h-8 w-8 text-blue-500" />
                 </div>
-                <h3 className="text-lg font-bold text-white mb-1">Create Project</h3>
-                <p className="text-gray-400 text-sm">Add a new project to the platform</p>
+                <h3 className="text-lg font-bold text-white mb-1">New Project</h3>
+                <p className="text-gray-400 text-sm">Create a new project</p>
               </button>
             </motion.div>
 
@@ -601,14 +604,32 @@ export default function NewProject() {
             >
               <button
                 onClick={() => router.push('/projects/edit')}
-                className="flex flex-col items-center justify-center w-full h-full bg-gradient-to-b from-purple-500/10 to-purple-600/5 border border-purple-500/20 rounded-2xl p-6 text-center aspect-[4/3] shadow-lg hover:shadow-purple-500/10 transition-all"
+                className="flex flex-col items-center justify-center w-full h-full bg-gradient-to-b from-teal-500/10 to-teal-600/5 border border-teal-500/20 rounded-2xl p-6 text-center aspect-[4/3] shadow-lg hover:shadow-teal-500/10 transition-all"
               >
-                <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                <div className="h-16 w-16 rounded-full bg-purple-600/10 flex items-center justify-center mb-3 group-hover:bg-purple-600/20 transition-colors">
-                  <IconEdit className="h-8 w-8 text-purple-500" />
+                <div className="absolute inset-0 bg-gradient-to-br from-teal-500/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <div className="h-16 w-16 rounded-full bg-teal-600/10 flex items-center justify-center mb-3 group-hover:bg-teal-600/20 transition-colors">
+                  <IconEdit className="h-8 w-8 text-teal-500" />
                 </div>
                 <h3 className="text-lg font-bold text-white mb-1">Edit Projects</h3>
-                <p className="text-gray-400 text-sm">Manage existing projects</p>
+                <p className="text-gray-400 text-sm">Update existing projects</p>
+              </button>
+            </motion.div>
+
+            <motion.div
+              whileHover={{ scale: 1.03, y: -5 }}
+              whileTap={{ scale: 0.98 }}
+              className="group relative overflow-hidden"
+            >
+              <button
+                onClick={() => router.push('/projects/new/seller-payments')}
+                className="flex flex-col items-center justify-center w-full h-full bg-gradient-to-b from-cyan-500/10 to-cyan-600/5 border border-cyan-500/20 rounded-2xl p-6 text-center aspect-[4/3] shadow-lg hover:shadow-cyan-500/10 transition-all"
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <div className="h-16 w-16 rounded-full bg-cyan-600/10 flex items-center justify-center mb-3 group-hover:bg-cyan-600/20 transition-colors">
+                  <IconChartBar className="h-8 w-8 text-cyan-500" />
+                </div>
+                <h3 className="text-lg font-bold text-white mb-1">Seller Dashboard</h3>
+                <p className="text-gray-400 text-sm">Track your sales and earnings</p>
               </button>
             </motion.div>
           </>
@@ -621,9 +642,9 @@ export default function NewProject() {
             whileTap={{ scale: 0.98 }}
             className="group relative overflow-hidden col-span-full"
           >
-            <div className="flex flex-col items-center justify-center w-full h-full bg-gradient-to-b from-purple-500/10 to-purple-600/5 border border-purple-500/20 rounded-2xl p-8 text-center aspect-[4/3] shadow-lg">
-              <div className="h-20 w-20 rounded-full bg-purple-600/10 flex items-center justify-center mb-4">
-                <IconChartBar className="h-10 w-10 text-purple-400" />
+            <div className="flex flex-col items-center justify-center w-full h-full bg-gradient-to-b from-pink-500/10 to-pink-600/5 border border-pink-500/20 rounded-2xl p-8 text-center aspect-[4/3] shadow-lg">
+              <div className="h-20 w-20 rounded-full bg-pink-600/10 flex items-center justify-center mb-4">
+                <IconChartBar className="h-10 w-10 text-pink-500" />
               </div>
               <h3 className="text-xl font-bold text-white mb-2">Coming Soon</h3>
               <p className="text-gray-400 text-base">Marketing features will be available soon. Stay tuned!</p>
