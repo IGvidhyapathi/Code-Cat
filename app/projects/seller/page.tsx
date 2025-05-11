@@ -193,7 +193,7 @@ export default function SellerDashboard() {
                 <IconCreditCard className="h-5 w-5 text-green-400" />
               </div>
               <p className="text-2xl font-bold text-white">
-                ${projects.reduce((sum, project) => sum + (project.sales * project.price), 0).toFixed(2)}
+              ₹{projects.reduce((sum, project) => sum + (project.sales * project.price), 0).toFixed(2)}
               </p>
             </div>
             
@@ -203,7 +203,7 @@ export default function SellerDashboard() {
                 <IconCreditCard className="h-5 w-5 text-purple-400" />
               </div>
               <p className="text-2xl font-bold text-white">
-                ${(projects.reduce((sum, project) => sum + project.price, 0) / (projects.length || 1)).toFixed(2)}
+              ₹{(projects.reduce((sum, project) => sum + project.price, 0) / (projects.length || 1)).toFixed(2)}
               </p>
             </div>
           </div>
