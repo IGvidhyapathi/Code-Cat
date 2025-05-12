@@ -1,112 +1,78 @@
-import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
-import { auth } from "@clerk/nextjs/server";
+import { NextRequest, NextResponse } from "next/server";
 import { clerkClient } from "@clerk/clerk-sdk-node";
+import { prisma } from "@/lib/prisma";
 
-interface SellerStatus {
-  id: string;
-  status: string;
-  userId: string;
-}
-
-interface Seller {
-  id: string;
-  name: string;
-  email: string;
-  phone: string;
-  status: string;
-  verifiedBy: string | null;
-  userId: string;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-export async function PATCH(
-  req: Request,
-  { params }: { params: { id: string } }
-) {
+export async function PATCH(request: NextRequest) {
   try {
-    const { userId } = await auth();
-    if (!userId) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
-    }
-
-    const body = await req.json();
+    const body = await request.json();
     const { status } = body;
 
-    if (!status || !['approved', 'rejected'].includes(status)) {
+    // Extract ID from URL path
+    const pathSegments = request.nextUrl.pathname.split("/");
+    const applicationId = pathSegments[pathSegments.length - 1];
+
+    if (!applicationId) {
+      return NextResponse.json({ error: "Application ID is required" }, { status: 400 });
+    }
+
+    if (!status || !["approved", "rejected"].includes(status)) {
       return NextResponse.json(
         { error: "Invalid status. Must be 'approved' or 'rejected'" },
         { status: 400 }
       );
     }
 
-    // First check if the seller exists
-    const sellers = await prisma.$queryRaw<SellerStatus[]>`
-      SELECT id, status, "userId"
-      FROM "sellers"
-      WHERE id = ${params.id}
-    `;
-
-    if (!sellers || sellers.length === 0) {
-      return NextResponse.json(
-        { error: "Seller not found" },
-        { status: 404 }
-      );
-    }
-
-    const seller = sellers[0];
-
-    // Update the seller status using raw SQL
-    await prisma.$executeRaw`
-      UPDATE "sellers"
-      SET status = ${status}, "updatedAt" = NOW()
-      WHERE id = ${params.id}
-    `;
-
     try {
-      // Get the user from the database to get their Clerk ID
-      const dbUser = await prisma.user.findUnique({
+      // First get the seller application to get the userId
+      const seller = await prisma.seller.findUnique({
+        where: { id: applicationId },
+        select: { userId: true }
+      });
+
+      if (!seller) {
+        return NextResponse.json(
+          { error: "Seller application not found" },
+          { status: 404 }
+        );
+      }
+
+      // Then get the user's Clerk ID
+      const user = await prisma.user.findUnique({
         where: { id: seller.userId },
         select: { clerkId: true }
       });
 
-      if (dbUser) {
-        // Update the user's public metadata in Clerk based on status
-        await clerkClient.users.updateUserMetadata(dbUser.clerkId, {
-          publicMetadata: { role: status === 'approved' ? "seller" : "member" }
-        });
-
-        // Also update the role in our database
-        await prisma.user.update({
-          where: { id: seller.userId },
-          data: { roles: status === 'approved' ? "Seller" : "Member" }
-        });
+      if (!user || !user.clerkId) {
+        return NextResponse.json(
+          { error: "User not found or Clerk ID not available" },
+          { status: 404 }
+        );
       }
-    } catch (error) {
-      console.error("Error updating user role:", error);
-      // Continue with the response even if role update fails
+
+      // Update the user's public metadata in Clerk
+      await clerkClient.users.updateUserMetadata(user.clerkId, {
+        publicMetadata: {
+          role: status === "approved" ? "seller" : "member",
+        },
+      });
+
+      return NextResponse.json({
+        success: true,
+        message: "User role updated successfully",
+        role: status === "approved" ? "seller" : "member",
+      });
+    } catch (clerkError) {
+      console.error("Clerk API Error:", clerkError);
+      return NextResponse.json(
+        { error: "Failed to update user role in Clerk" },
+        { status: 500 }
+      );
     }
-
-    // Fetch the updated seller
-    const updatedSellers = await prisma.$queryRaw<Seller[]>`
-      SELECT * FROM "sellers"
-      WHERE id = ${params.id}
-    `;
-
-    if (!updatedSellers || updatedSellers.length === 0) {
-      throw new Error("Failed to fetch updated seller");
-    }
-
-    return NextResponse.json(updatedSellers[0]);
   } catch (error) {
-    console.error("Error updating application status:", error);
+    console.error("Request Error:", error);
     return NextResponse.json(
-      { error: "Failed to update application status" },
-      { status: 500 }
+      { error: "Invalid request format" },
+      { status: 400 }
     );
   }
-} 
+}

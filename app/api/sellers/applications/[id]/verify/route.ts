@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
 
@@ -19,17 +19,11 @@ interface Seller {
   updatedAt: Date;
 }
 
-export async function PATCH(
-  req: Request,
-  { params }: { params: { id: string } }
-) {
+export async function PATCH(req: NextRequest) {
   try {
     const { userId } = await auth();
     if (!userId) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const body = await req.json();
@@ -50,39 +44,40 @@ export async function PATCH(
       );
     }
 
-    // First check if the seller exists and is approved
+    // Extract ID from URL
+    const id = req.nextUrl.pathname.split("/").pop();
+
+    if (!id) {
+      return NextResponse.json({ error: "Invalid seller ID" }, { status: 400 });
+    }
+
     const sellers = await prisma.$queryRaw<SellerStatus[]>`
       SELECT id, status
       FROM "sellers"
-      WHERE id = ${params.id}
+      WHERE id = ${id}
     `;
 
     if (!sellers || sellers.length === 0) {
-      return NextResponse.json(
-        { error: "Seller not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Seller not found" }, { status: 404 });
     }
 
     const seller = sellers[0];
-    if (seller.status !== 'approved') {
+    if (seller.status !== "approved") {
       return NextResponse.json(
         { error: "Can only verify approved sellers" },
         { status: 400 }
       );
     }
 
-    // Update the seller with verification using raw SQL
     await prisma.$executeRaw`
       UPDATE "sellers"
       SET "verifiedBy" = ${verifiedBy}, "updatedAt" = NOW()
-      WHERE id = ${params.id}
+      WHERE id = ${id}
     `;
 
-    // Fetch the updated seller
     const updatedSellers = await prisma.$queryRaw<Seller[]>`
       SELECT * FROM "sellers"
-      WHERE id = ${params.id}
+      WHERE id = ${id}
     `;
 
     if (!updatedSellers || updatedSellers.length === 0) {
@@ -97,4 +92,4 @@ export async function PATCH(
       { status: 500 }
     );
   }
-} 
+}

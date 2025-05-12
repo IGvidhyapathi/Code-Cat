@@ -84,8 +84,8 @@ export default function SellerPaymentsPage() {
   };
 
   const handleApplicationStatus = async (applicationId: string, status: ApplicationStatus) => {
-    if (status === 'approved' && !selectedVerifier) {
-      toast.error("Please select a verifier");
+    if (!applicationId) {
+      toast.error('Invalid application ID');
       return;
     }
 
@@ -99,30 +99,22 @@ export default function SellerPaymentsPage() {
         body: JSON.stringify({ status }),
       });
 
+      const data = await statusResponse.json();
+
       if (!statusResponse.ok) {
-        throw new Error('Failed to update application status');
+        throw new Error(data.error || 'Failed to update application status');
       }
 
-      if (status === 'approved') {
-        const verifyResponse = await fetch(`/api/sellers/applications/${applicationId}/verify`, {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ verifiedBy: selectedVerifier }),
-        });
-
-        if (!verifyResponse.ok) {
-          throw new Error('Failed to update verification');
-        }
+      if (data.success) {
+        toast.success(`Application ${status} successfully`);
+        setSelectedVerifier("");
+        fetchApplications();
+      } else {
+        throw new Error(data.error || 'Failed to update application status');
       }
-
-      toast.success(`Application ${status} successfully`);
-      setSelectedVerifier("");
-      fetchApplications();
     } catch (error) {
       console.error('Error updating application:', error);
-      toast.error('Failed to update application');
+      toast.error(error instanceof Error ? error.message : 'Failed to update application');
     } finally {
       setProcessingApplicationId(null);
     }
@@ -344,7 +336,33 @@ export default function SellerPaymentsPage() {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                           <div className="flex items-center justify-end space-x-2">
-                            {application.status !== 'approved' && (
+                            {application.status === 'rejected' ? (
+                              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="bg-green-500/10 text-green-400 hover:bg-green-500/20 hover:text-green-300 transition-colors duration-200"
+                                  onClick={() => handleApplicationStatus(application.id, 'approved')}
+                                  disabled={processingApplicationId === application.id}
+                                >
+                                  {processingApplicationId === application.id ? (
+                                    <div className="flex items-center">
+                                      <motion.div
+                                        animate={{ rotate: 360 }}
+                                        transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                                        className="w-4 h-4 border-2 border-green-400 border-t-transparent rounded-full mr-2"
+                                      />
+                                      Processing...
+                                    </div>
+                                  ) : (
+                                    <>
+                                      <IconCheck className="w-4 h-4 mr-1" />
+                                      Approve Later
+                                    </>
+                                  )}
+                                </Button>
+                              </motion.div>
+                            ) : application.status !== 'approved' ? (
                               <div className="flex items-center space-x-2">
                                 <div className="relative group">
                                   <select
@@ -387,7 +405,7 @@ export default function SellerPaymentsPage() {
                                   </Button>
                                 </motion.div>
                               </div>
-                            )}
+                            ) : null}
                             {application.status !== 'rejected' && (
                               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                                 <Button
