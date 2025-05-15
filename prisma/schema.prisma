@@ -37,7 +37,6 @@ model User {
   imageUrl  String?
   email     String?
   phone     String?
-  roles     UserRole  @default(Member)
   projects  Project[]
   payments  Payment[]
   seller    Seller?
@@ -46,7 +45,7 @@ model User {
 }
 
 model Project {
-  id                    String   @id @default(cuid())
+  id                    String        @id @default(cuid())
   title                 String
   description           String
   keyFeatures           String[]
@@ -59,17 +58,18 @@ model Project {
   contactGithub         String?
   category              String
   price                 Float?
-  projectType           String   @default("readymade")
-  includesDocumentation Boolean  @default(false)
-  includesSourceCode    Boolean  @default(false)
-  includesSupport       Boolean  @default(false)
-  supportDuration       String   @default("1")
-  lastUpdated           DateTime @updatedAt
+  projectType           String
+  includesDocumentation Boolean      @default(false)
+  includesSourceCode    Boolean      @default(false)
+  includesSupport       Boolean      @default(false)
+  supportDuration       String?
+  lastUpdated           DateTime      @default(now())
+  status                ProjectStatus @default(Ordered)
   userId                String
-  user                  User     @relation(fields: [userId], references: [id])
+  user                  User          @relation(fields: [userId], references: [id])
   payments              Payment[]
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @updatedAt
+  createdAt             DateTime      @default(now())
+  updatedAt             DateTime      @updatedAt
 
   @@map("projects")
 }
@@ -80,7 +80,7 @@ model Payment {
   currency         String        @default("INR")
   status           String
   projectStatus    ProjectStatus @default(Ordered)
-  project_taken String?
+  project_taken    String?
   razorpayPaymentId String?      @unique
   razorpayOrderId  String?
   razorpaySignature String?

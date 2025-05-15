@@ -264,8 +264,29 @@ export default function ProjectDetails() {
         }
       );
           
+          // Play payment success sound
+          const audio = new Audio('/payment success.mp3');
+          audio.play().catch(error => console.error('Error playing payment sound:', error));
+          
           // Record the successful payment
           await recordPayment(project.id, response.razorpay_payment_id, projectPrice);
+          
+          // Send email notification
+          try {
+            await fetch('/api/email', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                projectTitle: project.title,
+                amount: projectPrice,
+                paymentId: response.razorpay_payment_id,
+                buyerName: user?.fullName || 'Anonymous',
+                buyerEmail: user?.primaryEmailAddress?.emailAddress || 'No email provided'
+              })
+            });
+          } catch (error) {
+            console.error('Error sending email notification:', error);
+          }
           
           // Update payment status
           setPaymentCompleted(true);

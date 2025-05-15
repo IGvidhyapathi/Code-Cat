@@ -76,7 +76,6 @@ export async function POST(req: Request) {
             lastName: user.lastName || "",
             email: user.emailAddresses[0]?.emailAddress || "",
             imageUrl: user.imageUrl || "",
-            roles: "Member",
           },
         });
       } catch (error) {

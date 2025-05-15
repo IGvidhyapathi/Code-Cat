@@ -3,7 +3,22 @@
 import { useState, useEffect } from "react";
 import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
-import { IconSearch, IconX, IconCheck, IconUser, IconPhone, IconMail, IconCalendar, IconShieldCheck, IconFilter, IconChevronDown } from "@tabler/icons-react";
+import { 
+  IconSearch, 
+  IconX, 
+  IconCheck, 
+  IconUser, 
+  IconPhone, 
+  IconMail, 
+  IconCalendar, 
+  IconShieldCheck, 
+  IconFilter, 
+  IconChevronDown,
+  IconBuildingStore,
+  IconChartBar,
+  IconClock,
+  IconInfoCircle
+} from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
@@ -33,6 +48,12 @@ export default function SellerPaymentsPage() {
   const [selectedVerifier, setSelectedVerifier] = useState<string>("");
   const [processingApplicationId, setProcessingApplicationId] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState<ApplicationStatus | 'all'>('all');
+  const [stats, setStats] = useState({
+    total: 0,
+    approved: 0,
+    rejected: 0,
+    pending: 0
+  });
 
   useEffect(() => {
     if (!isSignedIn) {
@@ -42,6 +63,17 @@ export default function SellerPaymentsPage() {
 
     fetchApplications();
   }, [isSignedIn, router]);
+
+  useEffect(() => {
+    // Calculate stats whenever applications change
+    const newStats = {
+      total: applications.length,
+      approved: applications.filter(app => app.status === 'approved').length,
+      rejected: applications.filter(app => app.status === 'rejected').length,
+      pending: applications.filter(app => app.status === 'applied').length
+    };
+    setStats(newStats);
+  }, [applications]);
 
   const fetchApplications = async () => {
     setIsLoadingApplications(true);
@@ -89,6 +121,11 @@ export default function SellerPaymentsPage() {
       return;
     }
 
+    if (status === 'approved' && !selectedVerifier) {
+      toast.error('Please select a verifier');
+      return;
+    }
+
     setProcessingApplicationId(applicationId);
     try {
       const statusResponse = await fetch(`/api/sellers/applications/${applicationId}`, {
@@ -106,9 +143,20 @@ export default function SellerPaymentsPage() {
       }
 
       if (data.success) {
-        toast.success(`Application ${status} successfully`);
-        setSelectedVerifier("");
-        fetchApplications();
+        setApplications(prevApplications => 
+          prevApplications.map(app => 
+            app.id === applicationId 
+              ? { 
+                  ...app, 
+                  status: status,
+                  verifiedBy: status === 'approved' ? selectedVerifier : null 
+                }
+              : app
+          )
+        );
+
+      toast.success(`Application ${status} successfully`);
+      setSelectedVerifier("");
       } else {
         throw new Error(data.error || 'Failed to update application status');
       }
@@ -131,6 +179,17 @@ export default function SellerPaymentsPage() {
     }).format(date);
   };
 
+  const getStatusColor = (status: ApplicationStatus) => {
+    switch (status) {
+      case 'approved':
+        return 'bg-green-500/10 text-green-400 border-green-500/20';
+      case 'rejected':
+        return 'bg-red-500/10 text-red-400 border-red-500/20';
+      default:
+        return 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20';
+    }
+  };
+
   const filteredApplications = applications.filter(app => {
     const matchesSearch = 
       app.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -144,15 +203,15 @@ export default function SellerPaymentsPage() {
 
   if (!isSignedIn) {
     return (
-      <div className="min-h-screen bg-slate-900 flex items-center justify-center">
-        <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 max-w-md w-full p-8 text-center">
-          <div className="w-16 h-16 bg-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
-            <IconShieldCheck className="w-8 h-8 text-blue-400" />
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
+        <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700/50 max-w-md w-full p-8 text-center shadow-2xl">
+          <div className="w-20 h-20 bg-blue-500/20 rounded-2xl flex items-center justify-center mx-auto mb-6 transform rotate-3">
+            <IconBuildingStore className="w-10 h-10 text-blue-400" />
           </div>
           <h2 className="text-2xl font-bold text-white mb-3">Seller Management</h2>
           <p className="text-gray-400 mb-6">Sign in to manage seller applications.</p>
           <Button 
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-xl h-12 text-lg"
             onClick={() => router.push('/')}
           >
             Go Home
@@ -163,13 +222,13 @@ export default function SellerPaymentsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
       {/* Header */}
       <motion.div 
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="bg-slate-800/30 backdrop-blur-lg border-b border-slate-700/50 sticky top-0 z-10"
+        className="bg-slate-800/30 backdrop-blur-xl border-b border-slate-700/50 sticky top-0 z-10"
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -178,7 +237,7 @@ export default function SellerPaymentsPage() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.2 }}
             >
-              <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
+              <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">
                 Seller Management
               </h1>
               <p className="text-gray-400 mt-1">Manage and verify seller applications</p>
@@ -195,7 +254,7 @@ export default function SellerPaymentsPage() {
                   placeholder="Search applications..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full bg-slate-700/30 border-slate-600 text-white placeholder-gray-400 pl-10 transition-all duration-200 group-hover:bg-slate-700/50 focus:bg-slate-700/50"
+                  className="w-full bg-slate-700/30 border-slate-600 text-white placeholder-gray-400 pl-10 rounded-xl transition-all duration-200 group-hover:bg-slate-700/50 focus:bg-slate-700/50"
                 />
                 <IconSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 transition-colors duration-200 group-hover:text-gray-300" />
                 {searchQuery && (
@@ -214,7 +273,7 @@ export default function SellerPaymentsPage() {
                 <select
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value as ApplicationStatus | 'all')}
-                  className="block w-full rounded-md border-0 bg-slate-700/30 py-2 pl-3 pr-10 text-white shadow-sm ring-1 ring-inset ring-slate-600 focus:ring-2 focus:ring-inset focus:ring-blue-500 sm:text-sm sm:leading-6 transition-all duration-200 group-hover:bg-slate-700/50 focus:bg-slate-700/50 appearance-none"
+                  className="block w-full rounded-xl border-0 bg-slate-700/30 py-2 pl-3 pr-10 text-white shadow-sm ring-1 ring-inset ring-slate-600 focus:ring-2 focus:ring-inset focus:ring-blue-500 sm:text-sm sm:leading-6 transition-all duration-200 group-hover:bg-slate-700/50 focus:bg-slate-700/50 appearance-none"
                 >
                   <option value="all" className="bg-slate-800">All Status</option>
                   <option value="applied" className="bg-slate-800">Applied</option>
@@ -228,16 +287,69 @@ export default function SellerPaymentsPage() {
         </div>
       </motion.div>
 
-      {/* Main Content */}
+      {/* Stats Section */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
-          className="bg-slate-800/30 backdrop-blur-lg rounded-xl border border-slate-700/50 overflow-hidden shadow-xl"
+          className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8"
+        >
+          <div className="bg-slate-800/30 backdrop-blur-xl rounded-2xl border border-slate-700/50 p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-gray-400 text-sm">Total Applications</p>
+                <h3 className="text-2xl font-bold text-white mt-1">{stats.total}</h3>
+              </div>
+              <div className="w-12 h-12 bg-blue-500/20 rounded-xl flex items-center justify-center">
+                <IconBuildingStore className="w-6 h-6 text-blue-400" />
+              </div>
+            </div>
+          </div>
+          <div className="bg-slate-800/30 backdrop-blur-xl rounded-2xl border border-slate-700/50 p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-gray-400 text-sm">Approved</p>
+                <h3 className="text-2xl font-bold text-green-400 mt-1">{stats.approved}</h3>
+              </div>
+              <div className="w-12 h-12 bg-green-500/20 rounded-xl flex items-center justify-center">
+                <IconCheck className="w-6 h-6 text-green-400" />
+              </div>
+            </div>
+          </div>
+          <div className="bg-slate-800/30 backdrop-blur-xl rounded-2xl border border-slate-700/50 p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-gray-400 text-sm">Rejected</p>
+                <h3 className="text-2xl font-bold text-red-400 mt-1">{stats.rejected}</h3>
+              </div>
+              <div className="w-12 h-12 bg-red-500/20 rounded-xl flex items-center justify-center">
+                <IconX className="w-6 h-6 text-red-400" />
+              </div>
+            </div>
+          </div>
+          <div className="bg-slate-800/30 backdrop-blur-xl rounded-2xl border border-slate-700/50 p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-gray-400 text-sm">Pending</p>
+                <h3 className="text-2xl font-bold text-yellow-400 mt-1">{stats.pending}</h3>
+              </div>
+              <div className="w-12 h-12 bg-yellow-500/20 rounded-xl flex items-center justify-center">
+                <IconClock className="w-6 h-6 text-yellow-400" />
+              </div>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Main Content */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+          className="bg-slate-800/30 backdrop-blur-xl rounded-2xl border border-slate-700/50 overflow-hidden shadow-2xl"
         >
           {isLoadingApplications ? (
-            <div className="p-8 flex flex-col items-center justify-center">
+            <div className="p-12 flex flex-col items-center justify-center">
               <motion.div 
                 animate={{ rotate: 360 }}
                 transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
@@ -279,11 +391,11 @@ export default function SellerPaymentsPage() {
                                 transition={{ duration: 0.2 }}
                                 src={application.imageUrl}
                                 alt={application.name}
-                                className="h-10 w-10 rounded-full ring-2 ring-slate-600"
+                                className="h-12 w-12 rounded-xl ring-2 ring-slate-600"
                               />
                             ) : (
-                              <div className="h-10 w-10 rounded-full bg-slate-700/50 flex items-center justify-center ring-2 ring-slate-600">
-                                <IconUser className="w-6 h-6 text-gray-400" />
+                              <div className="h-12 w-12 rounded-xl bg-slate-700/50 flex items-center justify-center ring-2 ring-slate-600">
+                                <IconUser className="w-7 h-7 text-gray-400" />
                               </div>
                             )}
                             <div className="ml-4">
@@ -293,7 +405,7 @@ export default function SellerPaymentsPage() {
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="flex flex-col space-y-1">
+                          <div className="flex flex-col space-y-2">
                             <div className="text-sm text-white flex items-center group">
                               <IconMail className="w-4 h-4 mr-2 text-gray-400 group-hover:text-blue-400 transition-colors duration-200" />
                               {application.email}
@@ -307,11 +419,7 @@ export default function SellerPaymentsPage() {
                         <td className="px-6 py-4 whitespace-nowrap">
                           <motion.span
                             whileHover={{ scale: 1.05 }}
-                            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                              application.status === 'approved' ? 'bg-green-500/10 text-green-400' :
-                              application.status === 'rejected' ? 'bg-red-500/10 text-red-400' :
-                              'bg-yellow-500/10 text-yellow-400'
-                            }`}
+                            className={`inline-flex items-center px-3 py-1 rounded-xl text-xs font-medium border ${getStatusColor(application.status)}`}
                           >
                             {application.status === 'approved' ? 'Approved' :
                              application.status === 'rejected' ? 'Rejected' :
@@ -336,82 +444,12 @@ export default function SellerPaymentsPage() {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                           <div className="flex items-center justify-end space-x-2">
-                            {application.status === 'rejected' ? (
+                            {application.status === 'approved' ? (
                               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                                 <Button
                                   variant="outline"
                                   size="sm"
-                                  className="bg-green-500/10 text-green-400 hover:bg-green-500/20 hover:text-green-300 transition-colors duration-200"
-                                  onClick={() => handleApplicationStatus(application.id, 'approved')}
-                                  disabled={processingApplicationId === application.id}
-                                >
-                                  {processingApplicationId === application.id ? (
-                                    <div className="flex items-center">
-                                      <motion.div
-                                        animate={{ rotate: 360 }}
-                                        transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                                        className="w-4 h-4 border-2 border-green-400 border-t-transparent rounded-full mr-2"
-                                      />
-                                      Processing...
-                                    </div>
-                                  ) : (
-                                    <>
-                                      <IconCheck className="w-4 h-4 mr-1" />
-                                      Approve Later
-                                    </>
-                                  )}
-                                </Button>
-                              </motion.div>
-                            ) : application.status !== 'approved' ? (
-                              <div className="flex items-center space-x-2">
-                                <div className="relative group">
-                                  <select
-                                    value={selectedVerifier}
-                                    onChange={(e) => setSelectedVerifier(e.target.value)}
-                                    className="block rounded-md border-0 bg-slate-700/30 py-2 px-3 text-white shadow-sm ring-1 ring-inset ring-slate-600 focus:ring-2 focus:ring-inset focus:ring-blue-500 sm:text-sm sm:leading-6 transition-all duration-200 group-hover:bg-slate-700/50 focus:bg-slate-700/50 appearance-none"
-                                    disabled={processingApplicationId === application.id}
-                                  >
-                                    <option value="" className="bg-slate-800">Select Verifier</option>
-                                    <option value="Vidhyapathi" className="bg-slate-800">Vidhyapathi</option>
-                                    <option value="Dharun" className="bg-slate-800">Dharun</option>
-                                    <option value="Bharathkumar" className="bg-slate-800">Bharathkumar</option>
-                                    <option value="Manoj" className="bg-slate-800">Manoj</option>
-                                  </select>
-                                  <IconChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none transition-transform duration-200 group-hover:rotate-180" />
-                                </div>
-                                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                                  <Button
-                                    variant="outline"
-                                    size="sm"
-                                    className="bg-green-500/10 text-green-400 hover:bg-green-500/20 hover:text-green-300 transition-colors duration-200"
-                                    onClick={() => handleApplicationStatus(application.id, 'approved')}
-                                    disabled={processingApplicationId === application.id}
-                                  >
-                                    {processingApplicationId === application.id ? (
-                                      <div className="flex items-center">
-                                        <motion.div
-                                          animate={{ rotate: 360 }}
-                                          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                                          className="w-4 h-4 border-2 border-green-400 border-t-transparent rounded-full mr-2"
-                                        />
-                                        Processing...
-                                      </div>
-                                    ) : (
-                                      <>
-                                        <IconCheck className="w-4 h-4 mr-1" />
-                                        Approve
-                                      </>
-                                    )}
-                                  </Button>
-                                </motion.div>
-                              </div>
-                            ) : null}
-                            {application.status !== 'rejected' && (
-                              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  className="bg-red-500/10 text-red-400 hover:bg-red-500/20 hover:text-red-300 transition-colors duration-200"
+                                  className="bg-red-500/10 text-red-400 hover:bg-red-500/20 hover:text-red-300 transition-colors duration-200 rounded-xl"
                                   onClick={() => handleApplicationStatus(application.id, 'rejected')}
                                   disabled={processingApplicationId === application.id}
                                 >
@@ -432,6 +470,76 @@ export default function SellerPaymentsPage() {
                                   )}
                                 </Button>
                               </motion.div>
+                            ) : (
+                              <div className="flex items-center space-x-2">
+                                <div className="relative group">
+                                  <select
+                                    value={selectedVerifier}
+                                    onChange={(e) => setSelectedVerifier(e.target.value)}
+                                    className="block rounded-xl border-0 bg-slate-700/30 py-2 px-3 text-white shadow-sm ring-1 ring-inset ring-slate-600 focus:ring-2 focus:ring-inset focus:ring-blue-500 sm:text-sm sm:leading-6 transition-all duration-200 group-hover:bg-slate-700/50 focus:bg-slate-700/50 appearance-none"
+                                    disabled={processingApplicationId === application.id}
+                                  >
+                                    <option value="" className="bg-slate-800">Select Verifier</option>
+                                    <option value="Vidhyapathi" className="bg-slate-800">Vidhyapathi</option>
+                                    <option value="Dharun" className="bg-slate-800">Dharun</option>
+                                    <option value="Bharathkumar" className="bg-slate-800">Bharathkumar</option>
+                                    <option value="Manoj" className="bg-slate-800">Manoj</option>
+                                  </select>
+                                  <IconChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none transition-transform duration-200 group-hover:rotate-180" />
+                                </div>
+                                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="bg-green-500/10 text-green-400 hover:bg-green-500/20 hover:text-green-300 transition-colors duration-200 rounded-xl"
+                                    onClick={() => handleApplicationStatus(application.id, 'approved')}
+                                    disabled={processingApplicationId === application.id}
+                                  >
+                                    {processingApplicationId === application.id ? (
+                                      <div className="flex items-center">
+                                        <motion.div
+                                          animate={{ rotate: 360 }}
+                                          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                                          className="w-4 h-4 border-2 border-green-400 border-t-transparent rounded-full mr-2"
+                                        />
+                                        Processing...
+                                      </div>
+                                    ) : (
+                                      <>
+                                        <IconCheck className="w-4 h-4 mr-1" />
+                                        Approve
+                                      </>
+                                    )}
+                                  </Button>
+                                </motion.div>
+                            {application.status !== 'rejected' && (
+                              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                      className="bg-red-500/10 text-red-400 hover:bg-red-500/20 hover:text-red-300 transition-colors duration-200 rounded-xl"
+                                  onClick={() => handleApplicationStatus(application.id, 'rejected')}
+                                  disabled={processingApplicationId === application.id}
+                                >
+                                  {processingApplicationId === application.id ? (
+                                    <div className="flex items-center">
+                                      <motion.div
+                                        animate={{ rotate: 360 }}
+                                        transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                                        className="w-4 h-4 border-2 border-red-400 border-t-transparent rounded-full mr-2"
+                                      />
+                                      Processing...
+                                    </div>
+                                  ) : (
+                                    <>
+                                      <IconX className="w-4 h-4 mr-1" />
+                                      Reject
+                                    </>
+                                  )}
+                                </Button>
+                              </motion.div>
+                                )}
+                              </div>
                             )}
                           </div>
                         </td>
@@ -448,10 +556,10 @@ export default function SellerPaymentsPage() {
               transition={{ duration: 0.3 }}
               className="p-12 flex flex-col items-center justify-center"
             >
-              <div className="w-16 h-16 bg-slate-700/30 rounded-full flex items-center justify-center mb-4 ring-2 ring-slate-600">
-                <IconUser className="w-8 h-8 text-gray-500" />
+              <div className="w-20 h-20 bg-slate-700/30 rounded-2xl flex items-center justify-center mb-4 ring-2 ring-slate-600">
+                <IconInfoCircle className="w-10 h-10 text-gray-500" />
               </div>
-              <h3 className="text-lg font-medium text-white mb-2">No applications found</h3>
+              <h3 className="text-xl font-medium text-white mb-2">No applications found</h3>
               <p className="text-gray-400 text-center">
                 {searchQuery ? 'No applications match your search criteria.' : 'There are no seller applications at the moment.'}
               </p>
