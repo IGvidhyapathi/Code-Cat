@@ -138,7 +138,7 @@ export default function SupportPage() {
                 <div className="bg-slate-800/50 rounded-lg p-6 backdrop-blur-sm border border-slate-700/50">
                   <h3 className="text-lg font-medium text-white">What payment methods do you accept?</h3>
                   <p className="text-gray-400 mt-2">
-                    We accept all major credit cards, PayPal, and bank transfers. For other payment methods, 
+                    We accept all major credit cards,Debit cards, UPI, and bank transfers. For other payment methods, 
                     please contact our support team.
                   </p>
                 </div>
@@ -146,8 +146,7 @@ export default function SupportPage() {
                 <div className="bg-slate-800/50 rounded-lg p-6 backdrop-blur-sm border border-slate-700/50">
                   <h3 className="text-lg font-medium text-white">Can I request modifications to a project?</h3>
                   <p className="text-gray-400 mt-2">
-                    Yes, we offer customization services for our projects. Please reach out with your specific 
-                    requirements and we'll provide a quote.
+                    Yes, we offer customization services for our projects. Charges may vary depending on the complexity of the project.
                   </p>
                 </div>
               </div>
