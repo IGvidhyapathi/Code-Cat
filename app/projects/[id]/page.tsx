@@ -773,7 +773,7 @@ export default function ProjectDetails() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 pb-24 lg:pb-0">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-8">
             {/* Video Demo */}
@@ -922,7 +922,7 @@ export default function ProjectDetails() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3 }}
-              className="bg-slate-800 rounded-xl border border-slate-700/50 overflow-hidden shadow-md"
+              className="bg-slate-800 rounded-xl border border-slate-700/50 overflow-hidden shadow-md lg:block hidden"
             >
               <div className="p-6 space-y-6">
                 {/* Price Header */}
@@ -942,7 +942,7 @@ export default function ProjectDetails() {
                     ₹{project.price?.toLocaleString()}
                   </motion.p>
                   <p className="text-sm text-gray-400 pb-1">INR</p>
-                        </div>
+                </div>
 
                 {/* Payment Button */}
                 <motion.div
@@ -952,17 +952,17 @@ export default function ProjectDetails() {
                 >
                   {!isSignedIn ? (
                     <SignInButton mode="modal" fallbackRedirectUrl={`/projects/${project.id}`}>
-              <Button
+                      <Button
                         className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-md py-5 transition-colors duration-300"
-              >
+                      >
                         <div className="flex items-center justify-center">
                           <IconUser className="w-5 h-5 mr-2" />
                           <span>Sign in to Purchase</span>
                         </div>
-              </Button>
+                      </Button>
                     </SignInButton>
                   ) : (
-                  <Button
+                    <Button
                       onClick={handleRazorpayPayment}
                       disabled={isProcessingPayment || !razorpayLoaded || paymentCompleted || isCheckingPayment}
                       className={`w-full ${
@@ -1001,7 +1001,7 @@ export default function ProjectDetails() {
                           </>
                         )}
                       </div>
-                </Button>
+                    </Button>
                   )}
                 </motion.div>
                 
@@ -1177,6 +1177,79 @@ export default function ProjectDetails() {
                 </div>
               </motion.div>
             )}
+
+            {/* Mobile Fixed Payment Button */}
+            <div className="fixed bottom-0 left-0 right-0 p-4 bg-slate-900/95 backdrop-blur-lg border-t border-slate-700 lg:hidden z-50">
+              <div className="flex items-center justify-between mb-3">
+                <div>
+                  <p className="text-sm text-gray-400">One-time payment</p>
+                  <p className="text-2xl font-bold text-white">₹{project.price?.toLocaleString()}</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-xs text-gray-400">Secure payment via</p>
+                  <p className="text-sm text-gray-300">Razorpay</p>
+                </div>
+              </div>
+              
+              <motion.div
+                whileTap={{ scale: 0.98 }}
+                transition={{ duration: 0.2 }}
+              >
+                {!isSignedIn ? (
+                  <SignInButton mode="modal" fallbackRedirectUrl={`/projects/${project.id}`}>
+                    <Button
+                      className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-md py-4 transition-colors duration-300"
+                    >
+                      <div className="flex items-center justify-center">
+                        <IconUser className="w-5 h-5 mr-2" />
+                        <span>Sign in to Purchase</span>
+                      </div>
+                    </Button>
+                  </SignInButton>
+                ) : (
+                  <Button
+                    onClick={handleRazorpayPayment}
+                    disabled={isProcessingPayment || !razorpayLoaded || paymentCompleted || isCheckingPayment}
+                    className={`w-full ${
+                      paymentCompleted 
+                        ? 'bg-green-600 hover:bg-green-600 cursor-default' 
+                        : isCheckingPayment
+                        ? 'bg-slate-600 hover:bg-slate-600 cursor-wait'
+                        : 'bg-blue-600 hover:bg-blue-700'
+                    } text-white rounded-md py-4 transition-colors duration-300`}
+                  >
+                    <div className="flex items-center justify-center">
+                      {paymentCompleted ? (
+                        <>
+                          <IconCheck className="w-5 h-5 mr-2" />
+                          <span>Payment Complete</span>
+                        </>
+                      ) : isCheckingPayment ? (
+                        <span className="flex items-center">
+                          <div className="mr-2 h-4 w-4 border-2 border-t-transparent border-white rounded-full animate-spin"></div>
+                          Checking Payment Status...
+                        </span>
+                      ) : isProcessingPayment ? (
+                        <span className="flex items-center">
+                          <div className="mr-2 h-4 w-4 border-2 border-t-transparent border-white rounded-full animate-spin"></div>
+                          Processing...
+                        </span>
+                      ) : !razorpayLoaded ? (
+                        <span className="flex items-center">
+                          <div className="mr-2 h-4 w-4 border-2 border-t-transparent border-white rounded-full animate-spin"></div>
+                          Loading...
+                        </span>
+                      ) : (
+                        <>
+                          <IconCreditCard className="w-5 h-5 mr-2" />
+                          <span>Pay Now</span>
+                        </>
+                      )}
+                    </div>
+                  </Button>
+                )}
+              </motion.div>
+            </div>
           </div>
         </div>
       </div>
