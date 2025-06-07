@@ -3,6 +3,7 @@
 
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["clientExtensions"]
 }
 
 datasource db {
@@ -15,6 +16,12 @@ enum ProjectStatus {
   Communication
   DeliveryInProgress
   Delivered
+}
+
+enum PaymentStatus {
+  pending
+  processing
+  settled
 }
 
 enum UserRole {
@@ -40,6 +47,7 @@ model User {
   projects  Project[]
   payments  Payment[]
   seller    Seller?
+  promoCodes ProjectPromoCode[]
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
 }
@@ -69,7 +77,9 @@ model Project {
   user                  User          @relation(fields: [userId], references: [id])
   payments              Payment[]
   createdAt             DateTime      @default(now())
-  updatedAt             DateTime      @updatedAt
+  updatedAt             DateTime      @default(now()) @updatedAt
+  promoCodes            ProjectPromoCode[]
+  referrals             Referral[]
 
   @@map("projects")
 }
@@ -78,7 +88,7 @@ model Payment {
   id               String        @id @default(cuid())
   amount           Float
   currency         String        @default("INR")
-  status           String
+  status           PaymentStatus @default(pending)
   projectStatus    ProjectStatus @default(Ordered)
   project_taken    String?
   razorpayPaymentId String?      @unique
@@ -89,6 +99,7 @@ model Payment {
   project          Project       @relation(fields: [projectId], references: [id])
   userId           String
   user             User          @relation(fields: [userId], references: [id])
+  promoCode        ProjectPromoCode?
   createdAt        DateTime      @default(now())
   updatedAt        DateTime      @updatedAt
 
@@ -111,4 +122,49 @@ model Seller {
 
   @@index([email])
   @@map("sellers")
+}
+
+model Referral {
+  id          String    @id @default(cuid())
+  projectId   String
+  marketerId  String
+  createdAt   DateTime  @default(now())
+  project     Project   @relation(fields: [projectId], references: [id])
+  marketer    Marketer  @relation(fields: [marketerId], references: [id])
+
+  @@map("referrals")
+}
+
+model Marketer {
+  id          String    @id @default(cuid())
+  name        String
+  email       String    @unique
+  phone       String
+  code        String    @unique
+  status      String    @default("pending") // pending, approved, rejected
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  promoCodes  ProjectPromoCode[]
+  referrals   Referral[]
+
+  @@index([email])
+  @@index([code])
+  @@map("marketers")
+}
+
+model ProjectPromoCode {
+  id          String    @id @default(cuid())
+  project     Project   @relation(fields: [projectId], references: [id])
+  projectId   String
+  marketer    Marketer  @relation(fields: [marketerId], references: [id])
+  marketerId  String
+  payment     Payment?  @relation(fields: [paymentId], references: [id])
+  paymentId   String?   @unique
+  user        User?     @relation(fields: [userId], references: [id])
+  userId      String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @default(now()) @updatedAt
+
+  @@unique([projectId, marketerId, userId])
+  @@map("project_promo_codes")
 }

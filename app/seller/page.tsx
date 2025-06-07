@@ -166,14 +166,14 @@ export default function SellerPage() {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <div className="w-3 h-3 rounded-full bg-purple-400"></div>
-                      <span className="text-2xl font-bold text-white">10%</span>
+                      <span className="text-2xl font-bold text-white">5%</span>
                     </div>
                     <span className="text-gray-400">Marketing Agent</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <div className="w-3 h-3 rounded-full bg-blue-400"></div>
-                      <span className="text-2xl font-bold text-white">30%</span>
+                      <span className="text-2xl font-bold text-white">35%</span>
                     </div>
                     <span className="text-gray-400">Platform Fee</span>
                   </div>

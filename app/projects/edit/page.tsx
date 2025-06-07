@@ -37,6 +37,7 @@ interface Project {
   category: string;
   youtubeUrl: string;
   createdAt: string;
+  userId: string;
 }
 
 // Category badges with color mapping
@@ -170,6 +171,7 @@ export default function EditProjectList() {
       const isPinVerifiedLocal = localStorage.getItem(PIN_VERIFIED_KEY) === 'true';
       if (isPinVerifiedLocal) {
         setIsPinVerified(true);
+        console.log('Fetching projects with user:', user?.id);
         fetchProjects();
       } else {
         setIsLoading(false);
@@ -208,18 +210,35 @@ export default function EditProjectList() {
   const fetchProjects = async () => {
     setIsLoading(true);
     try {
+      // First get the database user ID
+      const userResponse = await fetch('/api/user');
+      if (!userResponse.ok) {
+        throw new Error('Failed to fetch user data');
+      }
+      const userData = await userResponse.json();
+      const dbUserId = userData.id;
+
+      // Then fetch projects
       const response = await fetch('/api/projects?limit=1000');
       if (!response.ok) {
         throw new Error('Failed to fetch projects');
       }
       const data = await response.json();
       const projectsList = data.items || [];
-      setProjects(projectsList);
+      console.log('Current database user ID:', dbUserId);
+      console.log('Projects:', projectsList);
+      setProjects(projectsList.map((project: Project) => ({
+        ...project,
+        userId: project.userId
+      })));
       setFilteredProjects(projectsList);
       setTotalProjectCount(projectsList.length);
+
+      // Store the database user ID for comparison
+      localStorage.setItem('dbUserId', dbUserId);
     } catch (error) {
-      console.error('Error fetching projects:', error);
-      toast.error('Failed to load projects');
+      console.error('Error fetching data:', error);
+      toast.error('Failed to load data');
       setProjects([]);
       setFilteredProjects([]);
     } finally {
@@ -807,80 +826,90 @@ export default function EditProjectList() {
             </motion.div>
           ) : (
             <div className="grid gap-4">
-              {filteredProjects.map((project, index) => (
-                <motion.div
-                  key={project.id}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.05 }}
-                  className="group relative bg-slate-800/30 hover:bg-slate-800/50 rounded-xl p-5 border border-slate-700/50 transition-all duration-200"
-                >
-                  <div className="flex flex-col sm:flex-row gap-4">
-                    {/* Project info */}
-                    <div className="flex-1 sm:pr-4">
-                      <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-2">
-                        <h3 className="text-xl font-semibold text-white group-hover:text-blue-400 transition-colors">{project.title}</h3>
-                        <div className="flex items-center gap-2">
-                          <span className={`px-2 py-0.5 text-xs rounded-full ${categoryColors[project.category]?.bg || "bg-blue-500/10"} ${categoryColors[project.category]?.text || "text-blue-400"}`}>
-                            <span>{categoryColors[project.category]?.icon || "🔹"} {project.category}</span>
-                          </span>
-                          <span className="flex items-center text-xs text-gray-400">
-                            <IconCalendar size={14} className="mr-1" />
-                            {new Date(project.createdAt).toLocaleDateString()}
-                          </span>
+              {filteredProjects.map((project, index) => {
+                // Get stored database user ID
+                const dbUserId = localStorage.getItem('dbUserId');
+                const debugInfo = `Project: ${project.id}, Project userId: ${project.userId}, Current user db id: ${dbUserId}`;
+                console.log(debugInfo);
+                
+                return (
+                  <motion.div
+                    key={project.id}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.05 }}
+                    className="group relative bg-slate-800/30 hover:bg-slate-800/50 rounded-xl p-5 border border-slate-700/50 transition-all duration-200"
+                  >
+                    <div className="flex flex-col sm:flex-row gap-4">
+                      {/* Project info */}
+                      <div className="flex-1 sm:pr-4">
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-2">
+                          <h3 className="text-xl font-semibold text-white group-hover:text-blue-400 transition-colors">{project.title}</h3>
+                          <div className="flex items-center gap-2">
+                            <span className={`px-2 py-0.5 text-xs rounded-full ${categoryColors[project.category]?.bg || "bg-blue-500/10"} ${categoryColors[project.category]?.text || "text-blue-400"}`}>
+                              <span>{categoryColors[project.category]?.icon || "🔹"} {project.category}</span>
+                            </span>
+                            <span className="flex items-center text-xs text-gray-400">
+                              <IconCalendar size={14} className="mr-1" />
+                              {new Date(project.createdAt).toLocaleDateString()}
+                            </span>
+                          </div>
                         </div>
-                      </div>
-                      
-                      <p className="text-gray-300 mb-3 line-clamp-2">{project.description}</p>
-                      
-                      {/* Project URL */}
-                      {project.youtubeUrl && (
-                        <div className="mb-3 flex items-center text-xs text-gray-400">
-                          <IconCode size={14} className="mr-1" />
-                          <span className="truncate max-w-xs">{project.youtubeUrl}</span>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Action buttons */}
-                    <div className="flex sm:flex-col gap-2 justify-end">
-                      <Button
-                        onClick={() => handleViewProject(project.id)}
-                        size="sm"
-                        variant="outline"
-                        className="px-2.5 bg-slate-700/50 border-slate-600/50 hover:bg-slate-700 hover:text-white"
-                      >
-                        <IconEye size={18} />
-                      </Button>
-                      
-                      <Button
-                        onClick={() => handleEditProject(project.id)}
-                        size="sm"
-                        variant="outline"
-                        className="px-2.5 bg-blue-700/20 border-blue-700/50 text-blue-400 hover:bg-blue-700/30"
-                      >
-                        <IconEdit size={18} />
-                      </Button>
-                      
-                      {userRole !== 'seller' && (
-                      <Button
-                        onClick={() => handleDeleteProject(project.id)}
-                        size="sm"
-                        variant="outline"
-                        className="px-2.5 bg-red-700/20 border-red-700/50 text-red-400 hover:bg-red-700/30"
-                        disabled={isDeleting[project.id]}
-                      >
-                        {isDeleting[project.id] ? (
-                          <div className="h-4 w-4 border-2 border-t-2 border-red-400 rounded-full animate-spin" />
-                        ) : (
-                          <IconTrash size={18} />
+                        
+                        <p className="text-gray-300 mb-3 line-clamp-2">{project.description}</p>
+                        
+                        {/* Project URL */}
+                        {project.youtubeUrl && (
+                          <div className="mb-3 flex items-center text-xs text-gray-400">
+                            <IconCode size={14} className="mr-1" />
+                            <span className="truncate max-w-xs">{project.youtubeUrl}</span>
+                          </div>
                         )}
-                      </Button>
-                      )}
+                      </div>
+
+                      {/* Action buttons */}
+                      <div className="flex sm:flex-col gap-2 justify-end">
+                        <Button
+                          onClick={() => handleViewProject(project.id)}
+                          size="sm"
+                          variant="outline"
+                          className="px-2.5 bg-slate-700/50 border-slate-600/50 hover:bg-slate-700 hover:text-white"
+                        >
+                          <IconEye size={18} />
+                        </Button>
+                        
+                        {/* Only show edit button if user is the project owner */}
+                        {project.userId === dbUserId && (
+                          <Button
+                            onClick={() => handleEditProject(project.id)}
+                            size="sm"
+                            variant="outline"
+                            className="px-2.5 bg-blue-700/20 border-blue-700/50 text-blue-400 hover:bg-blue-700/30"
+                          >
+                            <IconEdit size={18} />
+                          </Button>
+                        )}
+                        
+                        {userRole !== 'seller' && (
+                        <Button
+                          onClick={() => handleDeleteProject(project.id)}
+                          size="sm"
+                          variant="outline"
+                          className="px-2.5 bg-red-700/20 border-red-700/50 text-red-400 hover:bg-red-700/30"
+                          disabled={isDeleting[project.id]}
+                        >
+                          {isDeleting[project.id] ? (
+                            <div className="h-4 w-4 border-2 border-t-2 border-red-400 rounded-full animate-spin" />
+                          ) : (
+                            <IconTrash size={18} />
+                          )}
+                        </Button>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                </motion.div>
-              ))}
+                  </motion.div>
+                );
+              })}
             </div>
           )}
         </motion.div>

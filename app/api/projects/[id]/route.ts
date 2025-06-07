@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { auth } from '@clerk/nextjs/server';
 
 export const revalidate = 60; // Revalidate every 60 seconds
 
@@ -71,6 +72,21 @@ export async function PUT(request: NextRequest) {
   }
 
   try {
+    // Check authentication
+    const { userId } = await auth();
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Get database user
+    const dbUser = await prisma.user.findUnique({
+      where: { clerkId: userId }
+    });
+
+    if (!dbUser) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+
     const body = await request.json();
 
     // Validate required fields
@@ -81,16 +97,24 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    // Check if project exists
+    // Check if project exists and verify ownership
     const existingProject = await prisma.project.findUnique({
       where: { id },
-      select: { id: true }
+      select: { id: true, userId: true }
     });
 
     if (!existingProject) {
       return NextResponse.json(
         { error: 'Project not found' },
         { status: 404 }
+      );
+    }
+
+    // Verify project ownership
+    if (existingProject.userId !== dbUser.id) {
+      return NextResponse.json(
+        { error: 'You are not authorized to edit this project' },
+        { status: 403 }
       );
     }
 
@@ -140,6 +164,21 @@ export async function DELETE(request: NextRequest) {
   }
 
   try {
+    // Check authentication
+    const { userId } = await auth();
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Get database user
+    const dbUser = await prisma.user.findUnique({
+      where: { clerkId: userId }
+    });
+
+    if (!dbUser) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+
     // Check if project exists and get its payment information
     const project = await prisma.project.findUnique({
       where: { id },
@@ -152,18 +191,20 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'Project not found' }, { status: 404 });
     }
 
+    // Verify project ownership
+    if (project.userId !== dbUser.id) {
+      return NextResponse.json(
+        { error: 'You are not authorized to delete this project' },
+        { status: 403 }
+      );
+    }
+
     // If there are associated payments, we should handle them appropriately
     if (project.payments.length > 0) {
-      // Option 1: Prevent deletion if there are payments
       return NextResponse.json(
         { error: 'Cannot delete project with existing payments' },
         { status: 400 }
       );
-      
-      // Option 2: Delete associated payments first (uncomment if this is the preferred behavior)
-      // await prisma.payment.deleteMany({
-      //   where: { projectId: id }
-      // });
     }
 
     // Delete the project

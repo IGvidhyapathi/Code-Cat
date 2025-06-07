@@ -4,7 +4,22 @@ import React, { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { useUser } from "@clerk/nextjs";
-import { IconUpload, IconLock, IconCheck, IconCopy, IconTrash, IconEdit, IconPlus, IconChevronLeft, IconAlertTriangle, IconCreditCard, IconRocket, IconChartBar } from "@tabler/icons-react";
+import { 
+  IconUpload, 
+  IconLock, 
+  IconCheck, 
+  IconCopy, 
+  IconTrash, 
+  IconEdit, 
+  IconPlus, 
+  IconChevronLeft, 
+  IconAlertTriangle, 
+  IconCreditCard, 
+  IconRocket, 
+  IconChartBar,
+  IconUsers,
+  IconMail
+} from "@tabler/icons-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -570,6 +585,42 @@ export default function NewProject() {
                 <p className="text-gray-400 text-sm">Earn by marketing projects</p>
               </button>
             </motion.div>
+
+            <motion.div
+              whileHover={{ scale: 1.03, y: -5 }}
+              whileTap={{ scale: 0.98 }}
+              className="group relative overflow-hidden"
+            >
+              <button
+                onClick={() => router.push('/projects/user-management')}
+                className="flex flex-col items-center justify-center w-full h-full bg-gradient-to-b from-indigo-500/10 to-indigo-600/5 border border-indigo-500/20 rounded-2xl p-6 text-center aspect-[4/3] shadow-lg hover:shadow-indigo-500/10 transition-all"
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <div className="h-16 w-16 rounded-full bg-indigo-600/10 flex items-center justify-center mb-3 group-hover:bg-indigo-600/20 transition-colors">
+                  <IconUsers className="h-8 w-8 text-indigo-500" />
+                </div>
+                <h3 className="text-lg font-bold text-white mb-1">User Management</h3>
+                <p className="text-gray-400 text-sm">Manage users and roles</p>
+              </button>
+            </motion.div>
+
+            <motion.div
+              whileHover={{ scale: 1.03, y: -5 }}
+              whileTap={{ scale: 0.98 }}
+              className="group relative overflow-hidden"
+            >
+              <button
+                onClick={() => router.push('/projects/mail-management')}
+                className="flex flex-col items-center justify-center w-full h-full bg-gradient-to-b from-purple-500/10 to-purple-600/5 border border-purple-500/20 rounded-2xl p-6 text-center aspect-[4/3] shadow-lg hover:shadow-purple-500/10 transition-all"
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <div className="h-16 w-16 rounded-full bg-purple-600/10 flex items-center justify-center mb-3 group-hover:bg-purple-600/20 transition-colors">
+                  <IconMail className="h-8 w-8 text-purple-500" />
+                </div>
+                <h3 className="text-lg font-bold text-white mb-1">Mail Management</h3>
+                <p className="text-gray-400 text-sm">Manage email communications</p>
+              </button>
+            </motion.div>
           </>
         );
 
@@ -640,15 +691,19 @@ export default function NewProject() {
           <motion.div
             whileHover={{ scale: 1.03, y: -5 }}
             whileTap={{ scale: 0.98 }}
-            className="group relative overflow-hidden col-span-full"
+            className="group relative overflow-hidden"
           >
-            <div className="flex flex-col items-center justify-center w-full h-full bg-gradient-to-b from-pink-500/10 to-pink-600/5 border border-pink-500/20 rounded-2xl p-8 text-center aspect-[4/3] shadow-lg">
-              <div className="h-20 w-20 rounded-full bg-pink-600/10 flex items-center justify-center mb-4">
-                <IconChartBar className="h-10 w-10 text-pink-500" />
+            <button
+              onClick={() => router.push('/projects/new/marketer-payment')}
+              className="flex flex-col items-center justify-center w-full h-full bg-gradient-to-b from-pink-500/10 to-pink-600/5 border border-pink-500/20 rounded-2xl p-6 text-center aspect-[4/3] shadow-lg hover:shadow-pink-500/10 transition-all"
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-pink-500/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+              <div className="h-16 w-16 rounded-full bg-pink-600/10 flex items-center justify-center mb-3 group-hover:bg-pink-600/20 transition-colors">
+                <IconChartBar className="h-8 w-8 text-pink-500" />
               </div>
-              <h3 className="text-xl font-bold text-white mb-2">Coming Soon</h3>
-              <p className="text-gray-400 text-base">Marketing features will be available soon. Stay tuned!</p>
-            </div>
+              <h3 className="text-lg font-bold text-white mb-1">Marketer Dashboard</h3>
+              <p className="text-gray-400 text-sm">Track your referrals and earnings</p>
+            </button>
           </motion.div>
         );
 
@@ -657,15 +712,19 @@ export default function NewProject() {
           <motion.div
             whileHover={{ scale: 1.03, y: -5 }}
             whileTap={{ scale: 0.98 }}
-            className="group relative overflow-hidden col-span-full"
+            className="group relative overflow-hidden"
           >
-            <div className="flex flex-col items-center justify-center w-full h-full bg-gradient-to-b from-red-500/10 to-red-600/5 border border-red-500/20 rounded-2xl p-8 text-center aspect-[4/3] shadow-lg">
-              <div className="h-20 w-20 rounded-full bg-red-600/10 flex items-center justify-center mb-4">
-                <IconLock className="h-10 w-10 text-red-400" />
+            <button
+              onClick={() => router.push('/projects/user-management')}
+              className="flex flex-col items-center justify-center w-full h-full bg-gradient-to-b from-indigo-500/10 to-indigo-600/5 border border-indigo-500/20 rounded-2xl p-6 text-center aspect-[4/3] shadow-lg hover:shadow-indigo-500/10 transition-all"
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+              <div className="h-16 w-16 rounded-full bg-indigo-600/10 flex items-center justify-center mb-3 group-hover:bg-indigo-600/20 transition-colors">
+                <IconUsers className="h-8 w-8 text-indigo-500" />
               </div>
-              <h3 className="text-xl font-bold text-white mb-2">Not Authorized</h3>
-              <p className="text-gray-400 text-base">You don't have permission to access this area.</p>
-            </div>
+              <h3 className="text-lg font-bold text-white mb-1">User Management</h3>
+              <p className="text-gray-400 text-sm">Manage users and roles</p>
+            </button>
           </motion.div>
         );
     }

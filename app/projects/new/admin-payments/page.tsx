@@ -144,6 +144,41 @@ export default function AdminPaymentsPage() {
     }
   }, [isLoading, isPinVerified, isSignedIn, router]);
 
+  const updatePaymentStatus = async (paymentId: string, newStatus: string) => {
+    try {
+      // Update the local state immediately for better UX
+      setPayments(payments.map(payment => 
+        payment.id === paymentId 
+          ? { ...payment, status: newStatus }
+          : payment
+      ));
+
+      // Update in database
+      const response = await fetch(`/api/payments/update-status`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          paymentId,
+          status: newStatus
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update status');
+      }
+      
+      toast.success('Payment status updated successfully');
+    } catch (error) {
+      console.error('Error updating payment status:', error);
+      toast.error(error instanceof Error ? error.message : 'Failed to update status');
+      
+      // Revert the local state if the update failed
+      setPayments(payments);
+    }
+  };
+
   const updateProjectStatus = async (paymentId: string, newStatus: string) => {
     try {
       // Update the local state immediately for better UX
@@ -169,9 +204,9 @@ export default function AdminPaymentsPage() {
         throw new Error('Failed to update status');
       }
       
-      toast.success('Status updated successfully');
+      toast.success('Project status updated successfully');
     } catch (error) {
-      console.error('Error updating status:', error);
+      console.error('Error updating project status:', error);
       toast.error(error instanceof Error ? error.message : 'Failed to update status');
       
       // Revert the local state if the update failed
@@ -179,12 +214,12 @@ export default function AdminPaymentsPage() {
     }
   };
 
-  const updateProjectTaken = async (paymentId: string, projectTaken: string) => {
+  const updateProjectTaken = async (paymentId: string, person: string) => {
     try {
       // Update the local state immediately for better UX
       setPayments(payments.map(payment => 
         payment.id === paymentId 
-          ? { ...payment, project_taken: projectTaken }
+          ? { ...payment, project_taken: person }
           : payment
       ));
 
@@ -196,18 +231,18 @@ export default function AdminPaymentsPage() {
         },
         body: JSON.stringify({ 
           paymentId,
-          projectTaken 
+          project_taken: person 
         }),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to update project taken');
+        throw new Error('Failed to update project assignment');
       }
       
-      toast.success('Project taken updated successfully');
+      toast.success('Project assignment updated successfully');
     } catch (error) {
-      console.error('Error updating project taken:', error);
-      toast.error(error instanceof Error ? error.message : 'Failed to update project taken');
+      console.error('Error updating project assignment:', error);
+      toast.error(error instanceof Error ? error.message : 'Failed to update assignment');
       
       // Revert the local state if the update failed
       setPayments(payments);
@@ -240,6 +275,17 @@ export default function AdminPaymentsPage() {
       averageEarnings
     }));
   }, [payments, timeRange]);
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'processing':
+        return 'bg-blue-100 text-blue-800';
+      case 'settled':
+        return 'bg-green-100 text-green-800';
+      default: // pending
+        return 'bg-yellow-100 text-yellow-800';
+    }
+  };
 
   if (!isSignedIn) {
     return (
@@ -549,15 +595,15 @@ export default function AdminPaymentsPage() {
                               </select>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
-                              <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                                payment.status === 'success' ? 'bg-green-100 text-green-800' :
-                                payment.status === 'failed' ? 'bg-red-100 text-red-800' :
-                                'bg-yellow-100 text-yellow-800'
-                              }`}>
-                                {payment.status === 'success' ? 'Success' :
-                                 payment.status === 'failed' ? 'Failed' :
-                                 'Pending'}
-                              </span>
+                              <select
+                                value={payment.status || 'pending'}
+                                onChange={(e) => updatePaymentStatus(payment.id, e.target.value)}
+                                className={`rounded-md px-3 py-1.5 text-xs font-medium ${getStatusColor(payment.status)}`}
+                              >
+                                <option value="pending">Pending</option>
+                                <option value="processing">Processing</option>
+                                <option value="settled">Settled</option>
+                              </select>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
                               {formatDate(payment.createdAt)}

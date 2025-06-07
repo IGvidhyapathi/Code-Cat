@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { useUser } from "@clerk/nextjs";
-import { IconUpload, IconArrowLeft, IconEdit } from "@tabler/icons-react";
+import { IconUpload, IconArrowLeft, IconEdit, IconShieldLock } from "@tabler/icons-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 
@@ -26,6 +26,7 @@ interface ProjectFormData {
   includesSupport: boolean;
   supportDuration: string;
   lastUpdated: string;
+  userId?: string;
 }
 
 // Common technology keywords to detect with categories
@@ -65,6 +66,7 @@ export default function EditProject() {
   const { user, isLoaded } = useUser();
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [isAuthorized, setIsAuthorized] = useState(false);
   const [formData, setFormData] = useState<ProjectFormData>({
     title: "",
     description: "",
@@ -93,16 +95,43 @@ export default function EditProject() {
       return;
     }
 
-    async function fetchProject() {
+    async function checkAuthAndFetchProject() {
       try {
         setIsLoading(true);
-        const response = await fetch(`/api/projects/${params.id}`);
         
+        // First get the database user ID
+        const userResponse = await fetch('/api/user');
+        if (!userResponse.ok) {
+          throw new Error('Failed to fetch user data');
+        }
+        const userData = await userResponse.json();
+        const dbUserId = userData.id;
+
+        // Fetch project data
+        const response = await fetch(`/api/projects/${params.id}`);
         if (!response.ok) {
           throw new Error('Failed to fetch project');
         }
         
         const projectData = await response.json();
+
+        // Check if user owns this project
+        if (projectData.userId !== dbUserId) {
+          toast.error(
+            <div className="flex flex-col items-center gap-1">
+              <span className="text-lg font-semibold">🕵️‍♂️ Caught in the Act!</span>
+              <span className="text-sm">Detective CodeCat is watching you...</span>
+            </div>,
+            {
+              duration: 5000,
+              className: "bg-red-900/90 border border-red-700/50"
+            }
+          );
+          router.push('/projects/edit');
+          return;
+        }
+
+        setIsAuthorized(true);
         
         // Format and set the data
         setFormData({
@@ -123,9 +152,10 @@ export default function EditProject() {
           includesSupport: projectData.includesSupport || false,
           supportDuration: projectData.supportDuration || "1",
           lastUpdated: projectData.lastUpdated || new Date().toISOString().split('T')[0],
+          userId: projectData.userId
         });
       } catch (error) {
-        console.error('Error fetching project:', error);
+        console.error('Error:', error);
         toast.error('Failed to load project data');
         router.push('/projects/edit');
       } finally {
@@ -133,7 +163,7 @@ export default function EditProject() {
       }
     }
 
-    fetchProject();
+    checkAuthAndFetchProject();
   }, [params.id, router, user, isLoaded]);
 
   const handleGoBack = () => {
@@ -142,15 +172,21 @@ export default function EditProject() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!isAuthorized) {
+      toast.error("You are not authorized to edit this project");
+      return;
+    }
+
     setIsSaving(true);
 
     try {
       // Preserve other data but update the specific fields
       const updatedData = {
         title: formData.title,
-        description: formData.description, // Required by the API
-        keyFeatures: formData.keyFeatures, // Required by the API
-        techStack: formData.techStack, // Required by the API
+        description: formData.description,
+        keyFeatures: formData.keyFeatures,
+        techStack: formData.techStack,
         youtubeUrl: formData.youtubeUrl,
         demoUrl: formData.demoUrl,
         contactEmail: formData.contactEmail,
@@ -225,15 +261,64 @@ export default function EditProject() {
                   </svg>
                 </div>
               </div>
-              <div className="space-y-2">
-                <p className="text-xl text-white font-semibold">Loading Project</p>
-                <p className="text-gray-400">Fetching the latest data...</p>
-                <div className="flex items-center justify-center space-x-1 pt-2">
-                  <div className="w-2 h-2 rounded-full bg-blue-500 animate-bounce" style={{ animationDelay: '0ms' }}></div>
-                  <div className="w-2 h-2 rounded-full bg-blue-500 animate-bounce" style={{ animationDelay: '150ms' }}></div>
-                  <div className="w-2 h-2 rounded-full bg-blue-500 animate-bounce" style={{ animationDelay: '300ms' }}></div>
+              <p className="text-sm text-gray-400">Loading project data...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAuthorized) {
+    return (
+      <div className="min-h-screen bg-slate-900 py-24 sm:py-32">
+        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+          <div className="text-center">
+            <div className="flex flex-col items-center justify-center space-y-6">
+              <motion.div 
+                initial={{ scale: 0.5, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ duration: 0.5 }}
+                className="relative w-32 h-32"
+              >
+                <div className="w-32 h-32 rounded-full bg-red-500/10 flex items-center justify-center">
+                  <IconShieldLock className="w-16 h-16 text-red-500" />
                 </div>
+              </motion.div>
+              <motion.div
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.2 }}
+                className="space-y-4"
+              >
+                <h2 className="text-3xl font-bold text-white">Oops! Nice Try 😅</h2>
+              <div className="space-y-2">
+                  <p className="text-gray-400 max-w-md mx-auto">
+                    We caught you trying to sneak into someone else's project! That's not very nice...
+                  </p>
+                  <p className="text-gray-500 text-sm max-w-md mx-auto">
+                    Remember: Respect other creators' work just like you'd want them to respect yours! 🤝
+                  </p>
+                </div>
+                <div className="pt-4">
+                  <Button
+                    onClick={handleGoBack}
+                    variant="outline"
+                    className="bg-slate-800/50 hover:bg-slate-800 transition-colors"
+                  >
+                    <IconArrowLeft className="mr-2 h-4 w-4" />
+                    Go Back (and maybe rethink your choices 😉)
+                  </Button>
               </div>
+              </motion.div>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.4 }}
+                className="mt-8 text-sm text-gray-600"
+              >
+                <p>PS: Our security system is keeping track of these attempts 👀</p>
+              </motion.div>
             </div>
           </div>
         </div>
@@ -242,7 +327,7 @@ export default function EditProject() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-900 py-12 sm:py-16">
+    <div className="min-h-screen bg-slate-900 py-16 sm:py-24">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
           <Button 

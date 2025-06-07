@@ -2,31 +2,168 @@
 
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { IconRocket, IconChartBar, IconTarget, IconUsers, IconBrandGoogle, IconBrandFacebook, IconBrandInstagram, IconBrandTwitter, IconAlertTriangle, IconCopy } from "@tabler/icons-react";
+import { IconRocket, IconChartBar, IconTarget, IconUsers, IconBrandGoogle, IconBrandFacebook, IconBrandInstagram, IconBrandTwitter, IconAlertTriangle, IconCopy, IconEye, IconEyeOff } from "@tabler/icons-react";
 import { Sparkles } from "@/components/ui/sparkles";
 import Link from "next/link";
 import { useAuth, useUser } from "@clerk/nextjs";
 import { SignInButton } from "@clerk/nextjs";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { toast } from "sonner";
+
+interface MarketerData {
+  code: string | null;
+  status: string;
+}
 
 export default function MarketingPage() {
   const { isSignedIn } = useAuth();
   const { user } = useUser();
   const [copied, setCopied] = useState(false);
+  const [isHidden, setIsHidden] = useState(false);
+  const [marketerData, setMarketerData] = useState<MarketerData | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Generate marketing code from first name
-  const generateMarketingCode = (firstName: string) => {
-    if (!firstName) return "XXXX01";
-    const code = firstName.slice(0, 4).toUpperCase();
-    return `${code}01`;
+  useEffect(() => {
+    if (isSignedIn && user?.emailAddresses?.[0]?.emailAddress) {
+      fetchMarketerData(user.emailAddresses[0].emailAddress);
+    }
+  }, [isSignedIn, user]);
+
+  const fetchMarketerData = async (email: string) => {
+    try {
+      const response = await fetch('/api/marketers/status', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email })
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        if (response.status === 404) {
+          // Not found is normal for new users
+          setMarketerData(null);
+        } else {
+          throw new Error(data.error || 'Failed to fetch marketer data');
+        }
+      } else {
+        const data = await response.json();
+        setMarketerData(data);
+      }
+    } catch (error) {
+      console.error('Error fetching marketer data:', error);
+      toast.error('Failed to load marketer data');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const marketingCode = user?.firstName ? generateMarketingCode(user.firstName) : "XXXX01";
-
   const copyToClipboard = () => {
-    navigator.clipboard.writeText(marketingCode);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    if (marketerData?.code) {
+      navigator.clipboard.writeText(marketerData.code);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
+
+  const toggleVisibility = () => {
+    setIsHidden(!isHidden);
+  };
+
+  const renderMarketerStatus = () => {
+    if (!marketerData) {
+      return (
+        <div className="bg-slate-800/50 p-6 rounded-lg mt-6">
+          <div className="flex flex-col items-center gap-4">
+            <div className="text-3xl font-bold text-white bg-slate-900/50 px-6 py-3 rounded-lg border border-slate-700">
+              NOT APPLIED
+            </div>
+            <p className="text-gray-400">
+              You haven't applied to be a marketer yet
+            </p>
+            <Button asChild size="lg" className="bg-gradient-to-r from-purple-500 via-blue-500 to-cyan-500 hover:opacity-90">
+              <Link href="/marketing/apply" className="inline-flex items-center gap-2">
+                Apply Now
+                <IconRocket className="w-5 h-5" />
+              </Link>
+            </Button>
+          </div>
+        </div>
+      );
+    }
+
+    if (marketerData.status === 'rejected') {
+      return (
+        <div className="bg-slate-800/50 p-6 rounded-lg mt-6">
+          <div className="flex flex-col items-center gap-4">
+            <div className="text-3xl font-bold text-red-500 bg-slate-900/50 px-6 py-3 rounded-lg border border-red-500/20">
+              APPLICATION REJECTED
+            </div>
+            <p className="text-gray-400 text-center">
+              Unfortunately, your marketer application has been rejected.<br/>
+              Please contact support for more information.
+            </p>
+          </div>
+        </div>
+      );
+    }
+
+    if (marketerData.status === 'pending') {
+      return (
+        <div className="bg-slate-800/50 p-6 rounded-lg mt-6">
+          <div className="flex flex-col items-center gap-4">
+            <div className="text-3xl font-bold text-yellow-500 bg-slate-900/50 px-6 py-3 rounded-lg border border-yellow-500/20">
+              APPLICATION PENDING
+            </div>
+            <p className="text-gray-400 text-center">
+              Your application is currently under review.<br/>
+              We'll notify you once it's approved.
+            </p>
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <div className="bg-slate-800/50 p-6 rounded-lg mt-6">
+        <div className="flex flex-col items-center gap-4">
+          <div className="flex items-center justify-center gap-4">
+            <div className="text-3xl font-bold text-white bg-slate-900/50 px-6 py-3 rounded-lg border border-slate-700">
+              {isHidden ? '••••••' : marketerData.code}
+            </div>
+            <div className="flex gap-2">
+              <Button
+                onClick={toggleVisibility}
+                variant="outline"
+                className="border-slate-700 hover:bg-slate-800/50"
+              >
+                {isHidden ? (
+                  <IconEye className="w-5 h-5" />
+                ) : (
+                  <IconEyeOff className="w-5 h-5" />
+                )}
+              </Button>
+              <Button
+                onClick={copyToClipboard}
+                variant="outline"
+                className="border-slate-700 hover:bg-slate-800/50"
+                disabled={isHidden}
+              >
+                <IconCopy className="w-5 h-5 mr-2" />
+                {copied ? "Copied!" : "Copy Code"}
+              </Button>
+            </div>
+          </div>
+          <div className="mt-4 space-y-2">
+            <p className="text-gray-400">
+              Share this code with your clients to earn commissions
+            </p>
+            <p className="text-green-400 text-sm">
+              ✓ Your application has been approved. You can start using your code!
+            </p>
+          </div>
+        </div>
+      </div>
+    );
   };
 
   const features = [
@@ -89,9 +226,7 @@ export default function MarketingPage() {
               {isSignedIn ? (
                 <Button asChild size="lg" className="bg-gradient-to-r from-purple-500 via-blue-500 to-cyan-500 hover:opacity-90">
                   <Link 
-                    href="https://docs.google.com/forms/d/1BWR44zbOX1VR9Go6_jDGd9MJmrB3ZynJtgE3gCrXAjE/preview" 
-                    target="_blank"
-                    rel="noopener noreferrer"
+                    href="/marketing/apply"
                     className="inline-flex items-center gap-2"
                   >
                     Apply for Marketing
@@ -126,31 +261,13 @@ export default function MarketingPage() {
                 Your Personal Marketing Code
               </h2>
               {isSignedIn ? (
-                <>
-                  <div className="bg-slate-800/50 p-6 rounded-lg mt-6">
-                    <div className="flex items-center justify-center gap-4">
-                      <div className="text-3xl font-bold text-white bg-slate-900/50 px-6 py-3 rounded-lg border border-slate-700">
-                        {marketingCode}
-                      </div>
-                      <Button
-                        onClick={copyToClipboard}
-                        variant="outline"
-                        className="border-slate-700 hover:bg-slate-800/50"
-                      >
-                        <IconCopy className="w-5 h-5 mr-2" />
-                        {copied ? "Copied!" : "Copy Code"}
-                      </Button>
-                    </div>
-                    <div className="mt-4 space-y-2">
-                      <p className="text-gray-400">
-                        Share this code with your client and get your commissions
-                      </p>
-                      <p className="text-yellow-400 text-sm">
-                        ⚠️ Note: This code will only be valid after your application is approved
-                      </p>
-                    </div>
+                isLoading ? (
+                  <div className="flex justify-center items-center py-8">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
                   </div>
-                </>
+                ) : (
+                  renderMarketerStatus()
+                )
               ) : (
                 <div className="bg-slate-800/50 p-6 rounded-lg mt-6">
                   <div className="flex flex-col items-center gap-4">

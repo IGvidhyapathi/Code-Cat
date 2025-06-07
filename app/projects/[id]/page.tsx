@@ -11,6 +11,7 @@ import { marked } from "marked";
 import { useUser, SignInButton } from "@clerk/nextjs";
 import Script from "next/script";
 import { PhoneCollectionModal } from "@/components/ui/phone-collection-modal";
+import { Input } from "@/components/ui/input";
 
 interface Project {
   id: string;
@@ -155,6 +156,9 @@ export default function ProjectDetails() {
   const [paymentId, setPaymentId] = useState<string | null>(null);
   const [paymentStatus, setPaymentStatus] = useState<{ hasPaid: boolean; payment: any | null } | null>(null);
   const [isCheckingPayment, setIsCheckingPayment] = useState(true);
+  const [showReferralModal, setShowReferralModal] = useState(false);
+  const [referralCode, setReferralCode] = useState("");
+  const [isValidatingReferral, setIsValidatingReferral] = useState(false);
 
   const isOwner = user?.id === project?.userId;
   const successModalRef = useRef<HTMLDivElement>(null);
@@ -205,39 +209,58 @@ export default function ProjectDetails() {
     checkPaymentStatus();
   }, [isSignedIn, params.id]);
 
-  const handleRazorpayPayment = async () => {
-    // Check if user is signed in first
-    if (!user || !isSignedIn) {
-      toast.error('Authentication Required', {
-        description: 'You need to sign in before making a payment.',
-        duration: 5000
-      });
+  const handleReferralSubmit = async () => {
+    if (!referralCode.trim()) {
+      // Skip referral validation if no code entered
+      setShowReferralModal(false);
+      initializePayment();
       return;
     }
 
-    // Check if user has phone number
+    setIsValidatingReferral(true);
     try {
-      const response = await fetch("/api/user/phone");
-      const data = await response.json();
+      const response = await fetch('/api/projects/validate-promo', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          promoCode: referralCode.trim(),
+          projectId: params.id
+        })
+      });
+
+      let errorData;
+      try {
+        errorData = await response.json();
+      } catch (e) {
+        throw new Error('Failed to parse server response');
+      }
 
       if (!response.ok) {
-        throw new Error('Failed to check phone status');
+        throw new Error(errorData?.error || 'Failed to validate promo code');
       }
 
-      if (!data.hasPhone) {
-        // Show phone collection modal
-        const phoneModal = document.getElementById('phone-collection-modal');
-        if (phoneModal) {
-          phoneModal.style.display = 'flex';
-        }
-        return;
+      if (!errorData?.marketer?.id) {
+        throw new Error('Invalid server response format');
       }
+
+      // Store the validated promo code
+      const validatedCode = referralCode.trim();
+      setReferralCode(validatedCode);
+      
+      toast.success('Promo code applied successfully!');
+      setShowReferralModal(false);
+      initializePayment(errorData.marketer.id);
     } catch (error) {
-      console.error('Error checking phone status:', error);
-      toast.error('Failed to verify phone number status');
-      return;
+      console.error('Error validating promo code:', error);
+      // Clear the invalid promo code
+      setReferralCode('');
+      toast.error(error instanceof Error ? error.message : 'Invalid promo code. Please try again or skip.');
+    } finally {
+      setIsValidatingReferral(false);
     }
-    
+  };
+
+  const initializePayment = async (marketerId?: string) => {
     if (!project || isProcessingPayment || !razorpayLoaded) return;
     
     setIsProcessingPayment(true);
@@ -256,20 +279,20 @@ export default function ProjectDetails() {
         image: '/logo.png',
         handler: async function(response: any) {
           // Handle successful payment
-      toast.success(
+          toast.success(
             'Payment Successful!',
-        {
+            {
               description: `Your payment of ₹${projectPrice} for ${project.title} was successful. Reference: ${response.razorpay_payment_id}`,
-          duration: 5000,
-        }
-      );
+              duration: 5000,
+            }
+          );
           
           // Play payment success sound
           const audio = new Audio('/payment success.mp3');
           audio.play().catch(error => console.error('Error playing payment sound:', error));
           
           // Record the successful payment
-          await recordPayment(project.id, response.razorpay_payment_id, projectPrice);
+          await recordPayment(project.id, response.razorpay_payment_id, projectPrice, marketerId);
           
           // Send email notification
           try {
@@ -319,7 +342,8 @@ export default function ProjectDetails() {
         notes: {
           projectId: project.id,
           projectType: project.projectType,
-          category: project.category
+          category: project.category,
+          marketerId: marketerId
         }
       });
       
@@ -335,6 +359,43 @@ export default function ProjectDetails() {
       );
       setIsProcessingPayment(false);
     }
+  };
+
+  const handleRazorpayPayment = async () => {
+    // Check if user is signed in first
+    if (!user || !isSignedIn) {
+      toast.error('Authentication Required', {
+        description: 'You need to sign in before making a payment.',
+        duration: 5000
+      });
+      return;
+    }
+
+    // Check if user has phone number
+    try {
+      const response = await fetch("/api/user/phone");
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error('Failed to check phone status');
+      }
+
+      if (!data.hasPhone) {
+        // Show phone collection modal
+        const phoneModal = document.getElementById('phone-collection-modal');
+        if (phoneModal) {
+          phoneModal.style.display = 'flex';
+        }
+        return;
+      }
+    } catch (error) {
+      console.error('Error checking phone status:', error);
+      toast.error('Failed to verify phone number status');
+      return;
+    }
+    
+    // Show referral code modal
+    setShowReferralModal(true);
   };
 
   // Calculate project price based on various factors
@@ -381,7 +442,7 @@ export default function ProjectDetails() {
   };
 
   // Record payment in database
-  const recordPayment = async (projectId: string, paymentId: string, amount: number) => {
+  const recordPayment = async (projectId: string, paymentId: string, amount: number, marketerId?: string) => {
     try {
       // Call the payments API to record the payment
       const response = await fetch('/api/payments', {
@@ -395,7 +456,8 @@ export default function ProjectDetails() {
           metadata: {
             timestamp: new Date().toISOString(),
             projectType: project?.projectType,
-            category: project?.category
+            category: project?.category,
+            marketerId: marketerId
           }
         })
       });
@@ -406,6 +468,41 @@ export default function ProjectDetails() {
 
       const data = await response.json();
       console.log('Payment recorded in database:', data);
+
+      // If there's a marketer ID, record the promo code use
+      if (marketerId && referralCode) {
+        try {
+          console.log('Recording promo code use:', { marketerId, referralCode, projectId, paymentId });
+          const promoResponse = await fetch('/api/projects/record-promo', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              promoCode: referralCode,
+              projectId,
+              paymentId
+            })
+          });
+
+          if (!promoResponse.ok) {
+            const errorData = await promoResponse.json();
+            console.error('Failed to record promo code use:', errorData);
+            toast.error('Failed to record promo code use', {
+              description: errorData.error || 'Please try again later',
+              duration: 5000
+            });
+          } else {
+            console.log('Successfully recorded promo code use');
+          }
+        } catch (error) {
+          console.error('Error recording promo code use:', error);
+          toast.error('Error recording promo code use', {
+            description: 'Please try again later',
+            duration: 5000
+          });
+        }
+      } else {
+        console.log('Skipping promo code recording:', { marketerId, referralCode });
+      }
       
       toast.success('Payment successfully recorded!', {
         description: `Your payment of ₹${amount} has been recorded. Receipt ID: ${paymentId.substring(0, 8)}...`,
@@ -1026,7 +1123,7 @@ export default function ProjectDetails() {
               </div>
 
               {/* Footer */}
-              <div className="px-6 py-3 bg-slate-850 border-t border-slate-700">
+              <div className="px-6 py-3 bg-slate-900/50 rounded-b-xl">
                 <div className="flex items-center justify-center">
                   <span className="text-xs text-gray-400">Secure payment via Razorpay</span>
                 </div>
@@ -1253,6 +1350,83 @@ export default function ProjectDetails() {
           </div>
         </div>
       </div>
+
+      {/* Referral Code Modal */}
+      <AnimatePresence>
+        {showReferralModal && (
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ duration: 0.2 }}
+              className="bg-slate-800 rounded-xl max-w-md w-full shadow-2xl border border-slate-700"
+            >
+              {/* Header with gradient */}
+              <div className="relative overflow-hidden rounded-t-xl bg-slate-800/50 border-b border-slate-700/50 p-6">
+                <div className="absolute -top-24 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-3xl"></div>
+                <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-purple-500/10 rounded-full blur-3xl"></div>
+                <div className="relative">
+                  <h3 className="text-2xl font-bold text-white mb-2">Got a Referral Code?</h3>
+                  <p className="text-gray-400">Enter your referral code to support your favorite marketer. You can proceed without a code too.</p>
+                </div>
+              </div>
+
+              {/* Form */}
+              <div className="p-6 space-y-6">
+                <div className="space-y-2">
+                  <label htmlFor="referral-code" className="text-sm font-medium text-gray-300">
+                    Referral Code
+                  </label>
+                  <Input
+                    id="referral-code"
+                    type="text"
+                    placeholder="Enter your code here"
+                    value={referralCode}
+                    onChange={(e) => setReferralCode(e.target.value)}
+                    className="w-full bg-slate-900/50 border-slate-700 text-white placeholder:text-gray-500"
+                  />
+                </div>
+
+                <div className="space-y-3">
+                  <Button
+                    onClick={handleReferralSubmit}
+                    disabled={isValidatingReferral}
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white h-11"
+                  >
+                    {isValidatingReferral ? (
+                      <div className="flex items-center justify-center">
+                        <div className="mr-2 h-4 w-4 border-2 border-t-transparent border-white rounded-full animate-spin"></div>
+                        Validating...
+                      </div>
+                    ) : (
+                      'Apply Code & Continue'
+                    )}
+                  </Button>
+
+                  <Button
+                    onClick={() => {
+                      setShowReferralModal(false);
+                      initializePayment();
+                    }}
+                    variant="ghost"
+                    className="w-full text-gray-400 hover:text-white hover:bg-slate-700/50 h-11"
+                  >
+                    I don't have a code
+                  </Button>
+                </div>
+              </div>
+
+              {/* Footer */}
+              <div className="px-6 py-4 bg-slate-900/50 rounded-b-xl">
+                <p className="text-xs text-center text-gray-400">
+                  By using a referral code, you're supporting our marketer community.
+                </p>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

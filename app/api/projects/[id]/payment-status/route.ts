@@ -39,7 +39,7 @@ export async function GET(request: Request) {
       where: {
         projectId: projectId,
         userId: dbUser.id,
-        status: 'success'
+        status: 'settled'
       },
       select: {
         id: true,
