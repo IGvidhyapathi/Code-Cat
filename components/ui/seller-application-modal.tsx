@@ -87,10 +87,10 @@ export function SellerApplicationModal({ isOpen, onClose }: SellerApplicationMod
       return;
     }
 
+    const formattedPhone = '+91' + formData.phone.trim();
+    
     setIsSubmitting(true);
-    const loadingToast = toast.loading("Submitting your application...", {
-      description: "Please wait while we process your request.",
-    });
+    const loadingToast = toast.loading("Submitting application...");
 
     try {
       const response = await fetch("/api/sellers/apply", {
@@ -98,7 +98,10 @@ export function SellerApplicationModal({ isOpen, onClose }: SellerApplicationMod
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          ...formData,
+          phone: formattedPhone
+        }),
       });
 
       const data = await response.json();
@@ -123,11 +126,7 @@ export function SellerApplicationModal({ isOpen, onClose }: SellerApplicationMod
 
       toast.dismiss(loadingToast);
       toast.success("Application Submitted!", {
-        description: "Your seller application has been submitted successfully. We'll review it and get back to you soon.",
-        action: {
-          label: "View Status",
-          onClick: () => window.location.href = "/dashboard"
-        }
+        description: "Your seller application has been submitted successfully. We'll review it and get back to you soon."
       });
       
       // Reset form and close modal
@@ -208,16 +207,28 @@ export function SellerApplicationModal({ isOpen, onClose }: SellerApplicationMod
             <label htmlFor="phone" className="text-sm font-medium">
               Phone Number
             </label>
-            <Input
-              id="phone"
-              name="phone"
-              type="tel"
-              value={formData.phone}
-              onChange={handleInputChange}
-              required
-              placeholder="Enter your phone number"
-              className={errors.phone ? "border-red-500" : ""}
-            />
+            <div className="relative">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">+91</span>
+              <Input
+                id="phone"
+                name="phone"
+                type="tel"
+                value={formData.phone}
+                onChange={(e) => {
+                  // Remove any non-digit characters
+                  const cleaned = e.target.value.replace(/\D/g, '');
+                  handleInputChange({
+                    target: {
+                      name: 'phone',
+                      value: cleaned
+                    }
+                  } as React.ChangeEvent<HTMLInputElement>);
+                }}
+                required
+                placeholder="9876543210"
+                className={`pl-12 ${errors.phone ? "border-red-500" : ""}`}
+              />
+            </div>
             {errors.phone && (
               <p className="text-sm text-red-500">{errors.phone}</p>
             )}

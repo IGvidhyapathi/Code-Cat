@@ -68,15 +68,6 @@ export default function MarketerDashboard() {
   const [searchQuery, setSearchQuery] = useState("");
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (!isSignedIn) {
-      router.push('/');
-      return;
-    }
-
-    fetchDashboardData();
-  }, [isSignedIn, router]);
-
   const fetchDashboardData = async () => {
     try {
       const response = await fetch('/api/marketers/dashboard');
@@ -105,6 +96,20 @@ export default function MarketerDashboard() {
     }
   };
 
+  useEffect(() => {
+    if (!isSignedIn) {
+      router.push('/');
+      return;
+    }
+
+    fetchDashboardData();
+
+    // Set up auto-refresh every 30 seconds
+    const interval = setInterval(fetchDashboardData, 30000);
+
+    return () => clearInterval(interval);
+  }, [isSignedIn, router]);
+
   const formatAmount = (amount: number, currency: string) => {
     return new Intl.NumberFormat('en-IN', {
       style: 'currency',
@@ -120,6 +125,30 @@ export default function MarketerDashboard() {
       hour: 'numeric',
       minute: 'numeric'
     });
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'settled':
+        return 'bg-green-500/10 text-green-400';
+      case 'processing':
+        return 'bg-blue-500/10 text-blue-400';
+      case 'pending':
+      default:
+        return 'bg-yellow-500/10 text-yellow-400';
+    }
+  };
+
+  const getStatusText = (status: string) => {
+    switch (status) {
+      case 'settled':
+        return 'Settled';
+      case 'processing':
+        return 'Processing';
+      case 'pending':
+      default:
+        return 'Pending';
+    }
   };
 
   const filteredProjects = dashboardData?.marketer.projects.filter(p =>
@@ -341,14 +370,8 @@ export default function MarketerDashboard() {
                         {formatAmount(p.project.payment.amount, p.project.payment.currency)}
                       </td>
                       <td className="px-6 py-4">
-                        <span className={`px-3 py-1 rounded-full text-sm ${
-                          p.project.payment.status === 'success'
-                            ? 'bg-green-500/10 text-green-400'
-                            : p.project.payment.status === 'pending'
-                            ? 'bg-yellow-500/10 text-yellow-400'
-                            : 'bg-red-500/10 text-red-400'
-                        }`}>
-                          {p.project.payment.status}
+                        <span className={`px-3 py-1 rounded-full text-sm ${getStatusColor(p.project.payment.status)}`}>
+                          {getStatusText(p.project.payment.status)}
                         </span>
                       </td>
                       <td className="px-6 py-4 text-gray-400">

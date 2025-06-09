@@ -66,6 +66,37 @@ export default function SellerPaymentsPage() {
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
+  // Add auto-refresh functionality
+  useEffect(() => {
+    const fetchPayments = async () => {
+      if (!isSignedIn) return;
+      
+      try {
+        setIsLoading(true);
+        const response = await fetch('/api/payments/seller');
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch payments');
+        }
+        
+        const data = await response.json();
+        setPayments(data);
+      } catch (error) {
+        console.error('Error fetching payments:', error);
+        toast.error('Failed to load payment history');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchPayments();
+
+    // Set up auto-refresh every 30 seconds
+    const interval = setInterval(fetchPayments, 30000);
+
+    return () => clearInterval(interval);
+  }, [isSignedIn]);
+
   // Fetch payments data
   useEffect(() => {
     const fetchPayments = async () => {
@@ -82,11 +113,11 @@ export default function SellerPaymentsPage() {
         const data = await response.json();
         setPayments(data);
         
-        // Calculate stats
+        // Calculate stats - only count settled payments and take 60% of amount
         const totalEarnings = data.reduce((sum: number, payment: Payment) => 
-          payment.status === 'success' ? sum + (payment.amount * 0.6) : sum, 0);
+          payment.status === 'settled' ? sum + (payment.amount * 0.6) : sum, 0);
         const totalProjects = data.filter((payment: Payment) => 
-          payment.status === 'success').length;
+          payment.status === 'settled').length;
         const averageEarnings = totalProjects > 0 ? totalEarnings / totalProjects : 0;
         
         // Calculate trend (comparing with previous period)
@@ -105,7 +136,7 @@ export default function SellerPaymentsPage() {
             }
           })
           .reduce((sum: number, payment: Payment) => 
-            payment.status === 'success' ? sum + (payment.amount * 0.6) : sum, 0);
+            payment.status === 'settled' ? sum + (payment.amount * 0.6) : sum, 0);
             
         const previousPeriodEarnings = data
           .filter((payment: Payment) => {
@@ -122,7 +153,7 @@ export default function SellerPaymentsPage() {
             }
           })
           .reduce((sum: number, payment: Payment) => 
-            payment.status === 'success' ? sum + (payment.amount * 0.6) : sum, 0);
+            payment.status === 'settled' ? sum + (payment.amount * 0.6) : sum, 0);
             
         const trend = previousPeriodEarnings > 0 
           ? ((currentPeriodEarnings - previousPeriodEarnings) / previousPeriodEarnings) * 100
@@ -208,6 +239,14 @@ export default function SellerPaymentsPage() {
       // Revert the local state if the update failed
       setPayments(payments);
     }
+  };
+
+  // Update the display of amount in the table to show 60% for settled payments
+  const getDisplayAmount = (payment: Payment) => {
+    if (payment.status === 'settled') {
+      return payment.amount * 0.6;
+    }
+    return payment.amount;
   };
 
   if (!isSignedIn) {
@@ -446,17 +485,24 @@ export default function SellerPaymentsPage() {
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
                               <div className="text-sm font-semibold text-emerald-400">
-                                {formatAmount(payment.amount, payment.currency)}
+                                {payment.status === 'settled' ? (
+                                  <>
+                                    {formatAmount(getDisplayAmount(payment), payment.currency)}
+                                    <span className="text-xs text-gray-400 ml-1">(60%)</span>
+                                  </>
+                                ) : (
+                                  formatAmount(payment.amount, payment.currency)
+                                )}
                               </div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
                               <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                                payment.status === 'success' ? 'bg-green-100 text-green-800' :
-                                payment.status === 'failed' ? 'bg-red-100 text-red-800' :
+                                payment.status === 'settled' ? 'bg-green-100 text-green-800' :
+                                payment.status === 'processing' ? 'bg-blue-100 text-blue-800' :
                                 'bg-yellow-100 text-yellow-800'
                               }`}>
-                                {payment.status === 'success' ? 'Success' :
-                                 payment.status === 'failed' ? 'Failed' :
+                                {payment.status === 'settled' ? 'Settled' :
+                                 payment.status === 'processing' ? 'Processing' :
                                  'Pending'}
                               </span>
                             </td>

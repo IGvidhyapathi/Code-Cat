@@ -36,7 +36,13 @@ export async function POST(req: Request) {
       include: {
         project: {
           select: {
+            id: true,
             title: true
+          }
+        },
+        promoCode: {
+          include: {
+            marketer: true
           }
         }
       }

@@ -51,6 +51,8 @@ export function PhoneCollectionModal() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    const formattedPhone = '+91' + phoneNumber.trim();
+    
     if (!phoneNumber.trim()) {
       toast.error("Please enter a valid phone number");
       return;
@@ -64,7 +66,7 @@ export function PhoneCollectionModal() {
     setIsSubmitting(true);
     
     try {
-      console.log(`Submitting phone number ${phoneNumber} for user ${user.id}`);
+      console.log(`Submitting phone number ${formattedPhone} for user ${user.id}`);
       
       // Save phone number to database
       const response = await fetch("/api/user/phone", {
@@ -73,7 +75,7 @@ export function PhoneCollectionModal() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          phone: phoneNumber,
+          phone: formattedPhone,
         }),
       });
       
@@ -144,16 +146,23 @@ export function PhoneCollectionModal() {
                       <label htmlFor="phone" className="block text-sm font-medium text-gray-300 mb-1">
                         Phone Number
                       </label>
-                      <Input
-                        id="phone"
-                        type="tel"
-                        placeholder="+91 9876543210"
-                        value={phoneNumber}
-                        onChange={(e) => setPhoneNumber(e.target.value)}
-                        className="w-full px-3 py-2 bg-slate-700/50 border border-slate-600 text-white rounded-md placeholder:text-gray-400"
-                        disabled={isSubmitting || hasSubmitted}
-                        required
-                      />
+                      <div className="relative">
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">+91</span>
+                        <Input
+                          id="phone"
+                          type="tel"
+                          placeholder="9876543210"
+                          value={phoneNumber}
+                          onChange={(e) => {
+                            // Remove any non-digit characters
+                            const cleaned = e.target.value.replace(/\D/g, '');
+                            setPhoneNumber(cleaned);
+                          }}
+                          className="w-full pl-12 bg-slate-700/50 border border-slate-600 text-white rounded-md placeholder:text-gray-400"
+                          disabled={isSubmitting || hasSubmitted}
+                          required
+                        />
+                      </div>
                     </div>
                     
                     <div className="pt-2">

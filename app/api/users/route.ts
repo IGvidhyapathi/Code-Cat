@@ -10,8 +10,8 @@ export async function GET() {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    // Fetch all users
-    const response = await fetch("https://api.clerk.com/v1/users", {
+    // Fetch all users with a higher limit
+    const response = await fetch("https://api.clerk.com/v1/users?limit=100", {
       headers: {
         Authorization: `Bearer ${process.env.CLERK_SECRET_KEY}`,
         "Content-Type": "application/json",

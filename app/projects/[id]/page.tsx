@@ -452,7 +452,7 @@ export default function ProjectDetails() {
           projectId, 
           razorpayPaymentId: paymentId, 
           amount,
-          status: 'success',
+          status: 'settled',
           metadata: {
             timestamp: new Date().toISOString(),
             projectType: project?.projectType,

@@ -99,13 +99,8 @@ export async function GET() {
       console.log("Payments assigned to user:", assignedPayments.length);
     }
 
-    // Ensure projectStatus is set to a default value if missing
-    const paymentsWithStatus = payments.map(payment => ({
-      ...payment,
-      projectStatus: payment.projectStatus || 'Ordered'
-    }));
-
-    return NextResponse.json(paymentsWithStatus);
+    // Return payments without transforming status values
+    return NextResponse.json(payments);
   } catch (error) {
     console.error("[PAYMENTS_SELLER_GET]", error);
     return new NextResponse("Internal Error", { status: 500 });

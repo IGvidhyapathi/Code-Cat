@@ -13,7 +13,11 @@ import {
   IconX,
   IconRefresh,
   IconUserCircle,
-  IconUsers
+  IconUsers,
+  IconBold,
+  IconItalic,
+  IconArrowBack,
+  IconSquareRoundedPlus
 } from "@tabler/icons-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -52,11 +56,13 @@ export default function MailManagement() {
     subject: "",
     content: "",
     sendToAll: false,
-    selectedUsers: [] as string[]
+    selectedUsers: [] as string[],
+    isPlainText: true
   });
   const [users, setUsers] = useState<ClerkUser[]>([]);
   const [userSearchTerm, setUserSearchTerm] = useState("");
   const [isLoadingUsers, setIsLoadingUsers] = useState(true);
+  const [showPreview, setShowPreview] = useState(false);
 
   // Check if user is admin
   const userRole = user?.publicMetadata?.role as string || 'member';
@@ -223,6 +229,7 @@ export default function MailManagement() {
           content: newEmail.content,
           recipients: newEmail.selectedUsers,
           sendToAll: newEmail.sendToAll,
+          isPlainText: newEmail.isPlainText
         }),
       });
 
@@ -257,7 +264,8 @@ export default function MailManagement() {
         subject: "",
         content: "",
         sendToAll: false,
-        selectedUsers: []
+        selectedUsers: [],
+        isPlainText: true
       });
     } catch (error) {
       console.error('Error sending email:', error);
@@ -413,16 +421,133 @@ export default function MailManagement() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-400 mb-1">
-                      Content
-                    </label>
-                    <textarea
-                      value={newEmail.content}
-                      onChange={(e) => setNewEmail({ ...newEmail, content: e.target.value })}
-                      placeholder="Enter email content"
-                      rows={4}
-                      className="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
+                    <div className="flex items-center justify-between mb-1">
+                      <label className="block text-sm font-medium text-gray-400">
+                        Content
+                      </label>
+                      <div className="flex items-center gap-4">
+                        <label className="flex items-center gap-2 text-sm text-gray-400">
+                          <input
+                            type="checkbox"
+                            checked={newEmail.isPlainText}
+                            onChange={(e) => setNewEmail({ ...newEmail, isPlainText: e.target.checked })}
+                            className="rounded border-gray-700 bg-slate-900 text-blue-500 focus:ring-blue-500"
+                          />
+                          Plain Text Mode
+                        </label>
+                        <button
+                          onClick={() => setShowPreview(!showPreview)}
+                          className="text-sm text-blue-400 hover:text-blue-300"
+                        >
+                          {showPreview ? 'Edit Content' : 'Preview Email'}
+                        </button>
+                      </div>
+                    </div>
+                    {showPreview ? (
+                      <div 
+                        className="w-full min-h-[200px] px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white overflow-auto"
+                        dangerouslySetInnerHTML={{ __html: newEmail.content }}
+                      />
+                    ) : newEmail.isPlainText ? (
+                      <textarea
+                        value={newEmail.content}
+                        onChange={(e) => setNewEmail({ ...newEmail, content: e.target.value })}
+                        placeholder="Enter your message here. Line breaks and URLs will be automatically formatted."
+                        rows={8}
+                        className="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y"
+                      />
+                    ) : (
+                      <div className="border border-slate-700 rounded-lg overflow-hidden">
+                        <div className="bg-slate-800 border-b border-slate-700 p-2 flex gap-2">
+                          <button
+                            onClick={() => {
+                              const textarea = document.getElementById('email-content') as HTMLTextAreaElement;
+                              const start = textarea.selectionStart;
+                              const end = textarea.selectionEnd;
+                              const text = textarea.value;
+                              const before = text.substring(0, start);
+                              const selection = text.substring(start, end);
+                              const after = text.substring(end);
+                              setNewEmail({
+                                ...newEmail,
+                                content: `${before}<strong>${selection}</strong>${after}`
+                              });
+                            }}
+                            className="p-1 text-gray-400 hover:text-white rounded hover:bg-slate-700"
+                            title="Bold"
+                          >
+                            <IconBold className="h-4 w-4" />
+                          </button>
+                          <button
+                            onClick={() => {
+                              const textarea = document.getElementById('email-content') as HTMLTextAreaElement;
+                              const start = textarea.selectionStart;
+                              const end = textarea.selectionEnd;
+                              const text = textarea.value;
+                              const before = text.substring(0, start);
+                              const selection = text.substring(start, end);
+                              const after = text.substring(end);
+                              setNewEmail({
+                                ...newEmail,
+                                content: `${before}<em>${selection}</em>${after}`
+                              });
+                            }}
+                            className="p-1 text-gray-400 hover:text-white rounded hover:bg-slate-700"
+                            title="Italic"
+                          >
+                            <IconItalic className="h-4 w-4" />
+                          </button>
+                          <button
+                            onClick={() => {
+                              const textarea = document.getElementById('email-content') as HTMLTextAreaElement;
+                              const start = textarea.selectionStart;
+                              const text = textarea.value;
+                              const before = text.substring(0, start);
+                              const after = text.substring(start);
+                              setNewEmail({
+                                ...newEmail,
+                                content: `${before}<br>${after}`
+                              });
+                            }}
+                            className="p-1 text-gray-400 hover:text-white rounded hover:bg-slate-700"
+                            title="Add Line Break"
+                          >
+                            <IconArrowBack className="h-4 w-4 rotate-90" />
+                          </button>
+                          <div className="w-px h-4 bg-slate-700 my-auto mx-1" />
+                          <button
+                            onClick={() => {
+                              const textarea = document.getElementById('email-content') as HTMLTextAreaElement;
+                              const start = textarea.selectionStart;
+                              const text = textarea.value;
+                              const before = text.substring(0, start);
+                              const after = text.substring(start);
+                              setNewEmail({
+                                ...newEmail,
+                                content: `${before}<div class="cta-button">Click Here</div>${after}`
+                              });
+                            }}
+                            className="p-1 text-gray-400 hover:text-white rounded hover:bg-slate-700"
+                            title="Add Call-to-Action Button"
+                          >
+                            <IconSquareRoundedPlus className="h-4 w-4" />
+                          </button>
+                        </div>
+                        <textarea
+                          id="email-content"
+                          value={newEmail.content}
+                          onChange={(e) => setNewEmail({ ...newEmail, content: e.target.value })}
+                          placeholder="Enter email content (HTML supported)"
+                          rows={8}
+                          className="w-full px-4 py-2 bg-slate-800 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y"
+                        />
+                      </div>
+                    )}
+                    <p className="mt-1 text-xs text-gray-500">
+                      {newEmail.isPlainText 
+                        ? "Your text will be automatically formatted with proper spacing and clickable links."
+                        : "HTML formatting is supported. Use the toolbar above to add formatting."}
+                    </p>
                   </div>
 
                   <div>

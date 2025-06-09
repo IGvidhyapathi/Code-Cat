@@ -28,8 +28,10 @@ export default function MarketingApplyPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    const formattedPhone = '+91' + formData.phone.trim();
+
     // Validate phone number
-    if (!validatePhone(formData.phone)) {
+    if (!validatePhone(formattedPhone)) {
       toast.error("Invalid phone number", {
         description: "Please enter a valid phone number with at least 10 digits"
       });
@@ -46,6 +48,7 @@ export default function MarketingApplyPage() {
         },
         body: JSON.stringify({
           ...formData,
+          phone: formattedPhone,
           // Use user's verified email if available
           email: user?.emailAddresses?.[0]?.emailAddress || formData.email
         }),
@@ -163,17 +166,29 @@ export default function MarketingApplyPage() {
               <label htmlFor="phone" className="block text-sm font-medium text-gray-200 mb-2">
                 Phone Number
               </label>
-              <Input
-                id="phone"
-                name="phone"
-                type="tel"
-                required
-                value={formData.phone}
-                onChange={handleChange}
-                className="bg-slate-800/50 border-slate-700 text-white"
-                placeholder="Enter your phone number (min. 10 digits)"
-                disabled={isLoading}
-              />
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">+91</span>
+                <Input
+                  id="phone"
+                  name="phone"
+                  type="tel"
+                  required
+                  value={formData.phone}
+                  onChange={(e) => {
+                    // Remove any non-digit characters
+                    const cleaned = e.target.value.replace(/\D/g, '');
+                    handleChange({
+                      target: {
+                        name: 'phone',
+                        value: cleaned
+                      }
+                    } as React.ChangeEvent<HTMLInputElement>);
+                  }}
+                  className="pl-12 bg-slate-800/50 border-slate-700 text-white"
+                  placeholder="9876543210"
+                  disabled={isLoading}
+                />
+              </div>
             </div>
 
             <Button

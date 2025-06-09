@@ -11,7 +11,7 @@ const paymentSchema = z.object({
   razorpayPaymentId: z.string().min(1, "Payment ID is required"),
   razorpayOrderId: z.string().optional(),
   razorpaySignature: z.string().optional(),
-  status: z.enum(["success", "failed", "pending"]).default("success"),
+  status: z.enum(["pending", "processing", "settled"]).default("pending"),
   metadata: z.record(z.any()).optional(),
 });
 
@@ -88,7 +88,7 @@ export async function POST(req: Request) {
           id, amount, currency, status, "razorpayPaymentId", 
           "projectId", "userId", "createdAt", "updatedAt", metadata
         ) VALUES (
-          ${crypto.randomUUID()}, ${paymentData.amount}, 'INR', ${paymentData.status}, 
+          ${crypto.randomUUID()}, ${paymentData.amount}, 'INR', ${paymentData.status}::public."PaymentStatus", 
           ${paymentData.razorpayPaymentId}, ${paymentData.projectId}, 
           ${dbUser.id}, NOW(), NOW(), ${JSON.stringify(paymentData.metadata || {})}::jsonb
         )

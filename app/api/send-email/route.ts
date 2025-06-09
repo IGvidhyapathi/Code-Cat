@@ -19,6 +19,175 @@ const transporter = nodemailer.createTransport({
   logger: true // Enable logger
 });
 
+const convertPlainTextToHtml = (text: string) => {
+  // Convert line breaks to <br> tags
+  let html = text.replace(/\n/g, '<br>');
+  
+  // Convert URLs to clickable links
+  html = html.replace(
+    /(https?:\/\/[^\s]+)/g,
+    '<a href="$1" style="color: #4F46E5; text-decoration: underline;">$1</a>'
+  );
+  
+  // Wrap paragraphs
+  html = html.split('<br><br>').map(para => 
+    para.trim() ? `<p style="margin: 0 0 1em 0;">${para}</p>` : ''
+  ).join('');
+  
+  return html;
+};
+
+const createEmailTemplate = (subject: string, content: string, isPlainText: boolean = false) => {
+  const formattedContent = isPlainText ? convertPlainTextToHtml(content) : content;
+  
+  return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>${subject}</title>
+      <style>
+        body {
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+          line-height: 1.6;
+          color: #1a1a1a;
+          margin: 0;
+          padding: 0;
+          background-color: #f5f5f5;
+        }
+        .container {
+          max-width: 600px;
+          margin: 20px auto;
+          background: white;
+          border-radius: 16px;
+          overflow: hidden;
+          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+          background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%);
+          padding: 40px 30px;
+          text-align: center;
+        }
+        .logo {
+          margin-bottom: 20px;
+        }
+        .logo img {
+          height: 40px;
+        }
+        .title {
+          color: white;
+          font-size: 24px;
+          font-weight: bold;
+          margin: 0;
+          text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .content {
+          padding: 30px;
+          background: white;
+        }
+        .message {
+          color: #374151;
+          font-size: 16px;
+          line-height: 1.8;
+          margin-bottom: 30px;
+        }
+        .message p {
+          margin: 0 0 1em 0;
+        }
+        .message p:last-child {
+          margin-bottom: 0;
+        }
+        .message a {
+          color: #4F46E5;
+          text-decoration: underline;
+        }
+        .cta-button {
+          display: inline-block;
+          padding: 12px 24px;
+          background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%);
+          color: white !important;
+          text-decoration: none !important;
+          border-radius: 8px;
+          font-weight: 600;
+          margin: 20px 0;
+          text-align: center;
+        }
+        .footer {
+          background: #F9FAFB;
+          padding: 20px 30px;
+          text-align: center;
+          border-top: 1px solid #E5E7EB;
+        }
+        .social-links {
+          margin-bottom: 20px;
+        }
+        .social-link {
+          display: inline-block;
+          margin: 0 10px;
+          color: #6B7280;
+          text-decoration: none;
+        }
+        .footer-text {
+          color: #6B7280;
+          font-size: 14px;
+          margin: 0;
+        }
+        .divider {
+          height: 4px;
+          background: linear-gradient(90deg, #4F46E5 0%, #7C3AED 100%);
+          margin: 0;
+          border: none;
+        }
+        @media (max-width: 600px) {
+          .container {
+            margin: 0;
+            border-radius: 0;
+          }
+          .header {
+            padding: 30px 20px;
+          }
+          .content {
+            padding: 20px;
+          }
+        }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <div class="logo">
+            <!-- Replace with your actual logo -->
+            <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+              <rect width="40" height="40" rx="8" fill="white" fill-opacity="0.1"/>
+              <path d="M20 8L28 12V20L20 24L12 20V12L20 8Z" fill="white"/>
+            </svg>
+          </div>
+          <h1 class="title">${subject}</h1>
+        </div>
+        <hr class="divider">
+        <div class="content">
+          <div class="message">
+            ${formattedContent}
+          </div>
+        </div>
+        <div class="footer">
+          <div class="social-links">
+            <a href="#" class="social-link">Twitter</a>
+            <a href="#" class="social-link">LinkedIn</a>
+            <a href="#" class="social-link">GitHub</a>
+          </div>
+          <p class="footer-text">
+            © ${new Date().getFullYear()} CodeCat. All rights reserved.<br>
+            You're receiving this email because you're part of the CodeCat community.
+          </p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+};
+
 export async function POST(req: Request) {
   try {
     const session = await auth();
@@ -49,7 +218,7 @@ export async function POST(req: Request) {
     });
 
     const body = await req.json();
-    const { subject, content, recipients } = body;
+    const { subject, content, recipients, isPlainText = true } = body;
 
     console.log('Received email request:', {
       subject,
@@ -105,8 +274,7 @@ export async function POST(req: Request) {
             },
             to: email,
             subject: subject,
-            html: content,
-            text: content.replace(/<[^>]*>/g, ''),
+            html: createEmailTemplate(subject, content, isPlainText),
             headers: {
               'X-Priority': '1', // High priority
               'X-MSMail-Priority': 'High',

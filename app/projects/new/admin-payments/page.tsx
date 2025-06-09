@@ -181,6 +181,8 @@ export default function AdminPaymentsPage() {
 
   const updateProjectStatus = async (paymentId: string, newStatus: string) => {
     try {
+      console.log('Updating project status:', { paymentId, newStatus });
+      
       // Update the local state immediately for better UX
       setPayments(payments.map(payment => 
         payment.id === paymentId 
@@ -188,20 +190,31 @@ export default function AdminPaymentsPage() {
           : payment
       ));
 
+      const requestBody = { 
+        paymentId: paymentId,
+        projectStatus: newStatus 
+      };
+      console.log('Sending request with body:', requestBody);
+
       // Update in database
       const response = await fetch(`/api/payments/update-status`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ 
-          paymentId,
-          projectStatus: newStatus 
-        }),
+        body: JSON.stringify(requestBody),
       });
 
+      const data = await response.json();
+      console.log('Received response:', { status: response.status, data });
+      
       if (!response.ok) {
-        throw new Error('Failed to update status');
+        console.error('Update status failed:', { 
+          status: response.status,
+          statusText: response.statusText,
+          data 
+        });
+        throw new Error(data.error || data.details || 'Failed to update status');
       }
       
       toast.success('Project status updated successfully');
@@ -230,13 +243,16 @@ export default function AdminPaymentsPage() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ 
-          paymentId,
-          project_taken: person 
+          paymentId: paymentId,
+          project_taken: person
         }),
       });
 
+      const data = await response.json();
+      
       if (!response.ok) {
-        throw new Error('Failed to update project assignment');
+        console.error('Update project taken response:', data);
+        throw new Error(data.error || 'Failed to update project assignment');
       }
       
       toast.success('Project assignment updated successfully');
@@ -278,12 +294,13 @@ export default function AdminPaymentsPage() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'processing':
-        return 'bg-blue-100 text-blue-800';
       case 'settled':
-        return 'bg-green-100 text-green-800';
-      default: // pending
-        return 'bg-yellow-100 text-yellow-800';
+        return 'bg-green-500/10 text-green-400';
+      case 'processing':
+        return 'bg-blue-500/10 text-blue-400';
+      case 'pending':
+      default:
+        return 'bg-yellow-500/10 text-yellow-400';
     }
   };
 
@@ -562,8 +579,8 @@ export default function AdminPaymentsPage() {
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm">
                               <span className={`font-semibold ${
-                                payment.status === 'success' ? 'text-emerald-400' :
-                                payment.status === 'failed' ? 'text-red-400' :
+                                payment.status === 'settled' ? 'text-emerald-400' :
+                                payment.status === 'processing' ? 'text-blue-400' :
                                 'text-yellow-400'
                               }`}>
                                 {formatAmount(payment.amount, payment.currency)}
