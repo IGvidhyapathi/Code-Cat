@@ -5,6 +5,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { IconBrandYoutube, IconExternalLink } from "@tabler/icons-react";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 interface ProjectCardProps {
   id: string;
@@ -50,16 +51,22 @@ export function ProjectCard({
 }: ProjectCardProps) {
   const [useFallback, setUseFallback] = useState(false);
   const thumbnail = useFallback ? '/images/project-thumbnails/placeholder.jpg' : getYouTubeThumbnail(youtubeUrl);
+  const router = useRouter();
   
   // Add a key to force image refresh when YouTube URL changes
   const imageKey = `${id}-${youtubeUrl}-${Date.now()}`;
+
+  const handleCardClick = () => {
+    router.push(`/projects/${id}`);
+  };
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       whileHover={{ y: -5 }}
-      className="group relative bg-slate-800/50 rounded-lg overflow-hidden border border-slate-700 h-full flex flex-col transform-gpu transition-all duration-300 hover:shadow-[0_0_30px_rgba(59,130,246,0.3)] hover:border-blue-500/50"
+      onClick={handleCardClick}
+      className="group relative bg-slate-800/50 rounded-lg overflow-hidden border border-slate-700 h-full flex flex-col transform-gpu transition-all duration-300 hover:shadow-[0_0_30px_rgba(59,130,246,0.3)] hover:border-blue-500/50 cursor-pointer"
     >
       <div className="aspect-video relative overflow-hidden">
         {isTopSelling && (
@@ -98,23 +105,25 @@ export function ProjectCard({
             </span>
           </div>
           <div className="flex items-center space-x-2 sm:opacity-0 sm:translate-y-2 transition-all duration-300 group-hover:opacity-100 group-hover:translate-y-0">
-            <Link
+            <a
               href={youtubeUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="p-1.5 rounded-full bg-slate-700/50 text-red-500 hover:bg-slate-700 transition-colors"
+              onClick={(e) => e.stopPropagation()}
             >
               <IconBrandYoutube size={16} />
-            </Link>
+            </a>
             {demoUrl && (
-              <Link
+              <a
                 href={demoUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="p-1.5 rounded-full bg-slate-700/50 text-blue-500 hover:bg-slate-700 transition-colors"
+                onClick={(e) => e.stopPropagation()}
               >
                 <IconExternalLink size={16} />
-              </Link>
+              </a>
             )}
           </div>
         </div>
@@ -153,12 +162,11 @@ export function ProjectCard({
           )}
         </div>
 
-        <Link
-          href={`/projects/${id}`}
+        <div
           className="inline-flex w-full items-center justify-center px-4 py-2 rounded-lg bg-blue-600 text-white transition-all duration-300 hover:bg-blue-700 group-hover:bg-blue-500 group-hover:shadow-lg group-hover:shadow-blue-500/25 transform-gpu"
         >
           View Details
-        </Link>
+        </div>
       </div>
     </motion.div>
   );

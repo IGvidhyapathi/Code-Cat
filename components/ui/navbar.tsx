@@ -28,7 +28,7 @@ export function Navbar() {
     { href: "/", label: "Home", icon: IconHome },
     { href: "/explore", label: "Explore", icon: IconApps },
     { href: "/seller", label: "Become a Seller", icon: IconPlus },
-    { href: "/marketing", label: "Marketing", icon: IconChartBar },
+    { href: "/marketing", label: "Apply for Marketing", icon: IconChartBar },
     { href: "/payments", label: "Payments", icon: IconCreditCard },
     { href: "/support", label: "Support", icon: IconHelp },
   ];

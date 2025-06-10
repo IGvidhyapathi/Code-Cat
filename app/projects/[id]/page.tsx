@@ -12,6 +12,7 @@ import { useUser, SignInButton } from "@clerk/nextjs";
 import Script from "next/script";
 import { PhoneCollectionModal } from "@/components/ui/phone-collection-modal";
 import { Input } from "@/components/ui/input";
+import confetti from 'canvas-confetti';
 
 interface Project {
   id: string;
@@ -260,6 +261,41 @@ export default function ProjectDetails() {
     }
   };
 
+  const fireConfetti = () => {
+    // First burst
+    confetti({
+      particleCount: 100,
+      spread: 70,
+      origin: { y: 0.6 }
+    });
+
+    // Second burst after a small delay
+    setTimeout(() => {
+      confetti({
+        particleCount: 50,
+        angle: 60,
+        spread: 55,
+        origin: { x: 0 }
+      });
+      confetti({
+        particleCount: 50,
+        angle: 120,
+        spread: 55,
+        origin: { x: 1 }
+      });
+    }, 200);
+
+    // Final burst
+    setTimeout(() => {
+      confetti({
+        particleCount: 100,
+        spread: 100,
+        decay: 0.91,
+        scalar: 0.8
+      });
+    }, 500);
+  };
+
   const initializePayment = async (marketerId?: string) => {
     if (!project || isProcessingPayment || !razorpayLoaded) return;
     
@@ -290,6 +326,9 @@ export default function ProjectDetails() {
           // Play payment success sound
           const audio = new Audio('/payment success.mp3');
           audio.play().catch(error => console.error('Error playing payment sound:', error));
+          
+          // Fire confetti effect
+          fireConfetti();
           
           // Record the successful payment
           await recordPayment(project.id, response.razorpay_payment_id, projectPrice, marketerId);

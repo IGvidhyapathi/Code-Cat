@@ -423,8 +423,8 @@ export default function MailManagement() {
                   <div>
                     <div className="flex items-center justify-between mb-1">
                       <label className="block text-sm font-medium text-gray-400">
-                        Content
-                      </label>
+                      Content
+                    </label>
                       <div className="flex items-center gap-4">
                         <label className="flex items-center gap-2 text-sm text-gray-400">
                           <input
@@ -449,9 +449,9 @@ export default function MailManagement() {
                         dangerouslySetInnerHTML={{ __html: newEmail.content }}
                       />
                     ) : newEmail.isPlainText ? (
-                      <textarea
-                        value={newEmail.content}
-                        onChange={(e) => setNewEmail({ ...newEmail, content: e.target.value })}
+                    <textarea
+                      value={newEmail.content}
+                      onChange={(e) => setNewEmail({ ...newEmail, content: e.target.value })}
                         placeholder="Enter your message here. Line breaks and URLs will be automatically formatted."
                         rows={8}
                         className="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y"
@@ -540,7 +540,7 @@ export default function MailManagement() {
                           placeholder="Enter email content (HTML supported)"
                           rows={8}
                           className="w-full px-4 py-2 bg-slate-800 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y"
-                        />
+                    />
                       </div>
                     )}
                     <p className="mt-1 text-xs text-gray-500">
